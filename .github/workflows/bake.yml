@@ -41,6 +41,8 @@ jobs:
               - 'pgvector/**'
             postgis:
               - 'postgis/**'
+            pgaudit:
+              - 'pgaudit/**'
 
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix
