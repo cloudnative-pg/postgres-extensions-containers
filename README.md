@@ -20,8 +20,7 @@ in CloudNativePG.
 
 ## Supported Extensions
 
-Currently: **none**.
-This repository lays the foundation for packaging extensions going forward.
+- **pgaudit** - PostgreSQL Audit Extension for detailed session and object audit logging
 
 ---
 

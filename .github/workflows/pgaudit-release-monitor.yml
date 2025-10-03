@@ -1,0 +1,39 @@
+name: Monitor pgaudit Releases
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    outputs:
+      new-version: ${{ steps.check.outputs.new-version }}
+      should-build: ${{ steps.check.outputs.should-build }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check for new pgaudit release
+        id: check
+        run: |
+          # Get latest release from GitHub API
+          LATEST=$(curl -s https://api.github.com/repos/pgaudit/pgaudit/releases/latest | jq -r '.tag_name')
+          
+          # Check if we already built this version
+          if git tag | grep -q "pgaudit-${LATEST}"; then
+            echo "Version ${LATEST} already built"
+            echo "should-build=false" >> $GITHUB_OUTPUT
+          else
+            echo "New version found: ${LATEST}"
+            echo "new-version=${LATEST}" >> $GITHUB_OUTPUT
+            echo "should-build=true" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-test:
+    needs: check-release
+    if: needs.check-release.outputs.should-build == 'true'
+    uses: ./.github/workflows/build-pgaudit.yml
+    with:
+      pgaudit-version: ${{ needs.check-release.outputs.new-version }}
+    secrets: inherit
