@@ -18,7 +18,7 @@ metadata:
   name: postgres-with-pgaudit
 spec:
   instances: 3
-  imageName: ghcr.io/cloudnative-pg/postgresql:18-bookworm
+  imageName: ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm
   postgresql:
     extensions:
       - name: pgaudit

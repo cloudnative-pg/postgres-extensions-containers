@@ -67,25 +67,25 @@ jobs:
               pgaudit-all \
               --push
           else
-            # Build single combination for feature branch
-            TARGET="pgaudit-feature"
+            # Build both distros for feature branch
             REGISTRY="ghcr.io/${{ github.repository_owner }}" \
             PG_VERSION="${{ inputs.pg-version || '18' }}" \
-            DISTRO="${{ inputs.distro || 'bookworm' }}" \
             PGAUDIT_VERSION="${PGAUDIT_VER}" \
             BRANCH_NAME="${{ github.ref_name }}" \
             docker buildx bake \
-              --set pgaudit-feature.context=source \
+              --set "*.context=source" \
               --set "*.args.PG_VERSION=${{ inputs.pg-version || '18' }}" \
-              --set "*.args.DISTRO=${{ inputs.distro || 'bookworm' }}" \
               --set "*.args.PGAUDIT_VERSION=${PGAUDIT_VER}" \
-              ${TARGET} \
+              pgaudit-feature-all \
               --push
           fi
             
   smoke-test:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro: [bookworm, trixie]
     steps:
       - uses: actions/checkout@v4
       
@@ -108,11 +108,11 @@ jobs:
           config: kind-config.yaml
 
 
-      # - name: Check Kind Cluster Status
-      #   run: |
-      #     echo "Kind cluster 'kind' is ready."
-      #     kubectl cluster-info
-      #     kubectl get nodes
+      - name: Check Kind Cluster Status
+        run: |
+          echo "Kind cluster 'kind' is ready."
+          kubectl cluster-info
+          kubectl get nodes
           
       - name: Install CloudNativePG Operator
         run: |
@@ -140,10 +140,10 @@ jobs:
           
           echo "✅ CloudNativePG operator installed successfully"
 
-      - name: Create Postgres Cluster with Extension
+      - name: Create Postgres Cluster with Extension (${{ matrix.distro }})
         run: |
           PG_VER="${{ inputs.pg-version || '18' }}"
-          DISTRO="${{ inputs.distro || 'bookworm' }}"
+          DISTRO="${{ matrix.distro }}"
           PGAUDIT_VER="${{ steps.get-version.outputs.version }}"
           
           # Set image tag based on branch
@@ -153,18 +153,18 @@ jobs:
             IMAGE_TAG="ghcr.io/${{ github.repository_owner }}/pgaudit:${PG_VER}-${PGAUDIT_VER}-${{ github.ref_name }}-${DISTRO}"
           fi
           
-          echo "Testing with image: ${IMAGE_TAG}"
+          echo "🧪 Testing ${DISTRO} with image: ${IMAGE_TAG}"
           
           # Create test pod with pgaudit extension
           kubectl apply -f - <<EOF
           apiVersion: postgresql.cnpg.io/v1
           kind: Cluster
           metadata:
-            name: postgresql-with-extensions
+            name: postgresql-with-extensions-${DISTRO}
             namespace: cnpg-system
           spec:
             instances: 1
-            imageName: ghcr.io/cloudnative-pg/postgresql:${PG_VER}-${DISTRO}
+            imageName: ghcr.io/cloudnative-pg/postgresql:${PG_VER}-minimal-${DISTRO}
             postgresql:
               extensions:
                 - name: pgaudit
@@ -174,17 +174,18 @@ jobs:
               storageClass: standard
               size: 1Gi
           EOF
-          kubectl wait --for=jsonpath='{.status.phase}=Cluster in healthy state' cluster/postgresql-with-extensions --timeout=300s -n cnpg-system
-          echo "✅ PostgreSQL cluster with pgaudit extension is ready"
+          kubectl wait --for=jsonpath='{.status.phase}=Cluster in healthy state' cluster/postgresql-with-extensions-${DISTRO} --timeout=300s -n cnpg-system
+          echo "✅ PostgreSQL cluster with pgaudit extension (${DISTRO}) is ready"
           
-      - name: Verify pgaudit Extension
+      - name: Verify pgaudit Extension (${{ matrix.distro }})
         run: |
           EXTENSION_NAME="pgaudit"
           NAMESPACE="cnpg-system"
-          POD_NAME="postgresql-with-extensions-1"
+          DISTRO="${{ matrix.distro }}"
+          POD_NAME="postgresql-with-extensions-${DISTRO}-1"
           CONTAINER_NAME="postgres"
           
-          echo "🔍 Checking if ${EXTENSION_NAME} extension is available..."
+          echo "🔍 Checking if ${EXTENSION_NAME} extension is available in ${DISTRO}..."
           
           # Wait a bit for the extension to be fully loaded
           sleep 10
@@ -193,9 +194,10 @@ jobs:
           if kubectl exec "$POD_NAME" -n "$NAMESPACE" -c "$CONTAINER_NAME" -- sh -c \
              "psql -U postgres -d postgres -t -c \"SELECT name FROM pg_available_extensions WHERE name = '$EXTENSION_NAME';\"" | \
              grep -q "$EXTENSION_NAME"; then
-              echo "✅ Success! The '$EXTENSION_NAME' extension is available."
+              echo "✅ Success! The '$EXTENSION_NAME' extension is available in ${DISTRO}."
           else
-              echo "❌ Failure! The '$EXTENSION_NAME' extension was NOT found in pg_available_extensions."
+              echo "❌ Failure! The '$EXTENSION_NAME' extension was NOT found in pg_available_extensions for ${DISTRO}."
+              exit 1
           fi
           
       - name: Tag successful build
