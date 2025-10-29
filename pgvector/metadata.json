@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "name": "pgvector",
+    "sql_name": "vector",
+    "versions": {
+      "bookworm": {
+        "18": "0.8.1-2.pgdg12+1"
+      },
+      "trixie": {
+        "18": "0.8.1-2.pgdg13+1"
+      }
+    }
+  }
+}

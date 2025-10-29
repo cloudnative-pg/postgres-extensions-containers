@@ -1,0 +1,16 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.extension_name)
+spec:
+  imageName: ($values.pg_image)
+  instances: 1
+
+  storage:
+    size: 1Gi
+
+  postgresql:
+    extensions:
+      - name: ($values.extension_name)
+        image:
+          reference: ($values.extension_image)

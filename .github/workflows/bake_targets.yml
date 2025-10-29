@@ -1,0 +1,196 @@
+name: Build target extension
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Target environment for the image build (e.g. testing, production)."
+        required: true
+        type: string
+        default: "testing"
+      extension_name:
+        description: "The PostgreSQL extension to build (directory name)"
+        required: true
+        type: string
+    secrets:
+      SNYK_TOKEN:
+        required: false
+
+permissions: {}
+
+jobs:
+  testbuild:
+    name: Build ${{ inputs.extension_name }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+      # Required by the cosign step
+      id-token: write
+    outputs:
+      metadata: ${{ steps.build.outputs.metadata }}
+      images: ${{ steps.images.outputs.images }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
+        with:
+          platforms: 'linux/arm64'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+
+      - name: Build and push
+        uses: docker/bake-action@3acf805d94d93a86cce4ca44798a76464a75b88c # v6
+        id: build
+        env:
+          environment: testing
+          registry: ghcr.io/${{ github.repository_owner }}
+          revision: ${{ github.sha }}
+        with:
+          files: ./${{ inputs.extension_name }}/metadata.json,./docker-bake.hcl
+          push: true
+
+      # From bake's metadata, extract each unique tag (e.g. the ones with the timestamp)
+      - name: Generated images
+        id: images
+        run: |
+          echo "images=$(echo '${{ steps.build.outputs.metadata }}' | jq -c '[ .[]."image.name" | split(",")[] | select(test("[0-9]{12}")) ]')" >>  "$GITHUB_OUTPUT"
+
+      # Even if we're testing we sign the images, so we can push them to production later if that's required
+      - name: Install cosign
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
+        # See https://github.blog/security/supply-chain-security/safeguard-container-signing-capability-actions/
+        # and https://github.com/actions/starter-workflows/blob/main/ci/docker-publish.yml for more details on
+        # how to use cosign.
+      - name: Sign images
+        run: |
+          echo '${{ steps.build.outputs.metadata }}' | \
+            jq '.[] | (."image.name" | sub(",.*";"" )) + "@" + ."containerimage.digest"' | \
+            xargs cosign sign --yes
+
+  security:
+    name: Security checks
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: read
+      security-events: write
+    needs:
+      - testbuild
+    strategy:
+      matrix:
+        image: ${{fromJson(needs.testbuild.outputs.images)}}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Security checks
+        uses: cloudnative-pg/postgres-containers/.github/actions/security-scans@main
+        with:
+          image: "${{ matrix.image }}"
+          registry_user: ${{ github.actor }}
+          registry_token: ${{ secrets.GITHUB_TOKEN }}
+          snyk_token: ${{ secrets.SNYK_TOKEN }}
+          dockerfile: "${{ inputs.extension_name }}/Dockerfile"
+
+  smoke-test:
+    name: Smoke test
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: read
+    needs:
+      - testbuild
+    strategy:
+      matrix:
+        image: ${{fromJson(needs.testbuild.outputs.images)}}
+        cnpg: ["main", "1.27"]
+    env:
+      # renovate: datasource=github-tags depName=kubernetes-sigs/kind versioning=semver
+      KIND_VERSION: "v0.30.0"
+      # renovate: datasource=docker depName=kindest/node
+      KIND_NODE_VERSION: "v1.34.0"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Create kind cluster
+        uses: helm/kind-action@a1b0e391336a6ee6713a0583f8c6240d70863de3 # v1.12.0
+        with:
+          version: ${{ env.KIND_VERSION }}
+          kubectl_version: ${{ env.KIND_NODE_VERSION }}
+          node_image: kindest/node:${{ env.KIND_NODE_VERSION }}
+          config: kind-config.yaml
+
+      - name: Install CNPG (${{ matrix.cnpg }})
+        run: |
+          operator_manifest="https://raw.githubusercontent.com/cloudnative-pg/artifacts/release-${{ matrix.cnpg }}/manifests/operator-manifest.yaml"
+          if [[ ${{ matrix.cnpg }} == 'main' ]]; then
+            operator_manifest="https://raw.githubusercontent.com/cloudnative-pg/artifacts/main/manifests/operator-manifest.yaml"
+          fi
+          curl -sSfL "$operator_manifest" | kubectl apply --server-side -f -
+          kubectl wait --for=condition=Available --timeout=2m -n cnpg-system deployments cnpg-controller-manager
+
+      - name: Setup environment variables
+        id: get-env
+        run: |
+          SQL_NAME=$(jq -r '.metadata.sql_name' ${{ inputs.extension_name }}/metadata.json)
+          PG_IMAGE=$(skopeo inspect docker://${{ matrix.image }} -f '{{ json .Labels }}' | jq -r '."org.opencontainers.image.base.name"')
+
+          echo "sql_name=$SQL_NAME" >> $GITHUB_OUTPUT
+          echo "pg_image=$PG_IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Install Chainsaw
+        uses: kyverno/action-install-chainsaw@6354895e0f99ab23d3e38d85cf5c71b5dc21d727 # v0.2.13
+
+      - name: Run Kyverno/Chainsaw
+        env:
+          EXT_NAME: ${{ inputs.extension_name }}
+          EXT_IMAGE: ${{ matrix.image }}
+          EXT_SQL_NAME: ${{ steps.get-env.outputs.sql_name }}
+          PG_IMAGE: ${{ steps.get-env.outputs.pg_image }}
+        run: |
+          yq -n \
+            '
+              .extension_name = env(EXT_NAME) |
+              .extension_image = env(EXT_IMAGE) |
+              .extension_sql_name = env(EXT_SQL_NAME) |
+              .pg_image = env(PG_IMAGE)
+            ' \
+          > values.yaml
+          cat values.yaml
+
+          chainsaw test ./test --values values.yaml
+
+  copytoproduction:
+    name: Copy images to production
+    if: |
+      github.ref == 'refs/heads/main' &&
+      ( github.event.inputs.environment == 'production' || github.event_name == 'schedule' )
+    runs-on: ubuntu-24.04
+    needs:
+      - testbuild
+      - security
+      - smoke-test
+    permissions:
+      contents: read
+      packages: write
+      # Required by the cosign step
+      id-token: write
+    steps:
+      - name: Copy to production
+        uses: cloudnative-pg/postgres-containers/.github/actions/copy-images@main
+        with:
+          bake_build_metadata: "${{ needs.testbuild.outputs.metadata }}"
+          registry_user: ${{ github.actor }}
+          registry_token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,109 @@
+# This workflow updates the versions of each extension.
+# When it runs on the main branch, for each extension it will open a PR containing the changes.
+# When it runs on a dev branch, it will push a new commit containing the changes in the dev branch.
+name: Update Extension versions
+
+on:
+  push:
+  schedule:
+    - cron: 0 0 * * 1
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: 'bash -Eeuo pipefail -x {0}'
+
+permissions: read-all
+
+jobs:
+  fetch-extensions:
+    name: Fetch available extensions
+    runs-on: ubuntu-24.04
+    outputs:
+      extensions: ${{ steps.get-extensions.outputs.extensions }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Fetch extensions
+        id: get-extensions
+        run: |
+          extensions=$(find . -type f -name Dockerfile -exec dirname {} \; | \
+            sed 's|^\./||' | xargs -n1 basename | sort -u | \
+            jq -R -s -c 'split("\n")[:-1]')
+          echo "extensions=$extensions" >> $GITHUB_OUTPUT
+
+  update-extension:
+    name: Update ${{ matrix.extension }}
+    runs-on: ubuntu-24.04
+    needs:
+      - fetch-extensions
+    strategy:
+      matrix:
+        extension: ${{fromJson(needs.fetch-extensions.outputs.extensions)}}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Fetch latest extension versions
+        id: fetch_versions
+        run: |
+          # Get the distributions
+          readarray -t DISTROS < <(sed -n '/variable "distributions"/,/}/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl)
+          # Get the PG versions
+          readarray -t POSTGRES_MAJORS < <(sed -n '/variable "pgVersions"/,/]/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl)
+          # Get the extension name
+          EXT_NAME=$(jq -r '.metadata.name' "${{ matrix.extension }}/metadata.json")
+
+          for DISTRO in "${DISTROS[@]}"; do
+            for MAJOR in "${POSTGRES_MAJORS[@]}"; do
+              VERSION=$(curl -s "https://apt.postgresql.org/pub/repos/apt/dists/$DISTRO-pgdg/main/binary-amd64/Packages" \
+                | awk -v pkg="postgresql-${MAJOR}-${EXT_NAME}" '
+                    $1 == "Package:" && $2 == pkg {show=1; next}
+                    show && $1 == "Version:" {print $2; show=0}
+                  ' \
+                | sort -V \
+                | tail -n1)
+              if [[ -z "$VERSION" ]]; then
+                echo "No version found for ${EXT_NAME} on PG ${MAJOR} - $DISTRO"
+                exit 1
+              fi
+
+              jq --arg distro "$DISTRO" \
+                 --arg major "$MAJOR" \
+                 --arg version "$VERSION" \
+                '.metadata.versions[$distro][$major] = $version' \
+              "${{ matrix.extension }}/metadata.json" > "${{ matrix.extension }}/metadata.tmp" \
+              && mv "${{ matrix.extension }}/metadata.tmp" "${{ matrix.extension }}/metadata.json"
+            done
+          done
+
+      - name: Diff
+        run: |
+          git status
+          git diff
+
+      - name: Commit the changes if we are running on a dev branch
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
+        if: github.ref != 'refs/heads/main'
+        with:
+          author_name: CloudNativePG Automated Updates
+          author_email: noreply@cnpg.com
+          message: 'chore: update ${{ matrix.extension }} versions'
+          add: '${{ matrix.extension }}/'
+
+      - name: Create a PR if versions have been updated on main
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        if: github.ref == 'refs/heads/main'
+        with:
+          title: "chore: update ${{ matrix.extension }} versions"
+          body: "Updating the versions of ${{ matrix.extension }}"
+          branch: "${{ matrix.extension }}-update"
+          author: "extension-versions-updater <extension-versions-updater@users.noreply.github.com>"
+          add-paths: |
+            ${{ matrix.extension }}/**
+          commit-message: "chore: update ${{ matrix.extension }} versions"
+          signoff: true
