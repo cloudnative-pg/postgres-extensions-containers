@@ -1,4 +1,4 @@
-name: Build target extension
+name: Build, test and publish a target extension
 
 on:
   workflow_call:

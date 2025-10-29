@@ -1,4 +1,4 @@
-name: Build and publish extensions
+name: Build, test and publish extensions
 
 on:
   push:
@@ -54,3 +54,5 @@ jobs:
     with:
       environment: ${{ (github.ref == 'refs/heads/main') && 'production' || 'testing'}}
       extension_name: ${{ matrix.name }}
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

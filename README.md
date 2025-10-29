@@ -20,8 +20,8 @@ in CloudNativePG.
 
 ## Supported Extensions
 
-Currently: **none**.
-This repository lays the foundation for packaging extensions going forward.
+Currently:
+- **pgvector** - Open-source vector similarity search for PostgreSQL
 
 ---
 
@@ -34,18 +34,18 @@ Each extension image tag follows this format:
 ```
 
 **Example:**
-Building `pgvector` version `0.8.1` on PostgreSQL `17.6` for the `trixie`
+Building `pgvector` version `0.8.1` on PostgreSQL `18.0` for the `trixie`
 distro, with build timestamp `202509101200`, results in:
 
 ```
-pgvector:17.6-0.8.1-202509101200-trixie
+pgvector:18.0-0.8.1-202509101200-trixie
 ```
 
 For convenience, **rolling tags** should also be published:
 
 ```
-pgvector:17.6-0.8.1-trixie
-pgvector:17-0.8.1-trixie
+pgvector:18.0-0.8.1-trixie
+pgvector:18-0.8.1-trixie
 ```
 
 This scheme ensures:
