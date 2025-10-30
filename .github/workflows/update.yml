@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          persist-credentials: false
 
       - name: Fetch extensions
         id: get-extensions
@@ -45,16 +47,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          persist-credentials: false
 
       - name: Fetch latest extension versions
         id: fetch_versions
+        env:
+          EXTENSION_NAME: ${{ matrix.extension }}
         run: |
           # Get the distributions
           readarray -t DISTROS < <(sed -n '/variable "distributions"/,/}/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl)
           # Get the PG versions
           readarray -t POSTGRES_MAJORS < <(sed -n '/variable "pgVersions"/,/]/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl)
           # Get the extension name
-          EXT_NAME=$(jq -r '.metadata.name' "${{ matrix.extension }}/metadata.json")
+          EXT_NAME=$(jq -r '.metadata.name' "$EXTENSION_NAME/metadata.json")
 
           for DISTRO in "${DISTROS[@]}"; do
             for MAJOR in "${POSTGRES_MAJORS[@]}"; do
@@ -74,8 +80,8 @@ jobs:
                  --arg major "$MAJOR" \
                  --arg version "$VERSION" \
                 '.metadata.versions[$distro][$major] = $version' \
-              "${{ matrix.extension }}/metadata.json" > "${{ matrix.extension }}/metadata.tmp" \
-              && mv "${{ matrix.extension }}/metadata.tmp" "${{ matrix.extension }}/metadata.json"
+              "$EXTENSION_NAME/metadata.json" > "$EXTENSION_NAME/metadata.tmp" \
+              && mv "$EXTENSION_NAME/metadata.tmp" "$EXTENSION_NAME/metadata.json"
             done
           done
 
