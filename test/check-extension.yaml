@@ -10,11 +10,11 @@ spec:
       - name: data-test
         env:
           - name: EXT_SQL_NAME
-            value: ($values.extension_sql_name)
+            value: ($values.sql_name)
           - name: DB_URI
             valueFrom:
               secretKeyRef:
-                name: (join('-', [$values.extension_name, 'app']))
+                name: (join('-', [$values.name, 'app']))
                 key: uri
         image: alpine/psql:latest
         command: ['sh', '-c']

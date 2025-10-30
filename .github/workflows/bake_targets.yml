@@ -152,17 +152,23 @@ jobs:
           curl -sSfL "$operator_manifest" | kubectl apply --server-side -f -
           kubectl wait --for=condition=Available --timeout=2m -n cnpg-system deployments cnpg-controller-manager
 
-      - name: Setup environment variables
-        id: get-env
+      - name: Generate Chainsaw runtime values
         env:
           EXT_NAME: ${{ inputs.extension_name }}
           EXT_IMAGE: ${{ matrix.image }}
         run: |
-          SQL_NAME=$(jq -r '.metadata.sql_name' "$EXT_NAME/metadata.json")
+          # Get the PG base image
           PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."org.opencontainers.image.base.name"')
 
-          echo "sql_name=$SQL_NAME" >> $GITHUB_OUTPUT
-          echo "pg_image=$PG_IMAGE" >> $GITHUB_OUTPUT
+          # Merge metadata.json with runtime values to generate Chainsaw values.yaml
+          jq --arg ext_image "$EXT_IMAGE" \
+             --arg pg_image "$PG_IMAGE" \
+            '.metadata + { extension_image: $ext_image, pg_image: $pg_image }' \
+            "$EXT_NAME/metadata.json" > "$EXT_NAME/values.json"
+
+          # Convert to YAML
+          yq -p json -o yaml "$EXT_NAME/values.json" > "$EXT_NAME/values.yaml"
+          cat "$EXT_NAME/values.yaml"
 
       - name: Install Chainsaw
         uses: kyverno/action-install-chainsaw@6354895e0f99ab23d3e38d85cf5c71b5dc21d727 # v0.2.13
@@ -170,21 +176,14 @@ jobs:
       - name: Run Kyverno/Chainsaw
         env:
           EXT_NAME: ${{ inputs.extension_name }}
-          EXT_IMAGE: ${{ matrix.image }}
-          EXT_SQL_NAME: ${{ steps.get-env.outputs.sql_name }}
-          PG_IMAGE: ${{ steps.get-env.outputs.pg_image }}
         run: |
-          yq -n \
-            '
-              .extension_name = env(EXT_NAME) |
-              .extension_image = env(EXT_IMAGE) |
-              .extension_sql_name = env(EXT_SQL_NAME) |
-              .pg_image = env(PG_IMAGE)
-            ' \
-          > values.yaml
-          cat values.yaml
+          # Common smoke tests
+          chainsaw test ./test --values "$EXT_NAME/values.yaml"
 
-          chainsaw test ./test --values values.yaml
+          # Specific smoke tests
+          if [ -d "$EXT_NAME/test" ]; then
+            chainsaw test "$EXT_NAME/test" --values "$EXT_NAME/values.yaml"
+          fi
 
   copytoproduction:
     name: Copy images to production
