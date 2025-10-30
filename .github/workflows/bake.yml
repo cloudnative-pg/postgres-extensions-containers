@@ -33,10 +33,11 @@ jobs:
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix
         id: get-matrix
+        env:
+          # JSON array containing the extensions that have been changed
+          EXTENSIONS_CHANGED: ${{ steps.filter.outputs.changes }}
         run: |
-          raw='${{ steps.filter.outputs.changes }}'
-          echo "{\"name\": $raw}" > matrix.json
-          cat matrix.json
+          echo "{\"name\": $EXTENSIONS_CHANGED}" > matrix.json
           echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
 
   Bake:
