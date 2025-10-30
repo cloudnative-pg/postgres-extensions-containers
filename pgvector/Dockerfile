@@ -12,6 +12,9 @@ RUN apt-get update && \
 FROM scratch
 ARG PG_MAJOR
 
+# Licenses
+COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pgvector/copyright /licenses/postgresql-${PG_MAJOR}-pgvector/
+
 # Libraries
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/vector* /lib/
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
