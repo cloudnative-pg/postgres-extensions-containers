@@ -75,7 +75,8 @@ target "default" {
     "index,manifest:org.opencontainers.image.documentation=${url}",
     "index,manifest:org.opencontainers.image.authors=${authors}",
     "index,manifest:org.opencontainers.image.licenses=Apache-2.0",
-    "index,manifest:org.opencontainers.image.base.name=${getBaseImage(distro, pgVersion)}",
+    "index,manifest:org.opencontainers.image.base.name=scratch",
+    "index,manifest:io.cloudnativepg.image.base.name=${getBaseImage(distro, pgVersion)}",
   ]
   labels = {
     "org.opencontainers.image.created" = "${now}",
@@ -88,8 +89,9 @@ target "default" {
     "org.opencontainers.image.description" = "A ${metadata.name} ${pgVersion}-${getExtensionVersion(distro, pgVersion)} container image",
     "org.opencontainers.image.documentation" = "${url}",
     "org.opencontainers.image.authors" = "${authors}",
-    "org.opencontainers.image.licenses" = "Apache-2.0"
-    "org.opencontainers.image.base.name" = "${getBaseImage(distro, pgVersion)}"
+    "org.opencontainers.image.licenses" = "Apache-2.0",
+    "org.opencontainers.image.base.name" = "scratch",
+    "io.cloudnativepg.image.base.name" = "${getBaseImage(distro, pgVersion)}",
   }
 }
 

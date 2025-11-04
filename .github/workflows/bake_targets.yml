@@ -158,7 +158,7 @@ jobs:
           EXT_IMAGE: ${{ matrix.image }}
         run: |
           # Get the PG base image
-          PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."org.opencontainers.image.base.name"')
+          PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."io.cloudnativepg.image.base.name"')
 
           # Merge metadata.json with runtime values to generate Chainsaw values.yaml
           jq --arg ext_image "$EXT_IMAGE" \
