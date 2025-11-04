@@ -46,11 +46,11 @@ target "default" {
 
   dockerfile = "Dockerfile"
   context = "${metadata.name}/"
-  name = "${metadata.name}-${pgVersion}-${sanitize(getExtensionVersion(distro, pgVersion))}-${distro}"
+  name = "${metadata.name}-${sanitize(getExtensionVersion(distro, pgVersion))}-${pgVersion}-${distro}"
 
   tags = [
-    "${getImageName(fullname)}:${pgVersion}-${getExtensionVersion(distro, pgVersion)}-${distro}",
-    "${getImageName(fullname)}:${pgVersion}-${getExtensionVersion(distro, pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${distro}",
+    "${getImageName(fullname)}:${getExtensionVersion(distro, pgVersion)}-${pgVersion}-${distro}",
+    "${getImageName(fullname)}:${getExtensionVersion(distro, pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${pgVersion}-${distro}",
   ]
 
   args = {
@@ -70,8 +70,8 @@ target "default" {
     "index,manifest:org.opencontainers.image.version=${getExtensionVersion(distro, pgVersion)}",
     "index,manifest:org.opencontainers.image.revision=${revision}",
     "index,manifest:org.opencontainers.image.vendor=${authors}",
-    "index,manifest:org.opencontainers.image.title=${metadata.name} ${pgVersion}-${getExtensionVersion(distro, pgVersion)} ${distro}",
-    "index,manifest:org.opencontainers.image.description=A ${metadata.name} ${pgVersion}-${getExtensionVersion(distro, pgVersion)} container image",
+    "index,manifest:org.opencontainers.image.title=${metadata.name} ${getExtensionVersion(distro, pgVersion)} ${pgVersion} ${distro}",
+    "index,manifest:org.opencontainers.image.description=A ${metadata.name} ${getExtensionVersion(distro, pgVersion)} container image for PostgreSQL ${pgVersion} on ${distro}",
     "index,manifest:org.opencontainers.image.documentation=${url}",
     "index,manifest:org.opencontainers.image.authors=${authors}",
     "index,manifest:org.opencontainers.image.licenses=Apache-2.0",
@@ -85,8 +85,8 @@ target "default" {
     "org.opencontainers.image.version" = "${getExtensionVersion(distro, pgVersion)}",
     "org.opencontainers.image.revision" = "${revision}",
     "org.opencontainers.image.vendor" = "${authors}",
-    "org.opencontainers.image.title" = "${metadata.name} ${pgVersion}-${getExtensionVersion(distro, pgVersion)} ${distro}",
-    "org.opencontainers.image.description" = "A ${metadata.name} ${pgVersion}-${getExtensionVersion(distro, pgVersion)} container image",
+    "org.opencontainers.image.title" = "${metadata.name} ${getExtensionVersion(distro, pgVersion)} ${pgVersion} ${distro}",
+    "org.opencontainers.image.description" = "A ${metadata.name} ${getExtensionVersion(distro, pgVersion)} container image for PostgreSQL ${pgVersion} on ${distro}",
     "org.opencontainers.image.documentation" = "${url}",
     "org.opencontainers.image.authors" = "${authors}",
     "org.opencontainers.image.licenses" = "Apache-2.0",
