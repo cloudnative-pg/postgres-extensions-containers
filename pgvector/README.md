@@ -23,7 +23,7 @@ spec:
     extensions:
       - name: pgvector
         image:
-          reference: ghcr.io/cloudnative-pg/pgvector:18-0.8.1-trixie
+          reference: ghcr.io/cloudnative-pg/pgvector:0.8.1-18-trixie
 ```
 
 Then, create or add it to an existing Database object to install the extension in a target database.
