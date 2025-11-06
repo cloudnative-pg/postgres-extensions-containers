@@ -20,8 +20,7 @@ in CloudNativePG.
 
 ## Supported Extensions
 
-Currently:
-- **pgvector** - Open-source vector similarity search for PostgreSQL
+- [pgvector](pgvector) - Open-source vector similarity search for PostgreSQL
 
 ---
 

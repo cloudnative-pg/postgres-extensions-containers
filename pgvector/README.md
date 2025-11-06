@@ -1,11 +1,17 @@
 # PgVector
 
-[PgVector](https://github.com/pgvector/pgvector) is an open-source vector similarity search for PostgreSQL.
+[PgVector](https://github.com/pgvector/pgvector) is an open-source extension
+that enables **vector similarity search** in PostgreSQL.
 
-## How It Works
+This image provides a convenient way to deploy and manage `pgvector` with
+[CloudNativePG](https://cloudnative-pg.io/).
 
-To use this extension container image, first add it to your Cluster.
-For example:
+## Usage
+
+### 1. Add the PgVector extension image to your Cluster
+
+Define the `pgvector` extension under the `postgresql.extensions` section of
+your `Cluster` resource. For example:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -21,13 +27,15 @@ spec:
 
   postgresql:
     extensions:
-      - name: pgvector
-        image:
-          reference: ghcr.io/cloudnative-pg/pgvector:0.8.1-18-trixie
+    - name: pgvector
+      image:
+        reference: ghcr.io/cloudnative-pg/pgvector:0.8.1-18-trixie
 ```
 
-Then, create or add it to an existing Database object to install the extension in a target database.
-For example, to add it to the `app` Database:
+### 2. Enable the extension in a database
+
+You can install `pgvector` in a specific database by creating or updating a
+`Database` resource. For example, to enable it in the `app` database:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -42,3 +50,13 @@ spec:
   extensions:
   - name: vector
 ```
+
+### 3. Verify installation
+
+Once the database is ready, connect to it with `psql` and run:
+
+```sql
+\dx
+```
+
+You should see `vector` listed among the installed extensions.
