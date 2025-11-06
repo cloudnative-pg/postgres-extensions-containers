@@ -1,0 +1,28 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: verify-extension
+spec:
+  timeouts:
+    apply: 5s
+    assert: 3m
+    delete: 30s
+  description: Verify an extension is properly installed
+  steps:
+  - name: Create a Cluster with the extension
+    try:
+    - apply:
+        file: cluster.yaml
+    - apply:
+        file: database.yaml
+    - assert:
+        file: cluster-assert.yaml
+    - assert:
+        file: database-assert.yaml
+
+  - name: Verify the extension is installed
+    try:
+    - apply:
+        file: check-extension.yaml
+    - assert:
+        file: check-extension-assert.yaml

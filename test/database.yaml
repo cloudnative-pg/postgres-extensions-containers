@@ -1,0 +1,11 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: (join('-', [$values.name, 'app']))
+spec:
+  name: app
+  owner: app
+  cluster:
+    name: ($values.name)
+  extensions:
+  - name: ($values.sql_name)
