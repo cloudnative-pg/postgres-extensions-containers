@@ -28,7 +28,7 @@ variable "pgVersions" {
   ]
 }
 
-fullname = ( environment == "testing") ? "${registry}/${metadata.name}-testing" : "${registry}/${metadata.name}"
+fullname = ( environment == "testing") ? "${registry}/${metadata.image_name}-testing" : "${registry}/${metadata.image_name}"
 now = timestamp()
 authors = "The CloudNativePG Contributors"
 url = "https://github.com/cloudnative-pg/postgres-extensions-containers"
@@ -56,6 +56,7 @@ target "default" {
   args = {
     PG_MAJOR = "${pgVersion}"
     EXT_VERSION = "${getExtensionPackage(distro, pgVersion)}"
+    EXT_MAJOR = "${metadata.major_version}"
     BASE = "${getBaseImage(distro, pgVersion)}"
   }
 
