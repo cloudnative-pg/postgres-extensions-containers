@@ -23,12 +23,19 @@ RUN mkdir -p /system /licenses && \
 	# Extract all the libs that aren't already part of the base image
 	comm -13 /tmp/base-image-libs.out /tmp/all-deps.out > /tmp/libraries.out && \
 	while read -r lib; do \
-		# Resolve the symlink to get the real file
 		resolved=$(readlink -f "$lib"); \
-		# Base name of real file
-		basename=$(basename "$resolved"); \
-		# Copy the real file and all its symlinks
-		cp -a "$(dirname "$resolved")/${basename%.so*}.so"* /system/; \
+		dir=$(dirname "$lib"); \
+		base=$(basename "$lib"); \
+		# Copy the real file
+		cp -a "$resolved" /system/; \
+		# Reconstruct all its symlinks
+		for file in "$dir"/"${base%.so*}.so"*; do \
+			[ -e "$file" ] || continue; \
+			# If it's a symlink and it resolves to the same real file, we reconstruct it
+			if [ -L "$file" ] && [ "$(readlink -f "$file")" = "$resolved" ]; then \
+				ln -sf "$(basename "$resolved")" "/system/$(basename "$file")"; \
+			fi; \
+		done; \
 	done < /tmp/libraries.out && \
 	# Get licenses
 	for lib in $(find /system -maxdepth 1 -type f -name '*.so*'); do \
