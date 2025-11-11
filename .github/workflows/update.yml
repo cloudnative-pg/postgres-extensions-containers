@@ -47,8 +47,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-        with:
-          persist-credentials: false
 
       - name: Fetch latest extension versions
         id: fetch_versions
@@ -61,11 +59,17 @@ jobs:
           readarray -t POSTGRES_MAJORS < <(sed -n '/variable "pgVersions"/,/]/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl)
           # Get the extension name
           EXT_NAME=$(jq -r '.metadata.name' "$EXTENSION_NAME/metadata.json")
+          # Get the extension major version
+          EXT_MAJOR=$(jq -r '.metadata.major_version' "$EXTENSION_NAME/metadata.json")
 
           for DISTRO in "${DISTROS[@]}"; do
             for MAJOR in "${POSTGRES_MAJORS[@]}"; do
+              PKG="postgresql-${MAJOR}-${EXT_NAME}"
+              if [[ -n "$EXT_MAJOR" ]] && [[ "$EXT_MAJOR" != "null" ]]; then
+                PKG="postgresql-${MAJOR}-${EXT_NAME}-${EXT_MAJOR}"
+              fi
               VERSION=$(curl -s "https://apt.postgresql.org/pub/repos/apt/dists/$DISTRO-pgdg/main/binary-amd64/Packages" \
-                | awk -v pkg="postgresql-${MAJOR}-${EXT_NAME}" '
+                | awk -v pkg="${PKG}" '
                     $1 == "Package:" && $2 == pkg {show=1; next}
                     show && $1 == "Version:" {print $2; show=0}
                   ' \

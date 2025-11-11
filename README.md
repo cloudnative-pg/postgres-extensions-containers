@@ -21,6 +21,7 @@ in CloudNativePG.
 ## Supported Extensions
 
 - [pgvector](pgvector) - Open-source vector similarity search for PostgreSQL
+- [PostGIS](postgis) - Open-source geospatial database extension for PostgreSQL
 
 ---
 

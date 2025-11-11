@@ -3,11 +3,6 @@ name: Build, test and publish a target extension
 on:
   workflow_call:
     inputs:
-      environment:
-        description: "Target environment for the image build (e.g. testing, production)."
-        required: true
-        type: string
-        default: "testing"
       extension_name:
         description: "The PostgreSQL extension to build (directory name)"
         required: true
@@ -187,9 +182,7 @@ jobs:
 
   copytoproduction:
     name: Copy images to production
-    if: |
-      github.ref == 'refs/heads/main' &&
-      ( github.event.inputs.environment == 'production' || github.event_name == 'schedule' )
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-24.04
     needs:
       - testbuild

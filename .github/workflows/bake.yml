@@ -30,6 +30,8 @@ jobs:
           filters: |
             pgvector:
               - 'pgvector/**'
+            postgis:
+              - 'postgis/**'
 
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix
@@ -54,7 +56,6 @@ jobs:
       matrix: ${{ fromJSON(needs.change-triage.outputs.matrix) }}
     uses: ./.github/workflows/bake_targets.yml
     with:
-      environment: ${{ (github.ref == 'refs/heads/main') && 'production' || 'testing'}}
       extension_name: ${{ matrix.name }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
