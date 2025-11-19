@@ -54,7 +54,7 @@ jobs:
           registry: ghcr.io/${{ github.repository_owner }}
           revision: ${{ github.sha }}
         with:
-          files: ./${{ inputs.extension_name }}/metadata.json,./docker-bake.hcl
+          files: ./${{ inputs.extension_name }}/metadata.hcl,./docker-bake.hcl
           push: true
 
       # From bake's metadata, extract each unique tag (e.g. the ones with the timestamp)
@@ -128,6 +128,12 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Install Go
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6
+        with:
+          cache: false
+          go-version: 'stable'
+
       - name: Create kind cluster
         uses: helm/kind-action@a1b0e391336a6ee6713a0583f8c6240d70863de3 # v1.12.0
         with:
@@ -155,14 +161,15 @@ jobs:
           # Get the PG base image
           PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."io.cloudnativepg.image.base.name"')
 
-          # Merge metadata.json with runtime values to generate Chainsaw values.yaml
-          jq --arg ext_image "$EXT_IMAGE" \
-             --arg pg_image "$PG_IMAGE" \
-            '.metadata + { extension_image: $ext_image, pg_image: $pg_image }' \
-            "$EXT_NAME/metadata.json" > "$EXT_NAME/values.json"
-
-          # Convert to YAML
-          yq -p json -o yaml "$EXT_NAME/values.json" > "$EXT_NAME/values.yaml"
+          go install github.com/tmccombs/hcl2json@v0.6.8
+          # Convert metadata.hcl to YAML and merge it with runtime values to generate a valid Chainsaw values.yaml
+          hcl2json "$EXT_NAME/metadata.hcl" \
+            | yq '
+                .metadata.extension_image = env.EXT_IMAGE |
+                .metadata.pg_image = env.PG_IMAGE |
+                .metadata
+              ' -P -o yaml - \
+            > "$EXT_NAME/values.yaml"
           cat "$EXT_NAME/values.yaml"
 
       - name: Install Chainsaw
