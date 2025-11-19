@@ -2,6 +2,15 @@ name: Build, test and publish extensions
 
 on:
   push:
+  workflow_dispatch:
+    inputs:
+      extension_name:
+        description: "The PostgreSQL extension to build (directory name)"
+        required: true
+        type: choice
+        options:
+          - pgvector
+          - postgis
 
 defaults:
   run:
@@ -41,6 +50,9 @@ jobs:
           EXTENSIONS_CHANGED: ${{ steps.filter.outputs.changes }}
         run: |
           echo "{\"name\": $EXTENSIONS_CHANGED}" > matrix.json
+          if [[ ${{ github.event_name }} == 'workflow_dispatch' ]]; then
+            EXTENSIONS_CHANGED="[${{ github.event.inputs.extension_name }}]"
+          fi
           echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
 
   Bake:
