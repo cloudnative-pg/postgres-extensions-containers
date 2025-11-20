@@ -159,17 +159,17 @@ jobs:
           EXT_IMAGE: ${{ matrix.image }}
         run: |
           # Get the PG base image
-          PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."io.cloudnativepg.image.base.name"')
+          export PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."io.cloudnativepg.image.base.name"')
 
           go install github.com/tmccombs/hcl2json@v0.6.8
+          go install github.com/mikefarah/yq/v4@v4
+
           # Convert metadata.hcl to YAML and merge it with runtime values to generate a valid Chainsaw values.yaml
-          hcl2json "$EXT_NAME/metadata.hcl" \
-            | yq '
-                .metadata.extension_image = env.EXT_IMAGE |
-                .metadata.pg_image = env.PG_IMAGE |
-                .metadata
-              ' -P -o yaml - \
-            > "$EXT_NAME/values.yaml"
+          yq eval -P '
+            .metadata.extension_image = strenv(EXT_IMAGE) |
+            .metadata.pg_image = strenv(PG_IMAGE) |
+            .metadata
+          ' <(hcl2json "$EXT_NAME/metadata.hcl") > "$EXT_NAME/values.yaml"
           cat "$EXT_NAME/values.yaml"
 
       - name: Install Chainsaw
