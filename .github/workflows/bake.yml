@@ -48,11 +48,13 @@ jobs:
         env:
           # JSON array containing the extensions that have been changed
           EXTENSIONS_CHANGED: ${{ steps.filter.outputs.changes }}
+          # Input Extension name
+          INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
         run: |
-          echo "{\"name\": $EXTENSIONS_CHANGED}" > matrix.json
-          if [[ ${{ github.event_name }} == 'workflow_dispatch' ]]; then
-            EXTENSIONS_CHANGED="[${{ github.event.inputs.extension_name }}]"
+          if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
+            EXTENSIONS_CHANGED="[\"$INPUT_EXTENSION_NAME\"]"
           fi
+          echo "{\"name\": $EXTENSIONS_CHANGED}" > matrix.json
           echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
 
   Bake:
