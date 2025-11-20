@@ -88,6 +88,7 @@ jobs:
     needs:
       - testbuild
     strategy:
+      fail-fast: false
       matrix:
         image: ${{fromJson(needs.testbuild.outputs.images)}}
     steps:
@@ -114,6 +115,7 @@ jobs:
     needs:
       - testbuild
     strategy:
+      fail-fast: false
       matrix:
         image: ${{fromJson(needs.testbuild.outputs.images)}}
         cnpg: ["main", "1.27"]
