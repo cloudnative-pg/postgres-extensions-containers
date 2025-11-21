@@ -4,6 +4,7 @@
 
 This image provides a convenient way to deploy and manage `PostGIS` with
 [CloudNativePG](https://cloudnative-pg.io/).
+It also packages [pgRouting](https://github.com/pgRouting/pgrouting).
 
 ## Usage
 
@@ -50,21 +51,14 @@ spec:
     name: cluster-postgis
   extensions:
   - name: postgis
-    ensure: present
   - name: postgis_raster
-    ensure: present
   - name: postgis_sfcgal
-    ensure: present
   - name: fuzzystrmatch
-    ensure: present
   - name: address_standardizer
-    ensure: present
   - name: address_standardizer_data_us
-    ensure: present
   - name: postgis_tiger_geocoder
-    ensure: present
   - name: postgis_topology
-    ensure: present
+  - name: pgrouting
 ```
 
 ### 3. Verify installation
@@ -88,7 +82,7 @@ connect to the container and run:
 
 ```bash
 cd /extensions/postgis/lib
-LD_LIBRARY_PATH=/extensions/postgis/system ldd address_standardizer* postgis*
+LD_LIBRARY_PATH=/extensions/postgis/system ldd address_standardizer* postgis* libpgrouting*
 ```
 
 Make sure there are no missing shared libraries.

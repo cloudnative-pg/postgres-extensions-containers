@@ -45,7 +45,6 @@ RUN mkdir -p /system /licenses && \
 	for lib in $(find /system -maxdepth 1 -type f -name '*.so*'); do \
 		# Get the name of the pkg that installed the library
 		pkg=$(dpkg -S "$(basename "$lib")" | grep -v "diversion by" | awk -F: '/:/{print $1; exit}'); \
-		echo "$lib: $pkg"; \
 		[ -z "$pkg" ] && continue; \
 		mkdir -p "/licenses/$pkg" && cp -a "/usr/share/doc/$pkg/copyright" "/licenses/$pkg/copyright"; \
 	done
