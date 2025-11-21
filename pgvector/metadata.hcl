@@ -6,7 +6,6 @@ metadata = {
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = []
-  major_version            = null
 
   versions = {
     bookworm = {

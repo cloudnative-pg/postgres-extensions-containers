@@ -3,7 +3,7 @@ FROM $BASE AS builder
 
 ARG PG_MAJOR
 ARG EXT_VERSION
-ARG EXT_MAJOR
+ARG POSTGIS_MAJOR
 ARG PG_ROUTING_VERSION
 
 USER 0
@@ -14,7 +14,7 @@ RUN set -eux && \
 	# Install PostGIS
 	apt-get update && \
 	apt-get install -y --no-install-recommends \
-		"postgresql-${PG_MAJOR}-postgis-${EXT_MAJOR}=${EXT_VERSION}" \
+		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}=${EXT_VERSION}" \
 		"postgresql-${PG_MAJOR}-pgrouting=${PG_ROUTING_VERSION}"
 
 # Gather PostGIS system libraries and their licenses
@@ -44,7 +44,8 @@ RUN mkdir -p /system /licenses && \
 	# Get licenses
 	for lib in $(find /system -maxdepth 1 -type f -name '*.so*'); do \
 		# Get the name of the pkg that installed the library
-		pkg=$(dpkg -S "$(basename "$lib")" | awk -F: '/:/{print $1; exit}'); \
+		pkg=$(dpkg -S "$(basename "$lib")" | grep -v "diversion by" | awk -F: '/:/{print $1; exit}'); \
+		echo "$lib: $pkg"; \
 		[ -z "$pkg" ] && continue; \
 		mkdir -p "/licenses/$pkg" && cp -a "/usr/share/doc/$pkg/copyright" "/licenses/$pkg/copyright"; \
 	done
@@ -52,19 +53,29 @@ RUN mkdir -p /system /licenses && \
 
 FROM scratch
 ARG PG_MAJOR
-ARG EXT_MAJOR
+ARG POSTGIS_MAJOR
 
 # Licenses
 COPY --from=builder /licenses /licenses/
-COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-postgis-${EXT_MAJOR}/copyright /licenses/postgresql-${PG_MAJOR}-postgis-${EXT_MAJOR}/
+COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}/copyright /licenses/postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}/
 COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pgrouting/copyright /licenses/postgresql-${PG_MAJOR}-pgrouting/
 
 # Libraries
-COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/address_standardizer* /usr/lib/postgresql/${PG_MAJOR}/lib/postgis* /usr/lib/postgresql/${PG_MAJOR}/lib/libpgrouting* /lib/
+COPY --from=builder \
+	/usr/lib/postgresql/${PG_MAJOR}/lib/address_standardizer* \
+	/usr/lib/postgresql/${PG_MAJOR}/lib/postgis* \
+	/usr/lib/postgresql/${PG_MAJOR}/lib/libpgrouting* \
+	/lib/
+
 COPY --from=builder /usr/lib/postgresql/18/lib/bitcode/ /lib/bitcode/
 
 # Share
-COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/address_standardizer* /usr/share/postgresql/${PG_MAJOR}/extension/postgis* /share/extension/
+COPY --from=builder \
+	/usr/share/postgresql/${PG_MAJOR}/extension/address_standardizer* \
+	/usr/share/postgresql/${PG_MAJOR}/extension/postgis* \
+	/usr/share/postgresql/${PG_MAJOR}/extension/pgrouting* \
+	/share/extension/
+
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/contrib/postgis* /share/contrib/
 
 # System libs

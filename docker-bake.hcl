@@ -56,7 +56,6 @@ target "default" {
   args = {
     PG_MAJOR = "${pgVersion}"
     EXT_VERSION = "${getExtensionPackage(distro, pgVersion)}"
-    EXT_MAJOR = "${metadata.major_version}"
     BASE = "${getBaseImage(distro, pgVersion)}"
   }
 
