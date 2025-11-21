@@ -28,7 +28,7 @@ variable "pgVersions" {
   ]
 }
 
-fullname = ( environment == "testing") ? "${registry}/${metadata.name}-testing" : "${registry}/${metadata.name}"
+fullname = ( environment == "testing") ? "${registry}/${metadata.image_name}-testing" : "${registry}/${metadata.image_name}"
 now = timestamp()
 authors = "The CloudNativePG Contributors"
 url = "https://github.com/cloudnative-pg/postgres-extensions-containers"
