@@ -58,14 +58,17 @@ This scheme ensures:
 
 ## Roadmap / Open Questions
 
-- Should each extension live in its **own dedicated folder**?
-- Should each extension follow its **own release cycle**?
-- Must every release pass **smoke tests** (e.g. via [Kind](https://kind.sigs.k8s.io/))?
+- Should each extension live in its **own dedicated folder**? (YES!)
+- Should each extension follow its **own release cycle**? (YES!)
+  - Should we track dependencies? (YES: TODO)
+  - Should we test/rebuild the extensions that depend on the new one and so forth?
+- Must every release pass **smoke tests** (e.g. via [Kind](https://kind.sigs.k8s.io/))? (YES!)
 - Should we define policies for:
 
   - Licensing (must be open source)?
   - Contribution and ownership
   - Governance aligned with the [CloudNativePG project](https://cloudnative-pg.io/)?
-- Can contributors propose and maintain additional extensions?
+- Can contributors propose and maintain additional extensions? (YES)
+  - Shall we have a template for a new extension?
 - Should each extension have designated **component owners** responsible for
-  maintenance, reviews, and release management?
+  maintenance, reviews, and release management? (YES)
