@@ -19,17 +19,6 @@ metadata = {
   }
 }
 
-pgRouting = {
-  bookworm = {
-    // renovate: suite=bookworm-pgdg depName=postgresql-18-pgrouting
-    "18" = "4.0.0-1.pgdg12+1"
-  }
-  trixie = {
-    // renovate: suite=trixie-pgdg depName=postgresql-18-pgrouting
-    "18" = "4.0.0-1.pgdg13+1"
-  }
-}
-
 target "default" {
   name = "${metadata.name}-${sanitize(getExtensionVersion(distro, pgVersion))}-${pgVersion}-${distro}"
   matrix = {
@@ -38,7 +27,6 @@ target "default" {
   }
 
   args = {
-    PG_ROUTING_VERSION = pgRouting[distro][pgVersion]
     POSTGIS_MAJOR = "3"
   }
 }

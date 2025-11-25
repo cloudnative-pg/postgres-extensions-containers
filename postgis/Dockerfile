@@ -4,7 +4,6 @@ FROM $BASE AS builder
 ARG PG_MAJOR
 ARG EXT_VERSION
 ARG POSTGIS_MAJOR
-ARG PG_ROUTING_VERSION
 
 USER 0
 
@@ -14,15 +13,13 @@ RUN set -eux && \
 	# Install PostGIS
 	apt-get update && \
 	apt-get install -y --no-install-recommends \
-		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}=${EXT_VERSION}" \
-		"postgresql-${PG_MAJOR}-pgrouting=${PG_ROUTING_VERSION}"
+		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}=${EXT_VERSION}"
 
 # Gather PostGIS system libraries and their licenses
 RUN mkdir -p /system /licenses && \
 	# Get libraries
 	ldd /usr/lib/postgresql/${PG_MAJOR}/lib/address_standardizer*.so \
 		/usr/lib/postgresql/${PG_MAJOR}/lib/postgis*.so \
-		/usr/lib/postgresql/${PG_MAJOR}/lib/libpgrouting*.so \
 		| awk '{print $3}' | grep '^/' | sort | uniq > /tmp/all-deps.out && \
 	# Extract all the libs that aren't already part of the base image
 	comm -13 /tmp/base-image-libs.out /tmp/all-deps.out > /tmp/libraries.out && \
@@ -57,13 +54,11 @@ ARG POSTGIS_MAJOR
 # Licenses
 COPY --from=builder /licenses /licenses/
 COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}/copyright /licenses/postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}/
-COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pgrouting/copyright /licenses/postgresql-${PG_MAJOR}-pgrouting/
 
 # Libraries
 COPY --from=builder \
 	/usr/lib/postgresql/${PG_MAJOR}/lib/address_standardizer* \
 	/usr/lib/postgresql/${PG_MAJOR}/lib/postgis* \
-	/usr/lib/postgresql/${PG_MAJOR}/lib/libpgrouting* \
 	/lib/
 
 COPY --from=builder /usr/lib/postgresql/18/lib/bitcode/ /lib/bitcode/
@@ -72,7 +67,6 @@ COPY --from=builder /usr/lib/postgresql/18/lib/bitcode/ /lib/bitcode/
 COPY --from=builder \
 	/usr/share/postgresql/${PG_MAJOR}/extension/address_standardizer* \
 	/usr/share/postgresql/${PG_MAJOR}/extension/postgis* \
-	/usr/share/postgresql/${PG_MAJOR}/extension/pgrouting* \
 	/share/extension/
 
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/contrib/postgis* /share/contrib/

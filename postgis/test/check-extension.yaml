@@ -28,4 +28,3 @@ spec:
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'address_standardizer_data_us')" -q)" = "t"
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_tiger_geocoder')" -q)" = "t"
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_topology')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'pgrouting')" -q)" = "t"

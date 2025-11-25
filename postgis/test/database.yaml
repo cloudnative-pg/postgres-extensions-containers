@@ -16,4 +16,3 @@ spec:
   - name: address_standardizer_data_us
   - name: postgis_tiger_geocoder
   - name: postgis_topology
-  - name: pgrouting

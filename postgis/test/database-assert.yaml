@@ -21,6 +21,4 @@ status:
     name: postgis_tiger_geocoder
   - applied: true
     name: postgis_topology
-  - applied: true
-    name: pgrouting
   observedGeneration: 1

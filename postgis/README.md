@@ -4,7 +4,6 @@
 
 This image provides a convenient way to deploy and manage `PostGIS` with
 [CloudNativePG](https://cloudnative-pg.io/).
-It also packages [pgRouting](https://github.com/pgRouting/pgrouting).
 
 ## Usage
 
@@ -58,7 +57,6 @@ spec:
   - name: address_standardizer_data_us
   - name: postgis_tiger_geocoder
   - name: postgis_topology
-  - name: pgrouting
 ```
 
 ### 3. Verify installation
@@ -72,7 +70,7 @@ Once the database is ready, connect to it with `psql` and run:
 You should see `postgis`, `postgis_raster` (and so on) listed among the installed extensions.
 
 
-### 4. Verify OS dependencies are properly satisified
+### 4. Verify OS dependencies are properly satisfied
 
 PostGIS requires several OS dependencies that are being provided via the `/system` directory.
 CloudNativePG makes them available to PostgreSQL by adding the directory to LD_LIBRARY_PATH for the PostgreSQL process.
@@ -82,7 +80,7 @@ connect to the container and run:
 
 ```bash
 cd /extensions/postgis/lib
-LD_LIBRARY_PATH=/extensions/postgis/system ldd address_standardizer* postgis* libpgrouting*
+LD_LIBRARY_PATH=/extensions/postgis/system ldd address_standardizer* postgis*
 ```
 
 Make sure there are no missing shared libraries.
