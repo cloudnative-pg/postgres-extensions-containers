@@ -1,10 +1,13 @@
 .SUFFIXES:
 
+# Use bash if available, otherwise fall back to default shell
+SHELL := $(shell which bash 2>/dev/null || echo /bin/sh)
+
 # Find all directories containing metadata.hcl
 FILES := $(shell find . -type f -name metadata.hcl)
 DIRS  := $(patsubst %/,%,$(patsubst ./%,%,$(dir $(FILES))))
 
-.PHONY: all clean check prereqs $(DIRS)
+.PHONY: all check prereqs push $(DIRS)
 
 # Colours
 GREEN := \033[0;32m
@@ -14,6 +17,8 @@ NC    := \033[0m
 
 # Dry run flag
 DRY_RUN ?= false
+
+default: all
 
 # --------------------------
 # Prerequisite checks
@@ -41,14 +46,7 @@ check: prereqs
 # --------------------------
 push: all
 	@echo -e "$(BLUE)Performing bake --push for all projects...$(NC)"
-	@$(foreach dir,$(DIRS), \
-		echo -e "$(BLUE)[PUSH] $dir$(NC)"; \
-		if [ "$(DRY_RUN)" = "true" ]; then \
-			echo -e "$(GREEN)[DRY RUN] docker buildx bake -f $(dir)/metadata.hcl -f docker-bake.hcl --push$(NC)"; \
-		else \
-			docker buildx bake -f $(dir)/metadata.hcl -f docker-bake.hcl --push; \
-		fi; \
-	)
+	@$(foreach dir,$(DIRS), $(MAKE) push-$(dir) DRY_RUN=$(DRY_RUN);)
 
 # --------------------------
 # Generic per-project push
