@@ -2,6 +2,15 @@ name: Build, test and publish extensions
 
 on:
   push:
+  workflow_dispatch:
+    inputs:
+      extension_name:
+        description: "The PostgreSQL extension to build (directory name)"
+        required: true
+        type: choice
+        options:
+          - pgvector
+          - postgis
 
 defaults:
   run:
@@ -30,6 +39,8 @@ jobs:
           filters: |
             pgvector:
               - 'pgvector/**'
+            postgis:
+              - 'postgis/**'
 
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix
@@ -37,7 +48,12 @@ jobs:
         env:
           # JSON array containing the extensions that have been changed
           EXTENSIONS_CHANGED: ${{ steps.filter.outputs.changes }}
+          # Input Extension name
+          INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
         run: |
+          if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
+            EXTENSIONS_CHANGED="[\"$INPUT_EXTENSION_NAME\"]"
+          fi
           echo "{\"name\": $EXTENSIONS_CHANGED}" > matrix.json
           echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
 
@@ -54,7 +70,6 @@ jobs:
       matrix: ${{ fromJSON(needs.change-triage.outputs.matrix) }}
     uses: ./.github/workflows/bake_targets.yml
     with:
-      environment: ${{ (github.ref == 'refs/heads/main') && 'production' || 'testing'}}
       extension_name: ${{ matrix.name }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

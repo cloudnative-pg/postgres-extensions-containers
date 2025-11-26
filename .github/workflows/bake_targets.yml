@@ -3,11 +3,6 @@ name: Build, test and publish a target extension
 on:
   workflow_call:
     inputs:
-      environment:
-        description: "Target environment for the image build (e.g. testing, production)."
-        required: true
-        type: string
-        default: "testing"
       extension_name:
         description: "The PostgreSQL extension to build (directory name)"
         required: true
@@ -59,7 +54,7 @@ jobs:
           registry: ghcr.io/${{ github.repository_owner }}
           revision: ${{ github.sha }}
         with:
-          files: ./${{ inputs.extension_name }}/metadata.json,./docker-bake.hcl
+          files: ./${{ inputs.extension_name }}/metadata.hcl,./docker-bake.hcl
           push: true
 
       # From bake's metadata, extract each unique tag (e.g. the ones with the timestamp)
@@ -93,6 +88,7 @@ jobs:
     needs:
       - testbuild
     strategy:
+      fail-fast: false
       matrix:
         image: ${{fromJson(needs.testbuild.outputs.images)}}
     steps:
@@ -119,6 +115,7 @@ jobs:
     needs:
       - testbuild
     strategy:
+      fail-fast: false
       matrix:
         image: ${{fromJson(needs.testbuild.outputs.images)}}
         cnpg: ["main", "1.27"]
@@ -132,6 +129,12 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           persist-credentials: false
+
+      - name: Install Go
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6
+        with:
+          cache: false
+          go-version: 'stable'
 
       - name: Create kind cluster
         uses: helm/kind-action@a1b0e391336a6ee6713a0583f8c6240d70863de3 # v1.12.0
@@ -158,16 +161,17 @@ jobs:
           EXT_IMAGE: ${{ matrix.image }}
         run: |
           # Get the PG base image
-          PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."io.cloudnativepg.image.base.name"')
+          export PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."io.cloudnativepg.image.base.name"')
 
-          # Merge metadata.json with runtime values to generate Chainsaw values.yaml
-          jq --arg ext_image "$EXT_IMAGE" \
-             --arg pg_image "$PG_IMAGE" \
-            '.metadata + { extension_image: $ext_image, pg_image: $pg_image }' \
-            "$EXT_NAME/metadata.json" > "$EXT_NAME/values.json"
+          go install github.com/tmccombs/hcl2json@v0.6.8
+          go install github.com/mikefarah/yq/v4@v4
 
-          # Convert to YAML
-          yq -p json -o yaml "$EXT_NAME/values.json" > "$EXT_NAME/values.yaml"
+          # Convert metadata.hcl to YAML and merge it with runtime values to generate a valid Chainsaw values.yaml
+          yq eval -P '
+            .metadata.extension_image = strenv(EXT_IMAGE) |
+            .metadata.pg_image = strenv(PG_IMAGE) |
+            .metadata
+          ' <(hcl2json "$EXT_NAME/metadata.hcl") > "$EXT_NAME/values.yaml"
           cat "$EXT_NAME/values.yaml"
 
       - name: Install Chainsaw
@@ -187,9 +191,7 @@ jobs:
 
   copytoproduction:
     name: Copy images to production
-    if: |
-      github.ref == 'refs/heads/main' &&
-      ( github.event.inputs.environment == 'production' || github.event_name == 'schedule' )
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-24.04
     needs:
       - testbuild
