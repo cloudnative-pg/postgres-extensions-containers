@@ -51,6 +51,19 @@ push: all
 	)
 
 # --------------------------
+# Generic per-project push
+# Usage: make push-<project>
+# --------------------------
+push-%: prereqs
+	@echo -e "$(BLUE)Performing bake --push for $*...$(NC)"
+ifeq ($(DRY_RUN),true)
+	@echo -e "$(GREEN)[DRY RUN] docker buildx bake -f $*/metadata.hcl -f docker-bake.hcl --push$(NC)"
+else
+	docker buildx bake -f $*/metadata.hcl -f docker-bake.hcl --push
+endif
+	@echo -e "$(GREEN)--- Successfully pushed $* ---$(NC)"
+
+# --------------------------
 # Build targets
 # --------------------------
 all: prereqs $(DIRS)

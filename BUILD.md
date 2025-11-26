@@ -31,7 +31,15 @@ The `Makefile` dynamically discovers all subdirectories that contain a
 `metadata.hcl` file (e.g., `./pgvector/metadata.hcl`) and creates individual
 build targets for each project.
 
-### 1. Build Configuration Check (Dry Run)
+### 1. Check prerequisites only
+
+To verify that Docker and Buildx are correctly installed and configured:
+
+```bash
+make prereqs
+```
+
+### 2. Build configuration check (dry run)
 
 To verify the configuration (running `docker buildx bake --check`) for all
 projects without building or pulling layers:
@@ -40,7 +48,7 @@ projects without building or pulling layers:
 make check
 ```
 
-### 2. Build All Projects
+### 3. Build all projects
 
 To check prerequisites and build all discovered projects:
 
@@ -48,9 +56,9 @@ To check prerequisites and build all discovered projects:
 make
 # or
 make all
-````
+```
 
-### 3. Build a Specific Project
+### 4. Build a specific project
 
 To build a single project (e.g., the directory named `pgvector`):
 
@@ -58,7 +66,7 @@ To build a single project (e.g., the directory named `pgvector`):
 make pgvector
 ```
 
-### 4. Push All Images
+### 5. Push all images
 
 To build all images and immediately push them to the configured registry:
 
@@ -66,15 +74,15 @@ To build all images and immediately push them to the configured registry:
 make push
 ```
 
-### 5. Check Prerequisites Only
+### 6. Push images for a specific project
 
-To verify that Docker and Buildx are correctly installed and configured:
+To push images for a single project (e.g., the directory named `pgvector`):
 
 ```bash
-make prereqs
+make push-pgvector
 ```
 
-### 6. Dry Run Mode
+### 7. Dry run mode
 
 To see the commands that would be executed without running the actual `docker
 buildx bake` command, set the `DRY_RUN` flag:
