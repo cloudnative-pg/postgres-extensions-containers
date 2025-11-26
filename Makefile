@@ -47,7 +47,7 @@ check: prereqs
 # --------------------------
 # Push all images
 # --------------------------
-push: all $(PUSH_TARGETS)
+push: prereqs $(PUSH_TARGETS)
 	@echo -e "$(GREEN)======================================================$(NC)"
 	@echo -e "$(GREEN)Push successful for all projects: $(DIRS)$(NC)"
 	@echo -e "$(GREEN)======================================================$(NC)"
@@ -56,7 +56,7 @@ push: all $(PUSH_TARGETS)
 # Generic per-project push
 # Usage: make push-<project>
 # --------------------------
-$(PUSH_TARGETS): push-%: prereqs %
+$(PUSH_TARGETS): push-%: prereqs
 	@echo -e "$(BLUE)Performing bake --push for $*...$(NC)"
 ifeq ($(DRY_RUN),true)
 	@echo -e "$(GREEN)[DRY RUN] docker buildx bake -f $*/metadata.hcl -f docker-bake.hcl --push$(NC)"
