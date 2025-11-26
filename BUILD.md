@@ -11,12 +11,9 @@ outlined below.
 
 ## Prerequisites
 
-This project depends on
-[`postgres-containers`](https://github.com/cloudnative-pg/postgres-containers).
-
-Before you begin, ensure that you have met the
-[prerequisites](https://github.com/cloudnative-pg/postgres-containers/blob/main/BUILD.md#prerequisites)
-defined by that project, which primarily include:
+Before you begin, ensure that you have met the following
+[prerequisites](https://github.com/cloudnative-pg/postgres-containers/blob/main/BUILD.md#prerequisites),
+which primarily include:
 
 1.  **Docker:** Must be installed and running.
 2.  **Docker Command Line:** The `docker` command must be executable.
