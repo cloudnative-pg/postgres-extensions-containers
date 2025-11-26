@@ -7,6 +7,10 @@ SHELL := $(shell which bash 2>/dev/null || echo /bin/sh)
 FILES := $(shell find . -type f -name metadata.hcl)
 DIRS  := $(patsubst %/,%,$(patsubst ./%,%,$(dir $(FILES))))
 
+ifeq ($(DIRS),)
+$(error No subdirectories with metadata.hcl files found)
+endif
+
 # Create push targets for each directory
 PUSH_TARGETS := $(addprefix push-,$(DIRS))
 
