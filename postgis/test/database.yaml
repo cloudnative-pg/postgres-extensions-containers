@@ -1,0 +1,18 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: (join('-', [$values.name, 'app']))
+spec:
+  name: app
+  owner: app
+  cluster:
+    name: ($values.name)
+  extensions:
+  - name: ($values.sql_name)
+  - name: postgis_raster
+  - name: postgis_sfcgal
+  - name: fuzzystrmatch
+  - name: address_standardizer
+  - name: address_standardizer_data_us
+  - name: postgis_tiger_geocoder
+  - name: postgis_topology
