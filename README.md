@@ -8,6 +8,8 @@ container images** containing PostgreSQL extensions supported by
 integrate seamlessly with the [`image volume extensions` feature](https://cloudnative-pg.io/documentation/current/imagevolume_extensions/)
 in CloudNativePG.
 
+For detailed instructions on building the images, see the [BUILD.md file](BUILD.md).
+
 ---
 
 ## Requirements
