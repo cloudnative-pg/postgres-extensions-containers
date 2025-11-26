@@ -37,7 +37,7 @@ prereqs:
 check: prereqs
 	@echo -e "$(BLUE)Performing bake --check for all projects...$(NC)"
 	@$(foreach dir,$(DIRS), \
-		echo -e "$(BLUE)[CHECK] $dir$(NC)"; \
+		echo -e "$(BLUE)[CHECK] $(dir) $(NC)"; \
 		docker buildx bake -f $(dir)/metadata.hcl -f docker-bake.hcl --check; \
 	)
 
