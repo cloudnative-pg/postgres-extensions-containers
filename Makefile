@@ -11,8 +11,24 @@ ifeq ($(DIRS),)
 $(error No subdirectories with metadata.hcl files found)
 endif
 
+# Default supported distributions
+DISTROS := $(shell sed -n '/variable "distributions"/,/}/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl)
+# Default supported PostgreSQL majors
+POSTGRES_MAJORS := $(shell sed -n '/variable "pgVersions"/,/]/ { s/^[[:space:]]*"\([^"]*\)".*/\1/p }' docker-bake.hcl)
+
+# Find all extensions with AUTO_UPDATE_OS_LIBS = true
+EXTENSIONS_WITH_OS_LIBS := $(shell \
+  for dir in $(DIRS); do \
+    value=$$(sed -n 's/.*auto_update_os_libs *= *//p' "$$dir/metadata.hcl" | tr -d ' '); \
+    if [ "$$value" = "true" ]; then echo "$$dir"; fi; \
+  done \
+)
+
 # Create push targets for each directory
 PUSH_TARGETS := $(addprefix push-,$(DIRS))
+
+# Create UPDATE_OS_LIBS targets for each extension
+UPDATE_OS_LIBS_TARGETS := $(addprefix update-os-libs-,$(EXTENSIONS_WITH_OS_LIBS))
 
 .PHONY: all check prereqs push $(DIRS) $(PUSH_TARGETS)
 
@@ -47,6 +63,32 @@ check: prereqs
 		echo -e "$(BLUE)[CHECK] $(dir) $(NC)"; \
 		docker buildx bake -f $(dir)/metadata.hcl -f docker-bake.hcl --check; \
 	)
+
+# --------------------------
+# Update OS libraries for all images
+# --------------------------
+update-os-libs: prereqs $(UPDATE_OS_LIBS_TARGETS)
+	@echo -e "$(GREEN)======================================================$(NC)"
+	@echo -e "$(GREEN)OS libraries update for all projects: $(EXTENSIONS_WITH_OS_LIBS)$(NC)"
+	@echo -e "$(GREEN)======================================================$(NC)"
+
+# --------------------------
+# Generic per-project OS libraries update
+# Usage: make update-os-libs-<project>
+# --------------------------
+$(UPDATE_OS_LIBS_TARGETS): update-os-libs-%: prereqs
+	@echo -e "$(BLUE)Performing an OS libraries update for $*...$(NC)"
+	@mkdir -p "$*/system-libs" ;\
+	for DISTRO in $(DISTROS); do \
+		for MAJOR in $(POSTGRES_MAJORS); do \
+			docker run --rm -u 0 "ghcr.io/cloudnative-pg/postgresql:18-minimal-$$DISTRO" \
+				bash -c "apt-get update >/dev/null; apt-get install -qq --print-uris --no-install-recommends postgresql-$$MAJOR-$*" \
+			| cut -d ' ' -f 2,4 \
+			| grep '^lib' \
+			| sort \
+			> "$*/system-libs/$$MAJOR-$$DISTRO-os-libs.txt"; \
+		done; \
+	done
 
 # --------------------------
 # Push all images
