@@ -24,6 +24,7 @@ For detailed instructions on building the images, see the [BUILD.md file](BUILD.
 
 - [pgvector](pgvector) - Open-source vector similarity search for PostgreSQL
 - [PostGIS](postgis) - Open-source geospatial database extension for PostgreSQL
+- [pgAudit](pgaudit) - provides detailed session and object audit logging
 
 ---
 
