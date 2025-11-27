@@ -1,39 +1,40 @@
-# pgaudit Extension
+# pgAudit Extension
 
-PostgreSQL Audit Extension for detailed session and object audit logging.
-
-## Supported Versions
-
-| PostgreSQL | pgaudit | Distros | Status |
-|------------|---------|---------|--------|
-| 18         | 18.0    | bookworm, trixie | ✅ Active |
+[pgAudit](https://github.com/pgaudit/pgaudit) is an open-source extension
+that provides detailed session and/or object audit logging.
 
 ## Usage
 
-### 1. Add the PgVector extension image to your Cluster
+### 1. Add the pgAudit extension image to your Cluster
 
 Define the `pgaudit` extension under the `postgresql.extensions` section of
 your `Cluster` resource. For example:
 
-### PostgreSQL 18
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: cluster-pgaudit
 spec:
-  instances: 3
-  imageName: ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm
-  postgresql:
-    extensions:
-      - name: pgaudit
-        image:
-          reference: ghcr.io/cloudnative-pg/pgaudit:18-18.0-bookworm
-    parameters:
-      shared_preload_libraries: "pgaudit"
-      pgaudit.log: "all"
+  imageName: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
+  instances: 1
+
   storage:
     size: 1Gi
+
+  postgresql:
+    shared_preload_libraries:
+      - "pgaudit"
+    parameters:
+      pgaudit.log: "all, -misc"
+      pgaudit.log_catalog: "off"
+      pgaudit.log_parameter: "on"
+      pgaudit.log_relation: "on"
+
+    extensions:
+    - name: pgaudit
+      image:
+        reference: ghcr.io/cloudnative-pg/pgaudit:18.0-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -64,14 +65,3 @@ Once the database is ready, connect to it with `psql` and run:
 ```
 
 You should see `pgaudit` listed among the installed extensions.
-
-
-## Available Images
-
-- `ghcr.io/cloudnative-pg/pgaudit:18-18.0-bookworm`
-- `ghcr.io/cloudnative-pg/pgaudit:18-18.0-trixie`
-
-## Links
-
-- [pgaudit Documentation](https://github.com/pgaudit/pgaudit)
-- [CloudNativePG Extensions Guide](https://cloudnative-pg.io/documentation/current/imagevolume_extensions/)
