@@ -3,7 +3,6 @@ FROM $BASE AS builder
 
 ARG PG_MAJOR
 ARG EXT_VERSION
-ARG DISTRO=trixie
 
 USER 0
 

@@ -57,7 +57,6 @@ target "default" {
     PG_MAJOR = "${pgVersion}"
     EXT_VERSION = "${getExtensionPackage(distro, pgVersion)}"
     BASE = "${getBaseImage(distro, pgVersion)}"
-    DISTRO = "${distro}"
   }
 
   attest = [
