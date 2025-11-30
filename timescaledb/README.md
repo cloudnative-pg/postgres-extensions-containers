@@ -31,7 +31,6 @@ spec:
       timescaledb.telemetry_level: 'off'
       max_locks_per_transaction: '128'
 
-  postgresql:
     extensions:
     - name: timescaledb
       image:
