@@ -9,6 +9,8 @@ spec:
       containers:
       - name: data-test
         env:
+          - name: EXT_VERSION
+            value: ($values.version)
           - name: DB_URI
             valueFrom:
               secretKeyRef:
@@ -20,11 +22,11 @@ spec:
          - |
            set -e
            DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_raster')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_sfcgal')" -q)" = "t"
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'fuzzystrmatch')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'address_standardizer')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'address_standardizer_data_us')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_tiger_geocoder')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_topology')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_raster' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_sfcgal' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'address_standardizer' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'address_standardizer_data_us' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_tiger_geocoder AND extversion = '${EXT_VERSION}'')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_topology AND extversion = '${EXT_VERSION}'')" -q)" = "t"
