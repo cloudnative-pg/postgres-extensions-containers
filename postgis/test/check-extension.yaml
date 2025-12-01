@@ -28,5 +28,5 @@ spec:
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_sfcgal' AND extversion = '${EXT_VERSION}')" -q)" = "t"
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'address_standardizer' AND extversion = '${EXT_VERSION}')" -q)" = "t"
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'address_standardizer_data_us' AND extversion = '${EXT_VERSION}')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_tiger_geocoder AND extversion = '${EXT_VERSION}'')" -q)" = "t"
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_topology AND extversion = '${EXT_VERSION}'')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_tiger_geocoder' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis_topology' AND extversion = '${EXT_VERSION}')" -q)" = "t"
