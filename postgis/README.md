@@ -50,6 +50,7 @@ spec:
     name: cluster-postgis
   extensions:
   - name: postgis
+    version: '3.6.1'
   - name: postgis_raster
   - name: postgis_sfcgal
   - name: fuzzystrmatch

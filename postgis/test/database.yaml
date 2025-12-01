@@ -9,6 +9,7 @@ spec:
     name: ($values.name)
   extensions:
   - name: ($values.sql_name)
+    version: ($values.version)
   - name: postgis_raster
   - name: postgis_sfcgal
   - name: fuzzystrmatch
