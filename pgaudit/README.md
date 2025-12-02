@@ -1,7 +1,7 @@
 # pgAudit Extension
 
 [pgAudit](https://github.com/pgaudit/pgaudit) is an open-source extension
-that provides detailed session and/or object audit logging.
+that provides detailed session and/or object audit logging for PostgreSQL.
 
 ## Usage
 
