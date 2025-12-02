@@ -77,7 +77,9 @@ all: prereqs $(DIRS)
 	@echo -e "$(GREEN)Build successful for all projects: $(DIRS)$(NC)"
 	@echo -e "$(GREEN)======================================================$(NC)"
 
-# Per-project build
+# --------------------------
+# Per-project Build
+# --------------------------
 $(DIRS): %: %/metadata.hcl
 	@echo -e "$(BLUE)--- Starting Docker Buildx Bake for target: $@ ---$(NC)"
 ifeq ($(DRY_RUN),true)

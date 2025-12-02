@@ -130,12 +130,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Go
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6
-        with:
-          cache: false
-          go-version: 'stable'
-
       - name: Create kind cluster
         uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
         with:
@@ -155,23 +149,27 @@ jobs:
           curl -sSfL "$operator_manifest" | kubectl apply --server-side -f -
           kubectl wait --for=condition=Available --timeout=2m -n cnpg-system deployments cnpg-controller-manager
 
+      - name: Set up Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6
+        with:
+          python-version: 3.14
+
       - name: Generate Chainsaw runtime values
         env:
           EXT_NAME: ${{ inputs.extension_name }}
           EXT_IMAGE: ${{ matrix.image }}
         run: |
-          # Get the PG base image
-          export PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."io.cloudnativepg.image.base.name"')
+          TAG="${EXT_IMAGE##*:}"
+          PG_MAJOR="${TAG%%-*}"
+          DISTRO="${TAG##*-}"
 
-          go install github.com/tmccombs/hcl2json@v0.6.8
-          go install github.com/mikefarah/yq/v4@v4
+          pip install -r hack/requirements.txt
+          python3 hack/chainsaw-values.py \
+            --dir "$EXT_NAME" \
+            --pg-major "$PG_MAJOR" \
+            --distro "$DISTRO" \
+            --extension-image "$EXT_IMAGE"
 
-          # Convert metadata.hcl to YAML and merge it with runtime values to generate a valid Chainsaw values.yaml
-          yq eval -P '
-            .metadata.extension_image = strenv(EXT_IMAGE) |
-            .metadata.pg_image = strenv(PG_IMAGE) |
-            .metadata
-          ' <(hcl2json "$EXT_NAME/metadata.hcl") > "$EXT_NAME/values.yaml"
           cat "$EXT_NAME/values.yaml"
 
       - name: Install Chainsaw

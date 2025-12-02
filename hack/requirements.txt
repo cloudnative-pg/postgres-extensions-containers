@@ -1,0 +1,2 @@
+python-hcl2
+pyyaml
