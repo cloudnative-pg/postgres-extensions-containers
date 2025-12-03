@@ -61,7 +61,11 @@ When proposing a new extension, the following criteria must be met:
   Allowed Third-Party Licence Policy list (see
   [CNCF Allowed Licence Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md#cncf-allowlist-license-policy)).
 - **Structure:** only one extension can be included within an extension folder.
-- **Debian packages:** extension images must be built using a [Debian package provided by the PGDG](https://wiki.postgresql.org/wiki/Apt).
+- **Debian Packages:** Extension images must be built using a Debian package
+  provided by a trusted source like the
+  [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt).
+  This ensures compatibility with the base images and standard package
+  management procedures.
 - **Licence inclusion:** all necessary licence agreements for the extension and
   its dependencies must be included within the extension folder (refer to the
   examples in the `pgvector` and `postgis` folders).
