@@ -34,7 +34,7 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 
 
 Extensions are provided only for the OS versions already built by the
-[`cloudnative-pg/postgres-containers` project](https://github.com/cloudnative-pg/postgres-containers),
+[`cloudnative-pg/postgres-containers`](https://github.com/cloudnative-pg/postgres-containers) project,
 specifically Debian `stable` and `oldstable`.
 
 ---
