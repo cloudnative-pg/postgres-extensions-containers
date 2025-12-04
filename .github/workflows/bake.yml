@@ -69,8 +69,7 @@ jobs:
           # Filter away the shared filter
           EXTENSIONS_CHANGED=$(echo "$CHANGES" | jq -c 'map(select(. != "_shared"))')
 
-          echo "{\"name\": $EXTENSIONS_CHANGED}" > matrix.json
-          echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
+          echo "matrix=$EXTENSIONS_CHANGED" >> "$GITHUB_OUTPUT"
 
   Bake:
     name: Bake
@@ -80,12 +79,13 @@ jobs:
       contents: read
       id-token: write
       security-events: write
-    if: ${{ join(fromJSON(needs.change-triage.outputs.matrix).name) != '' }}
+    if: ${{ join(fromJSON(needs.change-triage.outputs.matrix)) != '' }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.change-triage.outputs.matrix) }}
+      matrix:
+        extension: ${{ fromJSON(needs.change-triage.outputs.matrix) }}
     uses: ./.github/workflows/bake_targets.yml
     with:
-      extension_name: ${{ matrix.name }}
+      extension_name: ${{ matrix.extension }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
