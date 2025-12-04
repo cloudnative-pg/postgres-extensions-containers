@@ -33,7 +33,7 @@ jobs:
       - name: Fetch extensions
         id: get-extensions
         run: |
-          EXTENSIONS_JSON=$(dagger call -m ./dagger/maintenance/ update-oslibs-targets)
+          EXTENSIONS_JSON=$(dagger call -m ./dagger/maintenance/ get-oslibs-targets)
           echo "extensions=$EXTENSIONS_JSON" >> $GITHUB_OUTPUT
 
   update-extension-os-libs:
@@ -64,7 +64,7 @@ jobs:
 
       - name: Update OS libs for ${{ matrix.extension }}
         run: |
-          dagger call -m ./dagger/maintenance/  update-oslibs --target ${{ matrix.extension }} \
+          dagger call -m ./dagger/maintenance/ update-oslibs --target ${{ matrix.extension }} \
             export --path .
 
       - name: Diff
