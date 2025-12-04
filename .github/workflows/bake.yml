@@ -38,12 +38,20 @@ jobs:
         with:
           base: ${{ (github.event_name == 'schedule') && 'main' || '' }}
           filters: |
+            shared: &shared
+              - 'docker-bake.hcl'
+              - 'Makefile'
+              - 'kind-config.yaml'
+              - 'test/**'
             pgvector:
               - 'pgvector/**'
+              - *shared
             postgis:
               - 'postgis/**'
+              - *shared
             pgaudit:
               - 'pgaudit/**'
+              - *shared
 
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix
@@ -68,6 +76,7 @@ jobs:
       contents: read
       id-token: write
       security-events: write
+    if: ${{ join(fromJSON(needs.change-triage.outputs.matrix).name) != '' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.change-triage.outputs.matrix) }}
