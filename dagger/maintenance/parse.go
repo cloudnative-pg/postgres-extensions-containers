@@ -29,13 +29,11 @@ const (
 )
 
 func parseBuildMatrix(ctx context.Context, source *dagger.Directory, target string) (*buildMatrix, error) {
-	bakeData, err := source.File(
-		bakeFileName).Contents(ctx)
+	bakeData, err := source.File(bakeFileName).Contents(ctx)
 	if err != nil {
 		return nil, err
 	}
-	metadata, err := source.File(
-		path.Join(target, metadataFile)).Contents(ctx)
+	metadata, err := source.File(path.Join(target, metadataFile)).Contents(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +52,6 @@ func parseBuildMatrix(ctx context.Context, source *dagger.Directory, target stri
 	}
 
 	var matrix buildMatrix
-
 	for _, variable := range p.AllVariables {
 		switch variable.Name {
 		case "distributions":
@@ -79,27 +76,22 @@ func parseBuildMatrix(ctx context.Context, source *dagger.Directory, target stri
 	return &matrix, nil
 }
 
-func parseExtensionMetadata(ctx context.Context, source *dagger.Directory) (*extensionMetadata, error) {
+func parseExtensionMetadata(ctx context.Context, extensionDirectory *dagger.Directory) (*extensionMetadata, error) {
 	type Config struct {
 		Metadata extensionMetadata `hcl:"metadata"`
 		Remain   hcl.Body          `hcl:",remain"`
 	}
 
-	data, err := source.File(
-		metadataFile).Contents(ctx)
+	data, err := extensionDirectory.File(metadataFile).Contents(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	var rootMeta Config
-	err = hclsimple.Decode(
-		metadataFile,
-		[]byte(data),
-		nil,
-		&rootMeta,
-	)
+	err = hclsimple.Decode(metadataFile, []byte(data), nil, &rootMeta)
 	if err != nil {
 		return nil, err
 	}
+
 	return &rootMeta.Metadata, nil
 }

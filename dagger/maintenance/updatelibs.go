@@ -15,9 +15,7 @@ func updateOSLibsOnTarget(
 	distribution string,
 	majorVersion string,
 ) (*dagger.File, error) {
-	postgresBaseImage := fmt.Sprintf("ghcr.io/cloudnative-pg/postgresql:%s-minimal-%s",
-		majorVersion,
-		distribution)
+	postgresBaseImage := fmt.Sprintf("ghcr.io/cloudnative-pg/postgresql:%s-minimal-%s", majorVersion, distribution)
 	packageName := fmt.Sprintf("postgresql-%s-%s", majorVersion, target)
 	out, err := dag.Container().
 		From(postgresBaseImage).
@@ -39,6 +37,7 @@ func updateOSLibsOnTarget(
 		}
 	}
 	file := dag.File(fmt.Sprintf("%s-%s-os-libs.txt", majorVersion, distribution), result)
+
 	return file, nil
 }
 
@@ -51,7 +50,7 @@ func extensionsWithOSLibs(
 		return nil, err
 	}
 
-	extensions := make(map[string]string, 0)
+	extensions := make(map[string]string)
 	for _, dir := range dirs {
 		metadata, err := parseExtensionMetadata(ctx, dir)
 		if err != nil {

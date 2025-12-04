@@ -15,15 +15,15 @@ import (
 
 type Maintenance struct{}
 
-// Updates the OS dependencies in the system-libs directory for the specified extension(s)
+// UpdateOSLibs updates the OS dependencies in the system-libs directory for the specified extension(s)
 func (m *Maintenance) UpdateOSLibs(
 	ctx context.Context,
-// The source directory containing the extension folders. Defaults to the current directory
-// +ignore=["dagger", ".github"]
-// +defaultPath="/"
+	// The source directory containing the extension folders. Defaults to the current directory
+	// +ignore=["dagger", ".github"]
+	// +defaultPath="/"
 	source *dagger.Directory,
-// The target extension to update OS libs for. Defaults to "all".
-// +default="all"
+	// The target extension to update OS libs for. Defaults to "all".
+	// +default="all"
 	target string,
 ) (*dagger.Directory, error) {
 	extDir := source
@@ -50,7 +50,7 @@ func (m *Maintenance) UpdateOSLibs(
 			return nil, err
 		}
 
-		files := make([]*dagger.File, 0, len(matrix.Distributions)+len(matrix.MajorVersions))
+		files := make([]*dagger.File, 0, len(matrix.Distributions)*len(matrix.MajorVersions))
 		for _, distribution := range matrix.Distributions {
 			for _, majorVersion := range matrix.MajorVersions {
 				file, err := updateOSLibsOnTarget(
@@ -73,12 +73,12 @@ func (m *Maintenance) UpdateOSLibs(
 	}), nil
 }
 
-// Return a list in JSON format of the extensions requiring OS libs updates
+// UpdateOSLibsTargets return a list in JSON format of the extensions requiring OS libs updates
 func (m *Maintenance) UpdateOSLibsTargets(
 	ctx context.Context,
-// The source directory containing the extension folders. Defaults to the current directory
-// +ignore=["dagger", ".github"]
-// +defaultPath="/"
+	// The source directory containing the extension folders. Defaults to the current directory
+	// +ignore=["dagger", ".github"]
+	// +defaultPath="/"
 	source *dagger.Directory,
 ) (string, error) {
 	targetExtensions, err := extensionsWithOSLibs(ctx, source)
