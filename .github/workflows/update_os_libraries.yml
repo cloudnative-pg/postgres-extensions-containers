@@ -23,18 +23,17 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Install Dagger
+        env:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.19.7
+        run: |
+          curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
+
       - name: Fetch extensions
         id: get-extensions
         run: |
-          EXTENSIONS=()
-          all_extensions=$(find . -type f -name metadata.hcl -exec dirname {} \; | sed 's|^\./||')
-          for e in ${all_extensions}; do
-            AUTO_UPDATE_OS_LIBS=$(sed -n 's/.*auto_update_os_libs *= *//p' "$e/metadata.hcl")
-            if [[ $AUTO_UPDATE_OS_LIBS == "true" ]]; then
-              EXTENSIONS+=("$e")
-            fi
-          done
-          EXTENSIONS_JSON=$(printf "%s\n" "${EXTENSIONS[@]}" | jq -R -s -c 'split("\n")[:-1]')
+          EXTENSIONS_JSON=$(dagger call -m ./dagger/maintenance/ update-oslibs-targets)
           echo "extensions=$EXTENSIONS_JSON" >> $GITHUB_OUTPUT
 
   update-extension-os-libs:
@@ -57,10 +56,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update OS libs for ${{ matrix.extension }}
-        env:
-          EXTENSION_NAME: ${{ matrix.extension }}
         run: |
-          make update-os-libs-$EXTENSION_NAME
+          dagger call -m ./dagger/maintenance/  update-oslibs --target ${{ matrix.extension }} \
+            export --path .
 
       - name: Diff
         run: |
