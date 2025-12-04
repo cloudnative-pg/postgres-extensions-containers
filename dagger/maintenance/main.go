@@ -15,7 +15,7 @@ import (
 
 type Maintenance struct{}
 
-// UpdateOSLibs updates the OS dependencies in the system-libs directory for the specified extension(s)
+// Updates the OS dependencies in the system-libs directory for the specified extension(s)
 func (m *Maintenance) UpdateOSLibs(
 	ctx context.Context,
 	// The source directory containing the extension folders. Defaults to the current directory
@@ -73,8 +73,8 @@ func (m *Maintenance) UpdateOSLibs(
 	}), nil
 }
 
-// UpdateOSLibsTargets return a list in JSON format of the extensions requiring OS libs updates
-func (m *Maintenance) UpdateOSLibsTargets(
+// Retrieves a list in JSON format of the extensions requiring OS libs updates
+func (m *Maintenance) GetOSLibsTargets(
 	ctx context.Context,
 	// The source directory containing the extension folders. Defaults to the current directory
 	// +ignore=["dagger", ".github"]
