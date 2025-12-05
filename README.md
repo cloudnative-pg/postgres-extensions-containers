@@ -117,3 +117,44 @@ This scheme ensures:
 - Alignment with the upstream `postgres-containers` base images
 - Explicit PostgreSQL and extension versioning
 - Multi-distro support
+
+---
+
+## Image Labels
+
+Each extension image includes OCI-compliant labels for runtime inspection
+and tooling integration. These metadata fields enable CloudNativePG and
+other tools to identify the base PostgreSQL version and OS distribution.
+
+### CloudNativePG-Specific Labels
+
+| Label | Description | Example |
+| :--- | :--- | :--- |
+| `io.cloudnativepg.image.base.name` | Base PostgreSQL container image | `ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm` |
+| `io.cloudnativepg.image.base.pgmajor` | PostgreSQL major version | `18` |
+| `io.cloudnativepg.image.base.os` | Operating system distribution | `bookworm` |
+
+### Standard OCI Labels
+
+In addition to CloudNativePG-specific labels, all images include standard OCI
+annotations as defined by the [OCI Image Format Specification](https://github.com/opencontainers/image-spec/blob/main/annotations.md):
+
+| Label | Description |
+| :--- | :--- |
+| `org.opencontainers.image.created` | Image creation timestamp |
+| `org.opencontainers.image.version` | Extension version |
+| `org.opencontainers.image.revision` | Git commit SHA |
+| `org.opencontainers.image.title` | Human-readable image title |
+| `org.opencontainers.image.description` | Image description |
+| `org.opencontainers.image.source` | Source repository URL |
+| `org.opencontainers.image.licenses` | License identifier (Apache-2.0) |
+
+You can inspect these labels using container tools:
+
+```bash
+# Using docker buildx imagetools
+docker buildx imagetools inspect <image> --raw | jq '.annotations'
+
+# Using skopeo
+skopeo inspect docker://<image> | jq '.Labels'
+```
