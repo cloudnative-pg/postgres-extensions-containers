@@ -11,6 +11,8 @@ spec:
         env:
           - name: EXT_SQL_NAME
             value: ($values.sql_name)
+          - name: EXT_VERSION
+            value: ($values.version)
           - name: DB_URI
             valueFrom:
               secretKeyRef:
@@ -22,5 +24,5 @@ spec:
          - |
            set -e
            DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
-           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = '${EXT_SQL_NAME}')" -q)" = "t"
-           echo "Extension '${EXT_SQL_NAME}' is installed!"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = '${EXT_SQL_NAME}' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           echo "Extension '${EXT_SQL_NAME} v${EXT_VERSION}' is installed!"

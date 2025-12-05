@@ -54,6 +54,7 @@ spec:
     name: cluster-pgaudit
   extensions:
   - name: pgaudit
+    version: '18.0'
 ```
 
 ### 3. Verify installation
