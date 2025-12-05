@@ -1,6 +1,7 @@
 name: Check OS Library Updates
 
 on:
+  push:
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
