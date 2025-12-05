@@ -77,6 +77,8 @@ target "default" {
     "index,manifest:org.opencontainers.image.licenses=Apache-2.0",
     "index,manifest:org.opencontainers.image.base.name=scratch",
     "index,manifest:io.cloudnativepg.image.base.name=${getBaseImage(distro, pgVersion)}",
+    "index,manifest:io.cloudnativepg.image.base.pgmajor=${pgVersion}",
+    "index,manifest:io.cloudnativepg.image.base.os=${distro}",
   ]
   labels = {
     "org.opencontainers.image.created" = "${now}",
@@ -92,6 +94,8 @@ target "default" {
     "org.opencontainers.image.licenses" = "Apache-2.0",
     "org.opencontainers.image.base.name" = "scratch",
     "io.cloudnativepg.image.base.name" = "${getBaseImage(distro, pgVersion)}",
+    "io.cloudnativepg.image.base.pgmajor" = "${pgVersion}",
+    "io.cloudnativepg.image.base.os" = "${distro}",
   }
 }
 
