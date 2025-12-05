@@ -36,29 +36,40 @@ jobs:
         uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         id: filter
         with:
-          base: ${{ (github.event_name == 'schedule') && 'main' || '' }}
           filters: |
+            _shared: &shared
+              - 'docker-bake.hcl'
+              - 'Makefile'
+              - 'kind-config.yaml'
+              - 'test/**'
+              - '.github/workflows/bake*.yml'
             pgvector:
               - 'pgvector/**'
+              - *shared
             postgis:
               - 'postgis/**'
+              - *shared
             pgaudit:
               - 'pgaudit/**'
+              - *shared
 
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix
         id: get-matrix
         env:
           # JSON array containing the extensions that have been changed
-          EXTENSIONS_CHANGED: ${{ steps.filter.outputs.changes }}
+          CHANGES: ${{ steps.filter.outputs.changes }}
           # Input Extension name
           INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
         run: |
           if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
-            EXTENSIONS_CHANGED="[\"$INPUT_EXTENSION_NAME\"]"
+            CHANGES="[\"$INPUT_EXTENSION_NAME\"]"
           fi
-          echo "{\"name\": $EXTENSIONS_CHANGED}" > matrix.json
-          echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
+
+          # Filter away the shared filter
+          EXTENSIONS_CHANGED=$(echo "$CHANGES" | jq -c 'map(select(. != "_shared"))')
+
+          echo "matrix=$EXTENSIONS_CHANGED" >> "$GITHUB_OUTPUT"
 
   Bake:
     name: Bake
@@ -68,11 +79,13 @@ jobs:
       contents: read
       id-token: write
       security-events: write
+    if: ${{ join(fromJSON(needs.change-triage.outputs.matrix)) != '' }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.change-triage.outputs.matrix) }}
+      matrix:
+        extension: ${{ fromJSON(needs.change-triage.outputs.matrix) }}
     uses: ./.github/workflows/bake_targets.yml
     with:
-      extension_name: ${{ matrix.name }}
+      extension_name: ${{ matrix.extension }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
