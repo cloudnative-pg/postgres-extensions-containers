@@ -23,18 +23,21 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Dagger
-        env:
-          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.7
-        run: |
-          curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
-
       - name: Fetch extensions
+        id: get-extensions-dagger
+        uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
+        with:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          version: 0.19.7
+          verb: call
+          module: ./dagger/maintenance/
+          args: get-oslibs-targets
+
+      - name: Set extensions output
         id: get-extensions
         run: |
-          EXTENSIONS_JSON=$(dagger call -m ./dagger/maintenance/ get-oslibs-targets)
-          echo "extensions=$EXTENSIONS_JSON" >> $GITHUB_OUTPUT
+          EXTENSIONS='${{ steps.get-extensions-dagger.outputs.output }}'
+          echo "extensions=$(echo "$EXTENSIONS" | jq -c .)" >> $GITHUB_OUTPUT
 
   update-extension-os-libs:
     name: Update OS libs for ${{ matrix.extension }}
@@ -55,26 +58,34 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Dagger
-        env:
-          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.7
-        run: |
-          curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
-
       - name: Update OS libs for ${{ matrix.extension }}
-        run: |
-          dagger call -m ./dagger/maintenance/ update-oslibs --target ${{ matrix.extension }} \
-            export --path .
+        uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
+        with:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          version: 0.19.7
+          verb: call
+          module: ./dagger/maintenance/
+          args: update-oslibs --target ${{ matrix.extension }} export --path=.
 
       - name: Diff
         run: |
           git status
           git diff
 
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected for ${{ matrix.extension }}"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected for ${{ matrix.extension }}"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create a PR if versions have been updated on main
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.check-changes.outputs.changed == 'true'
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
           title: "chore: update ${{ matrix.extension }} OS libraries"

@@ -9,6 +9,10 @@ import (
 	"dagger/maintenance/internal/dagger"
 )
 
+// libsRegex matches library dependencies from apt-get output
+// Format: library-name MD5Sum:checksum
+var libsRegex = regexp.MustCompile(`(?m)^.*\s(lib\S*).*(MD5Sum:.*)$`)
+
 func updateOSLibsOnTarget(
 	ctx context.Context,
 	target string,
@@ -17,6 +21,7 @@ func updateOSLibsOnTarget(
 ) (*dagger.File, error) {
 	postgresBaseImage := fmt.Sprintf("ghcr.io/cloudnative-pg/postgresql:%s-minimal-%s", majorVersion, distribution)
 	packageName := fmt.Sprintf("postgresql-%s-%s", majorVersion, target)
+
 	out, err := dag.Container().
 		From(postgresBaseImage).
 		WithUser("root").
@@ -26,17 +31,30 @@ func updateOSLibsOnTarget(
 			"apt-get install -qq --print-uris --no-install-recommends " + packageName,
 		}).Stdout(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch OS libs for extension %s (PostgreSQL %s on %s): %w",
+			target, majorVersion, distribution, err)
 	}
-	var re = regexp.MustCompile(`(?m)^.*\s(lib\S*).*(MD5Sum:.*)$`)
-	matches := re.FindAllStringSubmatch(out, -1)
+
+	matches := libsRegex.FindAllStringSubmatch(out, -1)
+	if len(matches) == 0 {
+		return nil, fmt.Errorf("no library dependencies found for extension %s (PostgreSQL %s on %s): apt-get may have failed or package has no lib dependencies",
+			target, majorVersion, distribution)
+	}
+
 	var result string
 	for _, m := range matches {
 		if len(m) >= 3 {
 			result += m[1] + " " + m[2] + "\n"
 		}
 	}
-	file := dag.File(fmt.Sprintf("%s-%s-os-libs.txt", majorVersion, distribution), result)
+
+	if result == "" {
+		return nil, fmt.Errorf("parsed empty content for extension %s (PostgreSQL %s on %s): regex matched but extracted no data",
+			target, majorVersion, distribution)
+	}
+
+	fileName := fmt.Sprintf("%s-%s-os-libs.txt", majorVersion, distribution)
+	file := dag.File(fileName, result)
 
 	return file, nil
 }
