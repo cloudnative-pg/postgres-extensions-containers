@@ -23,7 +23,7 @@ FROM scratch
 ARG PG_MAJOR
 
 # Licenses
-COPY --from=builder /tmp/licenses/LICENSE /licenses/pg_ivm/LICENSE
+COPY --from=builder /build/pg_ivm/LICENSE /licenses/pg_ivm/LICENSE
 
 # Libraries
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/pg_ivm* /lib/
