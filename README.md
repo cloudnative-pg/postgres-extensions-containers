@@ -38,6 +38,7 @@ from a trusted, auditable repository
 | :--- | :--- | :--- | :--- |
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) | CNPG maintainers |
 | **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) | CNPG maintainers |
+| **[pg_ivm](pg_ivm)** | Incremental View Maintenance for PostgreSQL | [github.com/sraoss/pg_ivm](https://github.com/sraoss/pg_ivm) |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) | CNPG maintainers |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) | CNPG maintainers |
 | **[TimescaleDB Apache-2 Edition](timescaledb-oss)** | Time-series database for PostgreSQL (open source version) | [github.com/timescale/timescaledb/](https://github.com/timescale/timescaledb/) | @shusaan |
