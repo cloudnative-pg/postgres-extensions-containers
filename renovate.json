@@ -20,5 +20,21 @@
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
       "datasourceTemplate": "deb"
     }
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "matchUpdateTypes": [
+        "digest",
+        "pinDigest",
+        "major",
+        "minor",
+        "patch"
+      ],
+      "groupName": "all github action",
+      "pinDigests": true
+    }
   ]
 }
