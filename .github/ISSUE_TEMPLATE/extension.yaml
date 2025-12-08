@@ -7,10 +7,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for proposing a new extension for the PostgreSQL Extensions Containers project! 
-        
+        Thanks for proposing a new extension for the PostgreSQL Extensions Containers project!
+
         The submission process requires the proposer to commit to becoming the **Component Owner** and taking on the long-term maintenance of the extension image. Please review the [governance document for the submission process](https://github.com/cloudnative-pg/postgres-extensions-containers?tab=readme-ov-file#submission-process).
-  
+
   - type: checkboxes
     id: search
     attributes:
@@ -28,7 +28,7 @@ body:
       placeholder: ex. pgvector
     validations:
       required: true
-      
+
   - type: input
     id: project-url
     attributes:
@@ -55,7 +55,7 @@ body:
       placeholder: ex. The pgvector extension provides vector similarity search capabilities for PostgreSQL.
     validations:
       required: true
-      
+
   - type: input
     id: license-url
     attributes:
@@ -64,7 +64,7 @@ body:
       placeholder: ex. https://github.com/pgvector/pgvector/blob/master/LICENSE
     validations:
       required: true
-      
+
   - type: checkboxes
     id: license-check
     attributes:
@@ -73,7 +73,16 @@ body:
       options:
         - label: The extension's license (linked above) complies with the list of allowed licenses.
           required: true
-          
+
+  - type: textarea
+    id: dependent-extensions
+    attributes:
+      label: Known Dependent Extensions
+      description: List any other PostgreSQL extensions that MUST be installed before or alongside this extension (e.g., if this extension requires 'plpgsql' or 'postgis' to be present). If none, please state "None".
+      placeholder: ex. postgis
+    validations:
+      required: true
+
   - type: checkboxes
     id: maintenance-commitment
     attributes:
@@ -82,16 +91,16 @@ body:
       options:
         - label: I/My organization commit to becoming the Component Owner and maintaining the extension image in the future.
           required: true
-          
+
   - type: textarea
     id: additional-notes
     attributes:
       label: Additional Notes (Optional)
-      description: Any other relevant information, required dependencies, or context that might be useful for packaging.
-      placeholder: ex. This extension requires the 'openssl' library to be installed.
+      description: Any other relevant information, required dependencies (like OS packages), or context that might be useful for packaging.
+      placeholder: ex. This extension requires the 'openssl' library (OS package) to be installed.
     validations:
       required: false
-      
+
   - type: checkboxes
     id: terms
     attributes:
