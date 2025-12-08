@@ -36,6 +36,7 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | :--- | :--- | :--- |
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
 | **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) |
+| **[pg_ivm](pg_ivm)** | Incremental View Maintenance for PostgreSQL | [github.com/sraoss/pg_ivm](https://github.com/sraoss/pg_ivm) |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) |
 
