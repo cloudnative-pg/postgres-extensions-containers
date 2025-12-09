@@ -26,9 +26,11 @@ jobs:
       - name: Fetch extensions
         id: get-extensions-dagger
         uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
-        with:
+        env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          version: 0.19.7
+          DAGGER_VERSION: 0.19.7
+        with:
+          version: ${{ env.DAGGER_VERSION }}
           verb: call
           module: ./dagger/maintenance/
           args: get-oslibs-targets
@@ -60,9 +62,11 @@ jobs:
 
       - name: Update OS libs for ${{ matrix.extension }}
         uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
-        with:
+        env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          version: 0.19.7
+          DAGGER_VERSION: 0.19.7
+        with:
+          version: ${{ env.DAGGER_VERSION }}
           verb: call
           module: ./dagger/maintenance/
           args: update-oslibs --target ${{ matrix.extension }} export --path=.
