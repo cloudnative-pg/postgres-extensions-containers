@@ -101,6 +101,15 @@ body:
     validations:
       required: false
 
+- type: input
+    id: github-handles
+    attributes:
+      label: GitHub Handles of Component Owners
+      description: List the GitHub handles (e.g., `@user1`, `@org/team`) that will be responsible for maintaining the extension and should be added to the `CODEOWNERS` file.
+      placeholder: ex. @user1
+    validations:
+      required: true
+
   - type: checkboxes
     id: terms
     attributes:
