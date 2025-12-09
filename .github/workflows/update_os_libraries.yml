@@ -28,7 +28,7 @@ jobs:
         uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.7
+          DAGGER_VERSION: 0.19.8
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
@@ -64,7 +64,7 @@ jobs:
         uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.7
+          DAGGER_VERSION: 0.19.8
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
@@ -88,7 +88,7 @@ jobs:
           fi
 
       - name: Create a PR if versions have been updated on main
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         if: github.ref == 'refs/heads/main' && steps.check-changes.outputs.changed == 'true'
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
