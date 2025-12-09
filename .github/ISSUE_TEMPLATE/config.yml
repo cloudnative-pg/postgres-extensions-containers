@@ -1,4 +1,4 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
   - name: Slack chat
     url: https://github.com/cloudnative-pg/cloudnative-pg?tab=readme-ov-file#communications
     about: Please join the slack channel and interact with our community
