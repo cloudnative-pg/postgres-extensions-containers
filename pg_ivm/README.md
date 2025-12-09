@@ -24,6 +24,9 @@ spec:
     size: 1Gi
 
   postgresql:
+    shared_preload_libraries:
+      - "pg_ivm"
+  postgresql:
     extensions:
     - name: pg_ivm
       image:
