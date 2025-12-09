@@ -76,20 +76,9 @@ jobs:
           git status
           git diff
 
-      - name: Check for changes
-        id: check-changes
-        run: |
-          if git diff --quiet; then
-            echo "No changes detected for ${{ matrix.extension }}"
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
-            echo "Changes detected for ${{ matrix.extension }}"
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-
       - name: Create a PR if versions have been updated on main
         uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
-        if: github.ref == 'refs/heads/main' && steps.check-changes.outputs.changed == 'true'
+        if: github.ref == 'refs/heads/main'
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
           title: "chore: update ${{ matrix.extension }} OS libraries"
@@ -97,6 +86,6 @@ jobs:
           branch: "${{ matrix.extension }}-os-libraries"
           author: "extension-os-libs-updater <extension-os-libs-updater@users.noreply.github.com>"
           add-paths: |
-            ${{ matrix.extension }}/**
+            ${{ matrix.extension }}/system-libs/**
           commit-message: "chore: update ${{ matrix.extension }} OS libraries"
           signoff: true
