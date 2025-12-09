@@ -1,0 +1,102 @@
+name: Check OS Library Updates
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: 'bash -Eeuo pipefail -x {0}'
+
+permissions: {}
+
+jobs:
+  fetch-extensions:
+    name: Fetch target extensions
+    runs-on: ubuntu-24.04
+    outputs:
+      extensions: ${{ steps.get-extensions.outputs.extensions }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          persist-credentials: false
+
+      - name: Fetch extensions
+        id: get-extensions-dagger
+        uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
+        env:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.19.7
+        with:
+          version: ${{ env.DAGGER_VERSION }}
+          verb: call
+          module: ./dagger/maintenance/
+          args: get-oslibs-targets
+
+      - name: Set extensions output
+        id: get-extensions
+        run: |
+          EXTENSIONS='${{ steps.get-extensions-dagger.outputs.output }}'
+          echo "extensions=$(echo "$EXTENSIONS" | jq -c .)" >> $GITHUB_OUTPUT
+
+  update-extension-os-libs:
+    name: Update OS libs for ${{ matrix.extension }}
+    runs-on: ubuntu-24.04
+    needs:
+      - fetch-extensions
+    strategy:
+      matrix:
+        extension: ${{ fromJson(needs.fetch-extensions.outputs.extensions) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update OS libs for ${{ matrix.extension }}
+        uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
+        env:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.19.7
+        with:
+          version: ${{ env.DAGGER_VERSION }}
+          verb: call
+          module: ./dagger/maintenance/
+          args: update-oslibs --target ${{ matrix.extension }} export --path=.
+
+      - name: Diff
+        run: |
+          git status
+          git diff
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected for ${{ matrix.extension }}"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected for ${{ matrix.extension }}"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create a PR if versions have been updated on main
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        if: github.ref == 'refs/heads/main' && steps.check-changes.outputs.changed == 'true'
+        with:
+          token: ${{ secrets.REPO_GHA_PAT }}
+          title: "chore: update ${{ matrix.extension }} OS libraries"
+          body: "Updating the OS libraries of ${{ matrix.extension }}"
+          branch: "${{ matrix.extension }}-os-libraries"
+          author: "extension-os-libs-updater <extension-os-libs-updater@users.noreply.github.com>"
+          add-paths: |
+            ${{ matrix.extension }}/**
+          commit-message: "chore: update ${{ matrix.extension }} OS libraries"
+          signoff: true
