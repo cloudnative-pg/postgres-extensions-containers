@@ -158,7 +158,7 @@ jobs:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
           module: ./dagger/maintenance/
-          args: generate-testing-values --target ${{ inputs.extension_name }} --extension-image ${{ matrix.image }}
+          args: generate-testing-values --target ${{ inputs.extension_name }} --extension-image ${{ matrix.image }} export --path=${{ inputs.extension_name }}/values.yaml
 
       - name: Install Chainsaw
         uses: kyverno/action-install-chainsaw@06560d18422209e9c1e08e931d477d04bf2674c1 # v0.2.14
