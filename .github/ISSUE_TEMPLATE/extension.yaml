@@ -101,7 +101,7 @@ body:
     validations:
       required: false
 
-- type: input
+  - type: input
     id: github-handles
     attributes:
       label: GitHub Handles of Component Owners
