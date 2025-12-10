@@ -10,6 +10,8 @@ import (
 	"path"
 	"slices"
 
+	"go.yaml.in/yaml/v3"
+
 	"dagger/maintenance/internal/dagger"
 )
 
@@ -111,4 +113,54 @@ func (m *Maintenance) GetTargets(
 	}
 
 	return string(jsonTargets), nil
+}
+
+// Generates Chainsaw's testing external values in YAML format
+func (m *Maintenance) GenerateTestingValues(
+	ctx context.Context,
+	// Path to the target extension directory
+	target *dagger.Directory,
+	// URL reference to the extension image to test [REPOSITORY[:TAG]]
+	// +optional
+	extensionImage string,
+) (*dagger.File, error) {
+	metadata, err := parseExtensionMetadata(ctx, target)
+	if err != nil {
+		return nil, err
+	}
+
+	targetExtensionImage := extensionImage
+	if targetExtensionImage == "" {
+		targetExtensionImage, err = getDefaultExtensionImage(metadata)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	labels, err := getImageLabels(targetExtensionImage)
+	if err != nil {
+		return nil, err
+	}
+
+	// Build values.yaml content
+	values := map[string]any{
+		"name":                     metadata.Name,
+		"sql_name":                 metadata.SQLName,
+		"image_name":               metadata.ImageName,
+		"shared_preload_libraries": metadata.SharedPreloadLibraries,
+		"extension_control_path":   metadata.ExtensionControlPath,
+		"dynamic_library_path":     metadata.DynamicLibraryPath,
+		"ld_library_path":          metadata.LdLibraryPath,
+		"extension_image":          targetExtensionImage,
+		"pg_image":                 labels["io.cloudnativepg.image.base.name"],
+		"version":                  labels["org.opencontainers.image.version"],
+	}
+	valuesYaml, err := yaml.Marshal(values)
+	if err != nil {
+		return nil, err
+	}
+
+	result := target.WithNewFile("values.yaml", string(valuesYaml))
+
+	return result.File("values.yaml"), nil
 }
