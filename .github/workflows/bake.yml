@@ -11,6 +11,7 @@ on:
         options:
           - pgvector
           - postgis
+          - timescaledb
           - pgaudit
 
 defaults:
@@ -48,6 +49,8 @@ jobs:
               - *shared
             postgis:
               - 'postgis/**'
+            timescaledb:
+              - 'timescaledb/**'
               - *shared
             pgaudit:
               - 'pgaudit/**'
