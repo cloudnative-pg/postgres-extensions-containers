@@ -6,6 +6,7 @@ metadata = {
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = ["/system"]
+  auto_update_os_libs      = true
 
   versions = {
     bookworm = {
