@@ -31,6 +31,7 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [https://github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [https://github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [https://postgis.net/](https://postgis.net/) |
+| **[Timescaledb](timescaledb)** | Time-series database for PostgreSQL | [https://github.com/timescale/timescaledb/](https://github.com/timescale/timescaledb/) |
 
 
 Extensions are provided only for the OS versions already built by the
