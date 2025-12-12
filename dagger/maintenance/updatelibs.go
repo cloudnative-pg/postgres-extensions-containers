@@ -59,10 +59,32 @@ func updateOSLibsOnTarget(
 	return file, nil
 }
 
-func extensionsWithOSLibs(
+type extensionsOptions struct {
+	filterOSLibs bool
+}
+
+// ExtensionsOption is a functional option for configuring extension retrieval
+type ExtensionsOption func(*extensionsOptions)
+
+// WithOSLibsFilter returns only extensions that have AutoUpdateOsLibs set to true
+func WithOSLibsFilter() ExtensionsOption {
+	return func(opts *extensionsOptions) {
+		opts.filterOSLibs = true
+	}
+}
+
+// getExtensions retrieves a map of extensions from the source directory.
+// By default, all extensions are returned but filters can be applied.
+func getExtensions(
 	ctx context.Context,
 	source *dagger.Directory,
+	opts ...ExtensionsOption,
 ) (map[string]string, error) {
+	options := &extensionsOptions{}
+	for _, opt := range opts {
+		opt(options)
+	}
+
 	dirs, err := extensionsDirectories(ctx, source)
 	if err != nil {
 		return nil, err
@@ -74,13 +96,16 @@ func extensionsWithOSLibs(
 		if err != nil {
 			return nil, err
 		}
-		if metadata.AutoUpdateOsLibs {
-			dirName, err := dir.Name(ctx)
-			if err != nil {
-				return nil, err
-			}
-			extensions[path.Dir(dirName)] = metadata.Name
+
+		if options.filterOSLibs && !metadata.AutoUpdateOsLibs {
+			continue
 		}
+
+		dirName, err := dir.Name(ctx)
+		if err != nil {
+			return nil, err
+		}
+		extensions[path.Dir(dirName)] = metadata.Name
 	}
 
 	return extensions, nil
