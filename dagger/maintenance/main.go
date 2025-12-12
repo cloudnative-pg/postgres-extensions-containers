@@ -36,7 +36,7 @@ func (m *Maintenance) UpdateOSLibs(
 		})
 	}
 
-	targetExtensions, err := extensionsWithOSLibs(ctx, extDir)
+	targetExtensions, err := getExtensions(ctx, extDir, WithOSLibsFilter())
 	if err != nil {
 		return source, err
 	}
@@ -84,7 +84,27 @@ func (m *Maintenance) GetOSLibsTargets(
 	// +defaultPath="/"
 	source *dagger.Directory,
 ) (string, error) {
-	targetExtensions, err := extensionsWithOSLibs(ctx, source)
+	targetExtensions, err := getExtensions(ctx, source, WithOSLibsFilter())
+	if err != nil {
+		return "", err
+	}
+	jsonTargets, err := json.Marshal(slices.Sorted(maps.Keys(targetExtensions)))
+	if err != nil {
+		return "", err
+	}
+
+	return string(jsonTargets), nil
+}
+
+// Retrieves a list in JSON format of the extensions
+func (m *Maintenance) GetTargets(
+	ctx context.Context,
+	// The source directory containing the extension folders. Defaults to the current directory
+	// +ignore=["dagger", ".github"]
+	// +defaultPath="/"
+	source *dagger.Directory,
+) (string, error) {
+	targetExtensions, err := getExtensions(ctx, source)
 	if err != nil {
 		return "", err
 	}
