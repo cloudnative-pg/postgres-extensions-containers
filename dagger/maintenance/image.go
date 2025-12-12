@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
 	"strconv"
 
 	"github.com/google/go-containerregistry/pkg/name"
+	containerregistryv1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
+	ocispecv1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 const (
@@ -14,35 +17,45 @@ const (
 	DefaultDistribution = "trixie"
 )
 
-// getImageLabels returns the OCI labels given an image ref.
-func getImageLabels(imageRef string) (map[string]string, error) {
+// getImageAnnotations returns the OCI annotations given an image ref.
+func getImageAnnotations(imageRef string) (map[string]string, error) {
 	ref, err := name.ParseReference(imageRef)
 	if err != nil {
 		return nil, err
 	}
 
-	desc, err := remote.Get(ref)
+	head, err := remote.Get(ref)
 	if err != nil {
 		return nil, err
 	}
 
-	img, err := desc.Image()
-	if err != nil {
-		return nil, err
+	switch head.MediaType {
+	case ocispecv1.MediaTypeImageIndex:
+		indexManifest, err := containerregistryv1.ParseIndexManifest(bytes.NewReader(head.Manifest))
+		if err != nil {
+			return nil, err
+		}
+		return indexManifest.Annotations, nil
+	case ocispecv1.MediaTypeImageManifest:
+		manifest, err := containerregistryv1.ParseManifest(bytes.NewReader(head.Manifest))
+		if err != nil {
+			return nil, err
+		}
+		return manifest.Annotations, nil
 	}
 
-	cfg, err := img.ConfigFile()
-	if err != nil {
-		return nil, err
-	}
-
-	return cfg.Config.Labels, nil
+	return nil, fmt.Errorf("unsupported media type: %s", head.MediaType)
 }
 
 // getDefaultExtensionImage returns the default extension image for a given extension,
 // resolved from the metadata.
 func getDefaultExtensionImage(metadata *extensionMetadata) (string, error) {
 	packageVersion := metadata.Versions[DefaultDistribution][strconv.Itoa(DefaultPgMajor)]
+	if packageVersion == "" {
+		return "", fmt.Errorf("no package version found for distribution %q and version %d",
+			DefaultDistribution, DefaultPgMajor)
+	}
+
 	re := regexp.MustCompile(`^(\d+(?:\.\d+)+)`)
 	matches := re.FindStringSubmatch(packageVersion)
 	if len(matches) < 2 {

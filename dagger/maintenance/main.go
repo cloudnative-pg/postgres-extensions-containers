@@ -137,7 +137,7 @@ func (m *Maintenance) GenerateTestingValues(
 		}
 	}
 
-	labels, err := getImageLabels(targetExtensionImage)
+	annotations, err := getImageAnnotations(targetExtensionImage)
 	if err != nil {
 		return nil, err
 	}
@@ -152,8 +152,8 @@ func (m *Maintenance) GenerateTestingValues(
 		"dynamic_library_path":     metadata.DynamicLibraryPath,
 		"ld_library_path":          metadata.LdLibraryPath,
 		"extension_image":          targetExtensionImage,
-		"pg_image":                 labels["io.cloudnativepg.image.base.name"],
-		"version":                  labels["org.opencontainers.image.version"],
+		"pg_image":                 annotations["io.cloudnativepg.image.base.name"],
+		"version":                  annotations["org.opencontainers.image.version"],
 	}
 	valuesYaml, err := yaml.Marshal(values)
 	if err != nil {
