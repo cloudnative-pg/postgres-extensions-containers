@@ -6,9 +6,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"maps"
 	"path"
 	"slices"
+
+	"go.yaml.in/yaml/v3"
 
 	"dagger/maintenance/internal/dagger"
 )
@@ -91,4 +94,68 @@ func (m *Maintenance) GetOSLibsTargets(
 	}
 
 	return string(jsonTargets), nil
+}
+
+// Generates Chainsaw's testing external values in YAML format
+func (m *Maintenance) GenerateTestingValues(
+	ctx context.Context,
+	// Path to the target extension directory
+	target *dagger.Directory,
+	// URL reference to the extension image to test [REPOSITORY[:TAG]]
+	// +optional
+	extensionImage string,
+) (*dagger.File, error) {
+	metadata, err := parseExtensionMetadata(ctx, target)
+	if err != nil {
+		return nil, err
+	}
+
+	targetExtensionImage := extensionImage
+	if targetExtensionImage == "" {
+		targetExtensionImage, err = getDefaultExtensionImage(metadata)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	annotations, err := getImageAnnotations(targetExtensionImage)
+	if err != nil {
+		return nil, err
+	}
+
+	pgImage := annotations["io.cloudnativepg.image.base.name"]
+	if pgImage == "" {
+		return nil, fmt.Errorf(
+			"extension image %s doesn't have an 'io.cloudnativepg.image.base.name' annotation",
+			targetExtensionImage)
+	}
+
+	version := annotations["org.opencontainers.image.version"]
+	if version == "" {
+		return nil, fmt.Errorf(
+			"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
+			targetExtensionImage)
+	}
+
+	// Build values.yaml content
+	values := map[string]any{
+		"name":                     metadata.Name,
+		"sql_name":                 metadata.SQLName,
+		"image_name":               metadata.ImageName,
+		"shared_preload_libraries": metadata.SharedPreloadLibraries,
+		"extension_control_path":   metadata.ExtensionControlPath,
+		"dynamic_library_path":     metadata.DynamicLibraryPath,
+		"ld_library_path":          metadata.LdLibraryPath,
+		"extension_image":          targetExtensionImage,
+		"pg_image":                 pgImage,
+		"version":                  version,
+	}
+	valuesYaml, err := yaml.Marshal(values)
+	if err != nil {
+		return nil, err
+	}
+
+	result := target.WithNewFile("values.yaml", string(valuesYaml))
+
+	return result.File("values.yaml"), nil
 }
