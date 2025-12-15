@@ -17,10 +17,19 @@ type buildMatrix struct {
 	MajorVersions []string
 }
 
+type versionMap map[string]map[string]string
+
 type extensionMetadata struct {
-	Name             string   `hcl:"name" cty:"name"`
-	AutoUpdateOsLibs bool     `hcl:"auto_update_os_libs" cty:"auto_update_os_libs"`
-	Remain           hcl.Body `hcl:",remain"`
+	Name                   string     `hcl:"name" cty:"name"`
+	SQLName                string     `hcl:"sql_name" cty:"sql_name"`
+	ImageName              string     `hcl:"image_name" cty:"image_name"`
+	SharedPreloadLibraries []string   `hcl:"shared_preload_libraries" cty:"shared_preload_libraries"`
+	ExtensionControlPath   []string   `hcl:"extension_control_path" cty:"extension_control_path"`
+	DynamicLibraryPath     []string   `hcl:"dynamic_library_path" cty:"dynamic_library_path"`
+	LdLibraryPath          []string   `hcl:"ld_library_path" cty:"ld_library_path"`
+	AutoUpdateOsLibs       bool       `hcl:"auto_update_os_libs" cty:"auto_update_os_libs"`
+	Versions               versionMap `hcl:"versions" cty:"versions"`
+	Remain                 hcl.Body   `hcl:",remain"`
 }
 
 const (
