@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"maps"
 	"path"
 	"slices"
@@ -122,6 +123,20 @@ func (m *Maintenance) GenerateTestingValues(
 		return nil, err
 	}
 
+	pgImage := annotations["io.cloudnativepg.image.base.name"]
+	if pgImage == "" {
+		return nil, fmt.Errorf(
+			"extension image %s doesn't have an 'io.cloudnativepg.image.base.name' annotation",
+			targetExtensionImage)
+	}
+
+	version := annotations["org.opencontainers.image.version"]
+	if version == "" {
+		return nil, fmt.Errorf(
+			"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
+			targetExtensionImage)
+	}
+
 	// Build values.yaml content
 	values := map[string]any{
 		"name":                     metadata.Name,
@@ -132,8 +147,8 @@ func (m *Maintenance) GenerateTestingValues(
 		"dynamic_library_path":     metadata.DynamicLibraryPath,
 		"ld_library_path":          metadata.LdLibraryPath,
 		"extension_image":          targetExtensionImage,
-		"pg_image":                 annotations["io.cloudnativepg.image.base.name"],
-		"version":                  annotations["org.opencontainers.image.version"],
+		"pg_image":                 pgImage,
+		"version":                  version,
 	}
 	valuesYaml, err := yaml.Marshal(values)
 	if err != nil {
