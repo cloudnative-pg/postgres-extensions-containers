@@ -21,12 +21,12 @@ type Maintenance struct{}
 // Updates the OS dependencies in the system-libs directory for the specified extension(s)
 func (m *Maintenance) UpdateOSLibs(
 	ctx context.Context,
-	// The source directory containing the extension folders. Defaults to the current directory
-	// +ignore=["dagger", ".github"]
-	// +defaultPath="/"
+// The source directory containing the extension folders. Defaults to the current directory
+// +ignore=["dagger", ".github"]
+// +defaultPath="/"
 	source *dagger.Directory,
-	// The target extension to update OS libs for. Defaults to "all".
-	// +default="all"
+// The target extension to update OS libs for. Defaults to "all".
+// +default="all"
 	target string,
 ) (*dagger.Directory, error) {
 	extDir := source
@@ -86,12 +86,50 @@ func (m *Maintenance) UpdateOSLibs(
 	}), nil
 }
 
+// Updates the container image in the readme for the specified extension(s)
+func (m *Maintenance) UpdateReadme(
+	ctx context.Context,
+// The source directory containing the extension folders. Defaults to the current directory
+// +ignore=["dagger", ".github"]
+// +defaultPath="/"
+	source *dagger.Directory,
+// The target extension to update the README. Defaults to "all".
+// +default="all"
+	target string,
+) (*dagger.Directory, error) {
+	extDir := source
+	if target != "all" {
+		extDir = source.Filter(dagger.DirectoryFilterOpts{
+			Include: []string{path.Join(target, "**")},
+		})
+	}
+	targetExtensions, err := getExtensions(ctx, extDir, WithReadmeFilter())
+	if err != nil {
+		return source, err
+	}
+	includeDirs := make([]string, 0, len(targetExtensions))
+
+	for dir := range targetExtensions {
+		includeDirs = append(includeDirs, dir)
+		file, outErr := updateReadme(ctx, source.Directory(dir))
+		if outErr != nil {
+			return source, outErr
+		}
+		source = source.WithFile(dir, file)
+
+	}
+
+	return source.Filter(dagger.DirectoryFilterOpts{
+		Include: includeDirs,
+	}), nil
+}
+
 // Retrieves a list in JSON format of the extensions requiring OS libs updates
 func (m *Maintenance) GetOSLibsTargets(
 	ctx context.Context,
-	// The source directory containing the extension folders. Defaults to the current directory
-	// +ignore=["dagger", ".github"]
-	// +defaultPath="/"
+// The source directory containing the extension folders. Defaults to the current directory
+// +ignore=["dagger", ".github"]
+// +defaultPath="/"
 	source *dagger.Directory,
 ) (string, error) {
 	targetExtensions, err := getExtensions(ctx, source, WithOSLibsFilter())
@@ -109,9 +147,9 @@ func (m *Maintenance) GetOSLibsTargets(
 // Retrieves a list in JSON format of the extensions
 func (m *Maintenance) GetTargets(
 	ctx context.Context,
-	// The source directory containing the extension folders. Defaults to the current directory
-	// +ignore=["dagger", ".github"]
-	// +defaultPath="/"
+// The source directory containing the extension folders. Defaults to the current directory
+// +ignore=["dagger", ".github"]
+// +defaultPath="/"
 	source *dagger.Directory,
 ) (string, error) {
 	targetExtensions, err := getExtensions(ctx, source)
@@ -129,10 +167,10 @@ func (m *Maintenance) GetTargets(
 // Generates Chainsaw's testing external values in YAML format
 func (m *Maintenance) GenerateTestingValues(
 	ctx context.Context,
-	// Path to the target extension directory
+// Path to the target extension directory
 	target *dagger.Directory,
-	// URL reference to the extension image to test [REPOSITORY[:TAG]]
-	// +optional
+// URL reference to the extension image to test [REPOSITORY[:TAG]]
+// +optional
 	extensionImage string,
 ) (*dagger.File, error) {
 	metadata, err := parseExtensionMetadata(ctx, target)

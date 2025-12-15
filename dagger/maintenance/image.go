@@ -50,6 +50,19 @@ func getImageAnnotations(imageRef string) (map[string]string, error) {
 // getDefaultExtensionImage returns the default extension image for a given extension,
 // resolved from the metadata.
 func getDefaultExtensionImage(metadata *extensionMetadata) (string, error) {
+	version, err := getDefaultExtensionVersion(metadata)
+	if err != nil {
+		return "", err
+	}
+	image := fmt.Sprintf("ghcr.io/cloudnative-pg/%s:%s-%d-%s",
+		metadata.ImageName, version, DefaultPgMajor, DefaultDistribution)
+
+	return image, nil
+}
+
+// getDefaultExtensionVersion returns the default extension version for a given extension,
+// resolved from the metadata.
+func getDefaultExtensionVersion(metadata *extensionMetadata) (string, error) {
 	packageVersion := metadata.Versions[DefaultDistribution][strconv.Itoa(DefaultPgMajor)]
 	if packageVersion == "" {
 		return "", fmt.Errorf("no package version found for distribution %q and version %d",
@@ -62,8 +75,5 @@ func getDefaultExtensionImage(metadata *extensionMetadata) (string, error) {
 		return "", fmt.Errorf("cannot extract extension version from %q", packageVersion)
 	}
 	version := matches[1]
-	image := fmt.Sprintf("ghcr.io/cloudnative-pg/%s:%s-%d-%s",
-		metadata.ImageName, version, DefaultPgMajor, DefaultDistribution)
-
-	return image, nil
+	return version, nil
 }

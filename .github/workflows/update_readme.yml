@@ -1,0 +1,83 @@
+name: Check Readme updates
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "**/metadata.hcl"
+
+jobs:
+  detect-changes:
+    if: github.event.pull_request.user.login == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has_changes: ${{ steps.set-matrix.outputs.has_changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Get changed metadata files
+        id: changed-files
+        uses: tj-actions/changed-files@v47
+        with:
+          files: "**/metadata.hcl"
+
+      - name: Create Matrix Output
+        id: set-matrix
+        run: |
+          FOLDERS=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n' | xargs -I {} dirname {} | sort -u | jq -R -s -c 'split("\n") | del(.[] | select(. == "" or . == "."))')
+          
+          echo "Folders detected: $FOLDERS"
+          
+          if [ "$FOLDERS" == "[]" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "matrix=$FOLDERS" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+  process-metadata:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        extension: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Update Readme for ${{ matrix.extension }}
+        uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
+        env:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.19.8
+        with:
+          version: ${{ env.DAGGER_VERSION }}
+          verb: call
+          module: ./dagger/maintenance/
+          args: update-readme --target ${{ matrix.extension }} export --path=.
+
+      - name: Diff
+        run: |
+          git status
+          git diff
+
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: 'docs: Update ${{ matrix.extension }} README.md'
+          file_pattern: '*/README.md'
+          # See https://git-scm.com/docs/git-commit#_options
+          commit_options: '--signoff'
