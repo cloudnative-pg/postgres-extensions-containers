@@ -49,6 +49,7 @@ jobs:
               - *shared
             postgis:
               - 'postgis/**'
+              - *shared
             timescaledb:
               - 'timescaledb/**'
               - *shared
