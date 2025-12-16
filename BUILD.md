@@ -1,9 +1,8 @@
 # Building Postgres Extensions Container Images for CloudNativePG
 
-This guide explains how to build Postgres extensions operand images for
-[CloudNativePG](https://cloudnative-pg.io) using
-[Docker Bake](https://docs.docker.com/build/bake/) together with a
-[GitHub Actions workflow](.github/workflows/bake.yml).
+This guide explains how to build Postgres extensions container images for
+[CloudNativePG](https://cloudnative-pg.io) locally, using
+[Docker Bake](https://docs.docker.com/build/bake/).
 
 ## Prerequisites
 
@@ -25,7 +24,7 @@ which primarily include:
 
 ### 1. Check prerequisites only
 
-To verify that Docker and Buildx are correctly installed and configured:
+To verify that all prerequisites are correctly installed and configured:
 
 ```bash
 task prereqs
@@ -42,7 +41,7 @@ task checks:all
 
 ### 3. Build all projects
 
-To check prerequisites and build all discovered projects:
+To build all discovered projects:
 
 ```bash
 task
@@ -76,8 +75,8 @@ task bake TARGET=pgvector PUSH=true
 
 ### 7. Dry run mode
 
-To see the commands that would be executed without running the actual `docker
-buildx bake` command, set the `DRY_RUN` flag:
+To see the commands that would be executed without running the actual
+`docker buildx bake` command, set the `DRY_RUN` flag:
 
 ```bash
 task DRY_RUN=true
