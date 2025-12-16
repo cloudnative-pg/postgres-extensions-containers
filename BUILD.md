@@ -5,10 +5,6 @@ This guide explains how to build Postgres extensions operand images for
 [Docker Bake](https://docs.docker.com/build/bake/) together with a
 [GitHub Actions workflow](.github/workflows/bake.yml).
 
-Although it is not necessary, we recommend you use
-[GNU Make](https://www.gnu.org/software/make/) to build the images locally as
-outlined below.
-
 ## Prerequisites
 
 Before you begin, ensure that you have met the following
