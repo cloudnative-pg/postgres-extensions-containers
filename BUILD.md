@@ -11,8 +11,9 @@ Before you begin, ensure that you have met the following
 [prerequisites](https://github.com/cloudnative-pg/postgres-containers/blob/main/BUILD.md#prerequisites),
 which primarily include:
 
-1. **Task:** required to run tasks defined in the `Taskfile`.
-2. **Dagger:** Must be installed and configured.
+
+1. **[Task](https://taskfile.dev/):** required to run tasks defined in the `Taskfile`.
+2. **[Dagger](https://dagger.io/):** Must be installed and configured.
 3. **Docker:** Must be installed and running.
 4. **Docker Command Line:** The `docker` command must be executable.
 5. **Docker Buildx:** The `docker buildx` plugin must be available.
