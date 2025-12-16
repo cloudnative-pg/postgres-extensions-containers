@@ -14,12 +14,6 @@ tasks:
     cmds:
       - task: bake:all
 
-  list-targets:
-    desc: List all available targets
-    silent: true
-    cmds:
-      - dagger call -sm ./dagger/maintenance/ get-targets
-
   prereqs:
     description: Ensure prerequisites are met
     run: once
@@ -100,6 +94,8 @@ tasks:
 
   update-os-libs:
     description: Update OS libs on the specified target
+    deps:
+      - prereqs
     prefix: 'update-os-libs-{{.TARGET}}'
     silent: true
     cmds:
@@ -110,7 +106,7 @@ tasks:
         - name: TARGET
 
   update-os-libs:all:
-    description: Update OS libs on for all the available targets
+    description: Update OS libs for all the available targets
     vars:
       TARGETS:
         sh: dagger call -sm ./dagger/maintenance/ get-oslibs-targets | tr -d '[]"' | tr ',' '\n'

@@ -74,7 +74,7 @@ func WithOSLibsFilter() ExtensionsOption {
 }
 
 // getExtensions retrieves a map of extensions from the source directory.
-// By default, all extensions are returned but filters can be applied.
+// By default, all extensions are returned, but filters can be applied.
 func getExtensions(
 	ctx context.Context,
 	source *dagger.Directory,
