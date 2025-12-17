@@ -34,11 +34,21 @@ func (m *Maintenance) UpdateOSLibs(
 		extDir = source.Filter(dagger.DirectoryFilterOpts{
 			Include: []string{path.Join(target, "**")},
 		})
+		hasMetadataFile, err := extDir.Exists(ctx, path.Join(target, metadataFile))
+		if err != nil {
+			return nil, err
+		}
+		if !hasMetadataFile {
+			return nil, fmt.Errorf("not a valid target, metadata.hcl file is missing. Target: %s", target)
+		}
 	}
 
 	targetExtensions, err := getExtensions(ctx, extDir, WithOSLibsFilter())
 	if err != nil {
 		return source, err
+	}
+	if len(targetExtensions) == 0 && target != "all" {
+		return nil, fmt.Errorf("the target %q does not require OS Libs update", target)
 	}
 
 	const systemLibsDir = "system-libs"
