@@ -1,0 +1,118 @@
+version: 3
+
+output: prefixed
+
+vars:
+  GREEN: \033[0;32m
+  BLUE: \033[0;34m
+  RED: \033[0;31m
+  NC: \033[0m
+
+tasks:
+  default:
+    desc: Build all targets (default)
+    cmds:
+      - task: bake:all
+
+  prereqs:
+    description: Ensure prerequisites are met
+    run: once
+    silent: true
+    cmds:
+      - echo -e "{{.BLUE}}Checking prerequisites...{{.NC}}"
+      - command -v dagger >/dev/null 2>&1 || { echo -e "{{.RED}}Dagger is not installed.{{.NC}}"; exit 1; }
+      - command -v docker >/dev/null 2>&1 || { echo -e "{{.RED}}Docker is not installed.{{.NC}}"; exit 1; }
+      - docker --version >/dev/null 2>&1 || { echo -e "{{.RED}}Cannot run docker command.{{.NC}}"; exit 1; }
+      - docker buildx version >/dev/null 2>&1 || { echo -e "{{.RED}}Docker Buildx not available.{{.NC}}"; exit 1; }
+      - docker context inspect >/dev/null 2>&1 || { echo -e "{{.RED}}Docker context not configured.{{.NC}}"; exit 1; }
+      - echo -e "{{.GREEN}}All prerequisites satisfied!{{.NC}}"
+
+  checks:
+    description: Run checks for the specified target
+    deps:
+      - prereqs
+    prefix: 'checks-{{.TARGET}}'
+    silent: true
+    preconditions:
+      - sh: test -f "{{.TARGET}}/metadata.hcl"
+        msg: 'Not a valid target, metadata.hcl file is missing. Target: {{.TARGET}}'
+    cmds:
+      - echo -e "{{.BLUE}}Checking target {{.TARGET}}...{{.NC}}"
+      - docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --check
+    requires:
+      vars:
+        - name: TARGET
+
+  checks:all:
+    description: Run checks for all the available targets
+    vars:
+      TARGETS:
+        sh: dagger call -sm ./dagger/maintenance/ get-targets | tr -d '[]"' | tr ',' '\n'
+    cmds:
+      - for:
+          var: TARGETS
+        vars:
+          TARGET: "{{.ITEM}}"
+        task: checks
+
+  bake:
+    description: Bake the specified target
+    deps:
+      - prereqs
+    prefix: 'bake-{{.TARGET}}'
+    silent: true
+    vars:
+      PUSH: '{{.PUSH | default "false"}}'
+      DRY_RUN: '{{.DRY_RUN | default "false"}}'
+    preconditions:
+      - sh: test -f "{{.TARGET}}/metadata.hcl"
+        msg: 'Not a valid target, metadata.hcl file is missing. Target: {{.TARGET}}'
+    cmds:
+      - echo -e "{{.BLUE}}Baking target {{.TARGET}} (push={{.PUSH}})...{{.NC}}"
+      - |
+        if [ "{{.DRY_RUN}}" = "true" ]; then
+          echo -e "{{.GREEN}}[DRY RUN] docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --push={{.PUSH}}{{.NC}}"
+        else
+          docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --push={{.PUSH}}
+        fi
+      - echo -e "{{.GREEN}}--- Successfully baked {{.TARGET}} ---{{.NC}}"
+    requires:
+      vars:
+        - name: TARGET
+
+  bake:all:
+    description: Bake all the available targets
+    vars:
+      TARGETS:
+        sh: dagger call -sm ./dagger/maintenance/ get-targets | tr -d '[]"' | tr ',' '\n'
+    cmds:
+      - for:
+          var: TARGETS
+        vars:
+          TARGET: "{{.ITEM}}"
+        task: bake
+
+  update-os-libs:
+    description: Update OS libs on the specified target
+    deps:
+      - prereqs
+    prefix: 'update-os-libs-{{.TARGET}}'
+    silent: true
+    cmds:
+      - echo -e "{{.BLUE}}Updating OS libs for {{.TARGET}}...{{.NC}}"
+      - dagger call -sm ./dagger/maintenance/ update-oslibs --source . --target {{.TARGET}} export --path .
+    requires:
+      vars:
+        - name: TARGET
+
+  update-os-libs:all:
+    description: Update OS libs for all the available targets
+    vars:
+      TARGETS:
+        sh: dagger call -sm ./dagger/maintenance/ get-oslibs-targets | tr -d '[]"' | tr ',' '\n'
+    cmds:
+      - for:
+          var: TARGETS
+        vars:
+          TARGET: "{{.ITEM}}"
+        task: update-os-libs

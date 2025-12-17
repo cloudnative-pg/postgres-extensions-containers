@@ -39,7 +39,7 @@ jobs:
           filters: |
             _shared: &shared
               - 'docker-bake.hcl'
-              - 'Makefile'
+              - 'Taskfile.yml'
               - 'kind-config.yaml'
               - 'test/**'
               - '.github/workflows/bake*.yml'
