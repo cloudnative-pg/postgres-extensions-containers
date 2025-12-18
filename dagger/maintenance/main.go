@@ -86,6 +86,44 @@ func (m *Maintenance) UpdateOSLibs(
 	}), nil
 }
 
+// Updates the container image in the readme for the specified extension(s)
+func (m *Maintenance) UpdateReadme(
+	ctx context.Context,
+	// The source directory containing the extension folders. Defaults to the current directory
+	// +ignore=["dagger", ".github"]
+	// +defaultPath="/"
+	source *dagger.Directory,
+	// The target extension to update the README. Defaults to "all".
+	// +default="all"
+	target string,
+) (*dagger.Directory, error) {
+	extDir := source
+	if target != "all" {
+		extDir = source.Filter(dagger.DirectoryFilterOpts{
+			Include: []string{path.Join(target, "**")},
+		})
+	}
+	targetExtensions, err := getExtensions(ctx, extDir, WithReadmeFilter())
+	if err != nil {
+		return source, err
+	}
+	includeDirs := make([]string, 0, len(targetExtensions))
+
+	for dir := range targetExtensions {
+		includeDirs = append(includeDirs, dir)
+		file, outErr := updateReadme(ctx, source.Directory(dir))
+		if outErr != nil {
+			return source, outErr
+		}
+		source = source.WithFile(dir, file)
+
+	}
+
+	return source.Filter(dagger.DirectoryFilterOpts{
+		Include: includeDirs,
+	}), nil
+}
+
 // Retrieves a list in JSON format of the extensions requiring OS libs updates
 func (m *Maintenance) GetOSLibsTargets(
 	ctx context.Context,
