@@ -49,6 +49,7 @@ spec:
     name: cluster-pgvector
   extensions:
   - name: vector
+    version: '0.8.1'
 ```
 
 ### 3. Verify installation

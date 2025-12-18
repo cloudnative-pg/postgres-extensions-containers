@@ -9,3 +9,4 @@ spec:
     name: ($values.name)
   extensions:
   - name: ($values.sql_name)
+    version: ($values.version)
