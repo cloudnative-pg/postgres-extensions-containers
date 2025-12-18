@@ -227,6 +227,26 @@ tasks:
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
         with-exec --args="wait","--for=condition=Available","--timeout=2m","-n","cnpg-system","deployments","cnpg-controller-manager" --use-entrypoint sync
 
+  e2e:export-kubeconfig:
+    description: Export Kind cluster kubeconfig
+    deps:
+      - e2e:start-dagger-engine
+      - e2e:kind-setup
+    vars:
+      DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
+      KUBECONFIG_PATH: '{{.KUBECONFIG_PATH| default "~/.kube/config"}}'
+      DOCKER_SOCKET:
+        sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
+    env:
+      _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
+    cmds:
+      - |
+        CONFIG=$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} \
+          --socket {{ .DOCKER_SOCKET }} container \
+          with-exec --args "kind","get","kubeconfig","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
+        mkdir -p $(dirname {{ .KUBECONFIG_PATH }})
+        echo "${CONFIG}" > {{ .KUBECONFIG_PATH }}
+
   e2e:env-setup:
     description: Setup E2E environment
     silent: true
