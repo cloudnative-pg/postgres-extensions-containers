@@ -6,30 +6,38 @@ on:
     paths:
       - "**/metadata.hcl"
 
+defaults:
+  run:
+    shell: 'bash -Eeuo pipefail -x {0}'
+
+permissions: {}
+
 jobs:
   detect-changes:
     if: github.event.pull_request.user.login == 'renovate[bot]'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       has_changes: ${{ steps.set-matrix.outputs.has_changes }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Get changed metadata files
         id: changed-files
-        uses: tj-actions/changed-files@v47
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
         with:
           files: "**/metadata.hcl"
 
       - name: Create Matrix Output
         id: set-matrix
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          FOLDERS=$(echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n' | xargs -I {} dirname {} | sort -u | jq -R -s -c 'split("\n") | del(.[] | select(. == "" or . == "."))')
+          FOLDERS=$(echo "$ALL_CHANGED_FILES" | tr ' ' '\n' | xargs -I {} dirname {} | sort -u | jq -R -s -c 'split("\n") | del(.[] | select(. == "" or . == "."))')
           
           echo "Folders detected: $FOLDERS"
           
@@ -43,10 +51,10 @@ jobs:
   process-metadata:
     needs: detect-changes
     if: needs.detect-changes.outputs.has_changes == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
-      # added or changed files to the repository.
+      # added or changed files to the pull request.
       contents: write
     strategy:
       fail-fast: false
@@ -54,7 +62,7 @@ jobs:
         extension: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
@@ -75,7 +83,7 @@ jobs:
           git status
           git diff
 
-      - uses: stefanzweifel/git-auto-commit-action@v7
+      - uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7
         with:
           commit_message: 'docs: Update ${{ matrix.extension }} README.md'
           file_pattern: '*/README.md'
