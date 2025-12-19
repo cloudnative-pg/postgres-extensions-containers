@@ -44,7 +44,7 @@ jobs:
           platforms: 'linux/arm64'
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Build and push
         uses: docker/bake-action@5be5f02ff8819ecd3092ea6b2e6261c31774f2b4 # v6
@@ -121,7 +121,7 @@ jobs:
         cnpg: ["main", "1.27"]
     env:
       # renovate: datasource=github-tags depName=kubernetes-sigs/kind versioning=semver
-      KIND_VERSION: "v0.30.0"
+      KIND_VERSION: "v0.31.0"
       # renovate: datasource=docker depName=kindest/node
       KIND_NODE_VERSION: "v1.34.0"
     steps:
@@ -153,7 +153,7 @@ jobs:
         uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.7
+          DAGGER_VERSION: 0.19.8
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
