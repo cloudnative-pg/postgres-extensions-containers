@@ -25,7 +25,7 @@ tasks:
       - task: bake:all
 
   prereqs:
-    description: Ensure prerequisites are met
+    desc: Ensure prerequisites are met
     run: once
     silent: true
     cmds:
@@ -38,7 +38,7 @@ tasks:
       - echo -e "{{.GREEN}}All prerequisites satisfied!{{.NC}}"
 
   checks:
-    description: Run checks for the specified target
+    desc: Run checks for the specified target
     deps:
       - prereqs
     prefix: 'checks-{{.TARGET}}'
@@ -54,7 +54,7 @@ tasks:
         - name: TARGET
 
   checks:all:
-    description: Run checks for all the available targets
+    desc: Run checks for all the available targets
     vars:
       TARGETS:
         sh: dagger call -sm ./dagger/maintenance/ get-targets | tr -d '[]"' | tr ',' '\n'
@@ -66,7 +66,7 @@ tasks:
         task: checks
 
   bake:
-    description: Bake the specified target
+    desc: Bake the specified target
     deps:
       - prereqs
     prefix: 'bake-{{.TARGET}}'
@@ -91,7 +91,7 @@ tasks:
         - name: TARGET
 
   bake:all:
-    description: Bake all the available targets
+    desc: Bake all the available targets
     vars:
       TARGETS:
         sh: dagger call -sm ./dagger/maintenance/ get-targets | tr -d '[]"' | tr ',' '\n'
@@ -103,7 +103,7 @@ tasks:
         task: bake
 
   update-os-libs:
-    description: Update OS libs on the specified target
+    desc: Update OS libs on the specified target
     deps:
       - prereqs
     prefix: 'update-os-libs-{{.TARGET}}'
@@ -116,7 +116,7 @@ tasks:
         - name: TARGET
 
   update-os-libs:all:
-    description: Update OS libs for all the available targets
+    desc: Update OS libs for all the available targets
     vars:
       TARGETS:
         sh: dagger call -sm ./dagger/maintenance/ get-oslibs-targets | tr -d '[]"' | tr ',' '\n'
@@ -128,17 +128,19 @@ tasks:
         task: update-os-libs
 
   e2e:create-docker-network:
-    description: Create Docker network to connect all the services, such as the Registry, Kind nodes, Chainsaw, etc.
+    desc: Create Docker network to connect all the services, such as the Registry, Kind nodes, Chainsaw, etc.
     run: once
+    internal: true
     cmds:
       - docker network create {{ .E2E_NETWORK }}
     status:
       - docker network inspect {{ .E2E_NETWORK }}
 
   e2e:start-container-registry:
-    description: Start a local Docker registry to push the built images for E2E tests
+    desc: Start a local Docker registry to push the built images for E2E tests
     deps:
       - e2e:create-docker-network
+    internal: true
     run: once
     vars:
       REGISTRY_VERSION: 2
@@ -150,9 +152,10 @@ tasks:
       - test "$(docker inspect -f {{`'{{json .State.Running}}'`}} {{ .REGISTRY_NAME }})" == "true"
 
   e2e:start-dagger-engine:
-    description: Start a custom Dagger engine so we can connect it to the E2E Docker network
+    desc: Start a custom Dagger engine so we can connect it to the E2E Docker network
     deps:
       - e2e:create-docker-network
+    internal: true
     run: once
     vars:
       # TODO: renovate
@@ -165,10 +168,11 @@ tasks:
       - test "$(docker inspect -f {{`'{{json .State.Running}}'`}} {{ .DAGGER_ENGINE_NAME }})" == "true"
 
   e2e:kind-setup:
-    description: Setup Kind cluster for E2E tests
+    desc: Setup Kind cluster for E2E tests
     deps:
       - e2e:start-container-registry
       - e2e:start-dagger-engine
+    internal: true
     run: once
     vars:
       #TODO: renovate
@@ -195,10 +199,11 @@ tasks:
         --socket {{ .DOCKER_SOCKET }} cluster --name {{ .KIND_CLUSTER_NAME }} exist)" == "true"
 
   e2e:cnpg-install:
-    description: Install CloudNativePG operator in the Kind cluster
+    desc: Install CloudNativePG operator in the Kind cluster
     deps:
       - e2e:start-dagger-engine
       - e2e:kind-setup
+    internal: true
     vars:
       # TODO: renovate
       DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
@@ -219,20 +224,25 @@ tasks:
         --socket {{ .DOCKER_SOCKET }} container \
         with-exec --args "kind","get","kubeconfig","--internal","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
         
-        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} with-new-file --contents "${kubeconfig}" --path /root/.kube/config --expand \
+        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }}
+        with-new-file --contents "${kubeconfig}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
         with-exec --args="apply","--server-side","-f","{{ .CNPG_MANIFEST }}" --use-entrypoint sync
 
-        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} with-new-file --contents "${kubeconfig}" --path /root/.kube/config --expand \
+        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }}
+        with-new-file --contents "${kubeconfig}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
-        with-exec --args="wait","--for=condition=Available","--timeout=2m","-n","cnpg-system","deployments","cnpg-controller-manager" --use-entrypoint sync
+        with-exec
+        --args="wait","--for=condition=Available","--timeout=2m","-n","cnpg-system","deployments","cnpg-controller-manager"
+        --use-entrypoint sync
 
   e2e:export-kubeconfig:
-    description: Export Kind cluster kubeconfig
+    desc: Export Kind cluster kubeconfig at path defined by KUBECONFIG_PATH var (default ~/.kube/config)
     deps:
       - e2e:start-dagger-engine
       - e2e:kind-setup
     vars:
+      # TODO: renovate
       DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
       KUBECONFIG_PATH: '{{.KUBECONFIG_PATH| default "~/.kube/config"}}'
       DOCKER_SOCKET:
@@ -248,7 +258,7 @@ tasks:
         echo "${CONFIG}" > {{ .KUBECONFIG_PATH }}
 
   e2e:env-setup:
-    description: Setup E2E environment
+    desc: Setup E2E environment
     silent: true
     deps:
       - e2e:create-docker-network
@@ -260,7 +270,7 @@ tasks:
       - echo -e "{{.GREEN}}--- E2E environment setup complete ---{{.NC}}"
 
   e2e:cleanup:
-    description: Cleanup E2E resources
+    desc: Cleanup E2E resources
     deps:
       - e2e:start-dagger-engine
     vars:
