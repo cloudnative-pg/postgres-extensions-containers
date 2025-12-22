@@ -167,7 +167,7 @@ tasks:
     status:
       - test "$(docker inspect -f {{`'{{json .State.Running}}'`}} {{ .DAGGER_ENGINE_NAME }})" == "true"
 
-  e2e:kind-setup:
+  e2e:setup-kind:
     desc: Setup Kind cluster for E2E tests
     deps:
       - e2e:start-container-registry
@@ -198,11 +198,11 @@ tasks:
         test "$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }}
         --socket {{ .DOCKER_SOCKET }} cluster --name {{ .KIND_CLUSTER_NAME }} exist)" == "true"
 
-  e2e:cnpg-install:
+  e2e:install-cnpg:
     desc: Install CloudNativePG operator in the Kind cluster
     deps:
       - e2e:start-dagger-engine
-      - e2e:kind-setup
+      - e2e:setup-kind
     internal: true
     vars:
       # TODO: renovate
@@ -224,23 +224,23 @@ tasks:
         --socket {{ .DOCKER_SOCKET }} container \
         with-exec --args "kind","get","kubeconfig","--internal","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
         
-        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }}
+        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} \
         with-new-file --contents "${kubeconfig}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
         with-exec --args="apply","--server-side","-f","{{ .CNPG_MANIFEST }}" --use-entrypoint sync
 
-        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }}
+        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} \
         with-new-file --contents "${kubeconfig}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
-        with-exec
-        --args="wait","--for=condition=Available","--timeout=2m","-n","cnpg-system","deployments","cnpg-controller-manager"
+        with-exec \
+        --args="wait","--for=condition=Available","--timeout=2m","-n","cnpg-system","deployments","cnpg-controller-manager" \
         --use-entrypoint sync
 
   e2e:export-kubeconfig:
     desc: Export Kind cluster kubeconfig at path defined by KUBECONFIG_PATH var (default ~/.kube/config)
     deps:
       - e2e:start-dagger-engine
-      - e2e:kind-setup
+      - e2e:setup-kind
     vars:
       # TODO: renovate
       DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
@@ -257,15 +257,15 @@ tasks:
         mkdir -p $(dirname {{ .KUBECONFIG_PATH }})
         echo "${CONFIG}" > {{ .KUBECONFIG_PATH }}
 
-  e2e:env-setup:
+  e2e:setup-env:
     desc: Setup E2E environment
     silent: true
     deps:
       - e2e:create-docker-network
       - e2e:start-container-registry
       - e2e:start-dagger-engine
-      - e2e:kind-setup
-      - e2e:cnpg-install
+      - e2e:setup-kind
+      - e2e:install-cnpg
     cmds:
       - echo -e "{{.GREEN}}--- E2E environment setup complete ---{{.NC}}"
 
