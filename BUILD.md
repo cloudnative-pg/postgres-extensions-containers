@@ -83,3 +83,33 @@ task DRY_RUN=true
 # or
 task bake TARGET=pgvector DRY_RUN=true
 ```
+
+## Testing locally
+
+Local testing can be performed by using a local Docker container registry and a Kind cluster with CNPG installed.
+The Taskfile includes utilities to set up and tear down such an environment.
+
+### Create a local test environment
+
+The `e2e:setup-env` task takes care of setting up a Kind cluster with a local Docker container registry connected to the same
+Docker network and installs CloudNativePG by default.
+
+```bash
+task e2e:setup-env
+```
+
+The container registry will be exposed locally at `localhost:5000`.
+
+The Kubeconfig to connect to the Kind cluster can be retrieved with:
+
+```bash
+task e2e:export-kubeconfig KUBECONFIG_PATH=<path-to-export-kubeconfig>
+```
+
+### Tear down the local test environment
+
+To clean up all the resources created by the `e2e:setup-env` task, run:
+
+```bash
+task e2e:cleanup
+```
