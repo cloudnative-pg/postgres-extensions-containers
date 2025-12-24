@@ -10,6 +10,7 @@ import (
 	"maps"
 	"path"
 	"slices"
+	"time"
 
 	"go.yaml.in/yaml/v3"
 
@@ -188,4 +189,87 @@ func (m *Maintenance) GenerateTestingValues(
 	result := target.WithNewFile("values.yaml", string(valuesYaml))
 
 	return result.File("values.yaml"), nil
+}
+
+// Tests the specified extension using Chainsaw
+func (m *Maintenance) Test(
+	ctx context.Context,
+	// The source directory containing the extension folders. Defaults to the current directory
+	// +ignore=["dagger", ".github"]
+	// +defaultPath="/"
+	source *dagger.Directory,
+	// The target extension to test
+	// +default="all"
+	target string,
+	// Container image to use to run chainsaw
+	// renovate image: renovate image: datasource=docker depName=chainsaw lookupName=ghcr.io/kyverno/chainsaw versioning=docker
+	// +default="ghcr.io/kyverno/chainsaw:v0.2.14"
+	chainsawImage string,
+	// Kubeconfig to connect to the target K8s
+	// +required
+	kubeconfig *dagger.File,
+) error {
+	extDir := source
+	if target != "all" {
+		extDir = source.Filter(dagger.DirectoryFilterOpts{
+			Include: []string{path.Join(target, "**"), "test"},
+		})
+		hasMetadataFile, err := extDir.Exists(ctx, path.Join(target, metadataFile))
+		if err != nil {
+			return err
+		}
+		if !hasMetadataFile {
+			return fmt.Errorf("not a valid target, metadata.hcl file is missing. Target: %s", target)
+		}
+	}
+
+	targetExtensions, err := extensionsDirectories(ctx, extDir)
+	if err != nil {
+		return err
+	}
+
+	for _, targetExtension := range targetExtensions {
+		extName, err := targetExtension.Name(ctx)
+		if err != nil {
+			return err
+		}
+
+		ctr := dag.Container().From(chainsawImage).
+			WithWorkdir("e2e").
+			WithEnvVariable("CACHEBUSTER", time.Now().String()).
+			WithDirectory("test", extDir.Directory("test")).
+			WithDirectory(extName, targetExtension).
+			WithFile("/etc/kubeconfig/config", kubeconfig).
+			WithEnvVariable("KUBECONFIG", "/etc/kubeconfig/config")
+
+		_, err = ctr.WithExec(
+			[]string{"test", "./test", "--values", path.Join(extName, "values.yaml")},
+			dagger.ContainerWithExecOpts{
+				UseEntrypoint: true,
+			}).
+			Sync(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		hasIndividualTests, err := targetExtension.Exists(ctx, "test")
+		if err != nil {
+			return err
+		}
+		if !hasIndividualTests {
+			continue
+		}
+		_, err = ctr.WithExec(
+			[]string{"test", path.Join(extName, "test"), "--values", path.Join(extName, "values.yaml")},
+			dagger.ContainerWithExecOpts{
+				UseEntrypoint: true,
+			}).
+			Sync(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
