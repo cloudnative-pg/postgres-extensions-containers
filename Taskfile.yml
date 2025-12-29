@@ -128,6 +128,22 @@ tasks:
           TARGET: "{{.ITEM}}"
         task: update-os-libs
 
+  generate-values:
+    desc: Generate Chainsaw testing values for the specified target
+    deps:
+      - prereqs
+    prefix: 'generate-values-{{.TARGET}}'
+    vars:
+        EXTENSION_IMAGE: '{{ .EXTENSION_IMAGE| default "" }}'
+    cmds:
+      - echo -e "{{.BLUE}}Generating values for target {{.TARGET}}...{{.NC}}"
+      - >
+        dagger call -sm ./dagger/maintenance/ generate-testing-values
+        --target {{ .TARGET }} --extension-image="{{ .EXTENSION_IMAGE }}" export --path {{.TARGET}}/values.yaml
+    requires:
+      vars:
+        - name: TARGET
+
   e2e:create-docker-network:
     desc: Create Docker network to connect all the services, such as the Registry, Kind nodes, Chainsaw, etc.
     run: once
@@ -275,6 +291,35 @@ tasks:
       - e2e:install-cnpg
     cmds:
       - echo -e "{{.GREEN}}--- E2E environment setup complete ---{{.NC}}"
+
+  e2e:test:
+    desc: Test target extension using Chainsaw
+    deps:
+      - e2e:start-dagger-engine
+    prefix: 'e2e:test-{{.TARGET}}'
+    silent: true
+    vars:
+      KUBECONFIG_PATH: '{{.KUBECONFIG_PATH| default "~/.kube/config"}}'
+    env:
+      _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
+    cmds:
+      - echo -e "{{.BLUE}}Testing {{.TARGET}}...{{.NC}}"
+      - dagger call -sm ./dagger/maintenance/ test --source . --target {{.TARGET}} --kubeconfig {{ .KUBECONFIG_PATH }}
+    requires:
+      vars:
+        - name: TARGET
+
+  e2e:test:all:
+    desc: Test all the available targets using Chainsaw
+    vars:
+      TARGETS:
+        sh: dagger call -sm ./dagger/maintenance/ get-targets | tr -d '[]"' | tr ',' '\n'
+    cmds:
+      - for:
+          var: TARGETS
+        vars:
+          TARGET: "{{.ITEM}}"
+        task: e2e:test
 
   e2e:cleanup:
     desc: Cleanup E2E resources
