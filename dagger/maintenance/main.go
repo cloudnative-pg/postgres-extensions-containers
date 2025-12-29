@@ -202,7 +202,7 @@ func (m *Maintenance) Test(
 	// +default="all"
 	target string,
 	// Container image to use to run chainsaw
-	// renovate image: renovate image: datasource=docker depName=chainsaw lookupName=ghcr.io/kyverno/chainsaw versioning=docker
+	// renovate: datasource=docker depName=kyverno/chainsaw packageName=ghcr.io/kyverno/chainsaw versioning=docker
 	// +default="ghcr.io/kyverno/chainsaw:v0.2.14"
 	chainsawImage string,
 	// Kubeconfig to connect to the target K8s
