@@ -228,10 +228,20 @@ func (m *Maintenance) Test(
 		return err
 	}
 
+	const valuesFile = "values.yaml"
+
 	for _, targetExtension := range targetExtensions {
 		extName, err := targetExtension.Name(ctx)
 		if err != nil {
 			return err
+		}
+
+		hasValues, err := targetExtension.Exists(ctx, valuesFile)
+		if err != nil {
+			return err
+		}
+		if !hasValues {
+			return fmt.Errorf("cannot execute tests for extension %q, values.yaml file is missing", target)
 		}
 
 		ctr := dag.Container().From(chainsawImage).
@@ -243,7 +253,7 @@ func (m *Maintenance) Test(
 			WithEnvVariable("KUBECONFIG", "/etc/kubeconfig/config")
 
 		_, err = ctr.WithExec(
-			[]string{"test", "./test", "--values", path.Join(extName, "values.yaml")},
+			[]string{"test", "./test", "--values", path.Join(extName, valuesFile)},
 			dagger.ContainerWithExecOpts{
 				UseEntrypoint: true,
 			}).
@@ -261,7 +271,7 @@ func (m *Maintenance) Test(
 			continue
 		}
 		_, err = ctr.WithExec(
-			[]string{"test", path.Join(extName, "test"), "--values", path.Join(extName, "values.yaml")},
+			[]string{"test", path.Join(extName, "test"), "--values", path.Join(extName, valuesFile)},
 			dagger.ContainerWithExecOpts{
 				UseEntrypoint: true,
 			}).
