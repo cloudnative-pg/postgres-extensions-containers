@@ -218,22 +218,31 @@ tasks:
           fi
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
+      KUBECONFIG:
+        sh: >
+          dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }}
+          --socket {{ .DOCKER_SOCKET }} container
+          with-exec --args "kind","get","kubeconfig","--internal","--name","{{ .KIND_CLUSTER_NAME }}" stdout
     cmds:
       - |
-        kubeconfig=$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} \
-        --socket {{ .DOCKER_SOCKET }} container \
-        with-exec --args "kind","get","kubeconfig","--internal","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
-        
         dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} \
-        with-new-file --contents "${kubeconfig}" --path /root/.kube/config --expand \
+        with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
         with-exec --args="apply","--server-side","-f","{{ .CNPG_MANIFEST }}" --use-entrypoint sync
 
         dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} \
-        with-new-file --contents "${kubeconfig}" --path /root/.kube/config --expand \
+        with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
         with-exec \
         --args="wait","--for=condition=Available","--timeout=2m","-n","cnpg-system","deployments","cnpg-controller-manager" \
+        --use-entrypoint sync
+    status:
+      - >
+        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }}
+        with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand
+        with-env-variable --name=CACHEBUSTER --value="$(date)"
+        with-exec
+        --args="get","--namespace=cnpg-system","deployments.apps","cnpg-controller-manager"
         --use-entrypoint sync
 
   e2e:export-kubeconfig:
