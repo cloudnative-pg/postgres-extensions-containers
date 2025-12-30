@@ -61,6 +61,7 @@ func updateOSLibsOnTarget(
 
 type extensionsOptions struct {
 	filterOSLibs bool
+	filterReadme bool
 }
 
 // ExtensionsOption is a functional option for configuring extension retrieval
@@ -70,6 +71,13 @@ type ExtensionsOption func(*extensionsOptions)
 func WithOSLibsFilter() ExtensionsOption {
 	return func(opts *extensionsOptions) {
 		opts.filterOSLibs = true
+	}
+}
+
+// WithReadmeFilter returns only extensions that a README files
+func WithReadmeFilter() ExtensionsOption {
+	return func(opts *extensionsOptions) {
+		opts.filterReadme = true
 	}
 }
 
@@ -104,6 +112,12 @@ func getExtensions(
 		dirName, err := dir.Name(ctx)
 		if err != nil {
 			return nil, err
+		}
+		if options.filterReadme {
+			exists, existsErr := dir.Exists(ctx, readmeFilename)
+			if existsErr != nil || !exists {
+				continue
+			}
 		}
 		extensions[path.Dir(dirName)] = metadata.Name
 	}
