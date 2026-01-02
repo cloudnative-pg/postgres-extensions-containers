@@ -1,8 +1,10 @@
-# TimescaleDB with CloudNativePG
+# TimescaleDB (Apache 2.0 Edition) with CloudNativePG
 
 [TimescaleDB](https://github.com/timescale/timescaledb) is the leading open-source time-series database, built on PostgreSQL. It enables fast analytics, efficient storage, and powerful querying for time-series workloads.
 
-This image provides a convenient way to deploy and manage `TimescaleDB` with
+**Note**: This image contains only the Apache 2.0 licensed components of TimescaleDB to ensure CNCF licensing compliance. Advanced features requiring the Timescale License (TSL) are not included.
+
+This image provides a convenient way to deploy and manage the open-source core of `TimescaleDB` with
 [CloudNativePG](https://cloudnative-pg.io/).
 
 ## Usage
