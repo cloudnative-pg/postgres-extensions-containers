@@ -8,12 +8,12 @@ metadata = {
   ld_library_path = []
   versions = {
     bookworm = {
-      // renovate: datasource=postgresql depName=timescaledb-2-postgresql-18 versioning=deb
-      "18" = "2.23.1~debian12-1800"
+      // renovate: datasource=postgresql depName=timescaledb-2-oss-postgresql-18 versioning=deb
+      "18" = "2.24.0~debian12-1801"
     }
     trixie = {
-      // renovate: datasource=postgresql depName=timescaledb-2-postgresql-18 versioning=deb
-      "18" = "2.23.1~debian13-1800"
+      // renovate: datasource=postgresql depName=timescaledb-2-oss-postgresql-18 versioning=deb
+      "18" = "2.24.0~debian13-1801"
     }
   }
 }
