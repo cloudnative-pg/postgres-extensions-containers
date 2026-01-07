@@ -11,6 +11,7 @@
   ],
   "customManagers": [
     {
+      "description": "updates the deb package versions in the metadata.hcl files",
       "customType": "regex",
       "managerFilePatterns": [
         "**/*.hcl"
@@ -20,6 +21,20 @@
       ],
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
       "datasourceTemplate": "deb"
+    },
+    {
+      "description": "updates the container image versions in the README.md files",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "**/README.md"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*reference: ghcr.io\\/cloudnative-pg\\/[A-Za-z0-9_-]+:(?<currentValue>([0-9]\\.?)+)",
+        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*version: '(?<currentValue>([0-9]\\.?)+)'"
+      ],
+      "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
+      "datasourceTemplate": "deb",
+      "extractVersionTemplate": "^(?<version>[^-+]+)"
     }
   ],
   "packageRules": [

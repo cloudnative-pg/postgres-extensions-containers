@@ -28,6 +28,7 @@ spec:
     extensions:
     - name: postgis
       image:
+        # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
         reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.1-18-trixie
       ld_library_path:
       - system
@@ -50,6 +51,7 @@ spec:
     name: cluster-postgis
   extensions:
   - name: postgis
+    # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
     version: '3.6.1'
   - name: postgis_raster
   - name: postgis_sfcgal
