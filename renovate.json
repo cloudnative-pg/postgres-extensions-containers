@@ -29,7 +29,7 @@
         "**/README.md"
       ],
       "matchStrings": [
-        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*reference: ghcr.io\\/cloudnative-pg\\/[A-Za-z0-9_-]+.*:(?<currentValue>([0-9]\\.?)+)",
+        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*reference: ghcr.io\\/cloudnative-pg\\/[A-Za-z0-9_-]+:(?<currentValue>([0-9]\\.?)+)",
         "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*version: '(?<currentValue>([0-9]\\.?)+)'"
       ],
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
