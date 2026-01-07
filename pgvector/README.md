@@ -29,6 +29,7 @@ spec:
     extensions:
     - name: pgvector
       image:
+        # renovate: suite=trixie-pgdg depName=postgresql-18-pgvector
         reference: ghcr.io/cloudnative-pg/pgvector:0.8.1-18-trixie
 ```
 
@@ -49,6 +50,7 @@ spec:
     name: cluster-pgvector
   extensions:
   - name: vector
+    # renovate: suite=trixie-pgdg depName=postgresql-18-pgvector
     version: '0.8.1'
 ```
 
