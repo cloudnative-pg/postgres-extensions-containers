@@ -12,10 +12,11 @@ vars:
   DAGGER_ENGINE_NAME: dagger-engine-pg-extensions
   REGISTRY_NAME: registry.pg-extensions
   REGISTRY_HOST_PORT: 5000
-  # TODO: renovate
-  K8S_VERSION: 1.34.2
-  # TODO: renovate ?
-  CNPG_RELEASE: 1.28
+  # renovate: datasource=git-refs depName=kind lookupName=https://github.com/aweris/daggerverse currentValue=main
+  DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
+  # renovate: datasource=docker depName=kindest/node versioning=docker
+  KIND_NODE_VERSION: v1.34.2@sha256:745f8ed46d8e99517774768227fd1a0af34a6bf395aef9c7ed98fbce0e263918
+  K8S_VERSION: '{{ regexReplaceAll "^v([0-9.]+).*" .KIND_NODE_VERSION "$1" }}'
   KIND_CLUSTER_NAME: pg-extensions-{{ .K8S_VERSION }}
 
 tasks:
@@ -143,7 +144,8 @@ tasks:
     internal: true
     run: once
     vars:
-      REGISTRY_VERSION: 2
+      # renovate: datasource=docker depName=registry versioning=docker
+      REGISTRY_VERSION: 3.0.0@sha256:cd92709b4191c5779cd7215ccd695db6c54652e7a62843197e367427efb84d0e
     cmds:
       - >
         docker run -d --name {{ .REGISTRY_NAME }} --rm -p {{ .REGISTRY_HOST_PORT }}:5000
@@ -158,7 +160,7 @@ tasks:
     internal: true
     run: once
     vars:
-      # TODO: renovate
+      # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
       DAGGER_ENGINE_VERSION: v0.19.8
     cmds:
       - >
@@ -175,8 +177,6 @@ tasks:
     internal: true
     run: once
     vars:
-      #TODO: renovate
-      DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
       REGISTRY_DIR: /etc/containerd/certs.d/localhost:{{ .REGISTRY_HOST_PORT }}
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
@@ -187,7 +187,7 @@ tasks:
         dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} --socket {{ .DOCKER_SOCKET }}
         container with-env-variable --name=KIND_EXPERIMENTAL_DOCKER_NETWORK --value={{ .E2E_NETWORK }} with-env-variable --name=CACHE_BUSTER --value="$(date)"
         with-file --source=kind-config.yaml --path=/root/kind-config.yaml
-        with-exec --args="kind","create","cluster","--name","{{ .KIND_CLUSTER_NAME }}","--image","kindest/node:v{{ .K8S_VERSION }}","--config","/root/kind-config.yaml" sync
+        with-exec --args="kind","create","cluster","--name","{{ .KIND_CLUSTER_NAME }}","--image","kindest/node:{{ .KIND_NODE_VERSION }}","--config","/root/kind-config.yaml" sync
       - docker exec "{{ .KIND_CLUSTER_NAME }}-control-plane" mkdir -p "{{ .REGISTRY_DIR }}"
       - |
         cat <<EOF | docker exec -i "{{ .KIND_CLUSTER_NAME }}-control-plane" cp /dev/stdin "{{ .REGISTRY_DIR }}/hosts.toml"
@@ -204,8 +204,10 @@ tasks:
       - e2e:setup-kind
     internal: true
     vars:
-      # TODO: renovate
-      DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
+      # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver extractVersion=^v(?<version>\d+\.\d+)\.\d+$
+      CNPG_RELEASE: 1.28
+      # renovate: datasource=docker depName=alpine/kubectl versioning=docker
+      KUBECTL_VERSION: 1.34.2@sha256:96a7d245a74d461925a56e3024d2f027c2a7a822b3e9e0117ec558db42de9c35
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
       CNPG_MANIFEST:
@@ -222,13 +224,13 @@ tasks:
         KUBECONFIG=$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} \
           --socket {{ .DOCKER_SOCKET }} container \
           with-exec --args "kind","get","kubeconfig","--internal","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
-        
-        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} \
+
+        dagger core container from --address=alpine/kubectl:{{ .KUBECTL_VERSION }} \
         with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
         with-exec --args="apply","--server-side","-f","{{ .CNPG_MANIFEST }}" --use-entrypoint sync
 
-        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} \
+        dagger core container from --address=alpine/kubectl:{{ .KUBECTL_VERSION }} \
         with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
         with-exec \
@@ -239,7 +241,7 @@ tasks:
         KUBECONFIG=$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} \
           --socket {{ .DOCKER_SOCKET }} container \
           with-exec --args "kind","get","kubeconfig","--internal","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
-        dagger core container from --address=alpine/kubectl:{{ .K8S_VERSION }} \
+        dagger core container from --address=alpine/kubectl:{{ .KUBECTL_VERSION }} \
         with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand \
         with-env-variable --name=CACHEBUSTER --value="$(date)" \
         with-exec \
@@ -251,8 +253,6 @@ tasks:
     deps:
       - e2e:setup-kind
     vars:
-      # TODO: renovate
-      DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
       KUBECONFIG_PATH: '{{.KUBECONFIG_PATH| default "~/.kube/config"}}'
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
@@ -281,8 +281,6 @@ tasks:
     deps:
       - e2e:start-dagger-engine
     vars:
-      # TODO: renovate
-      DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
     env:

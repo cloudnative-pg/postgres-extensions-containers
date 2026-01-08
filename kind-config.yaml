@@ -4,5 +4,5 @@ featureGates:
   ImageVolume: true
 containerdConfigPatches:
   - |-
-    [plugins."io.containerd.grpc.v1.cri".registry]
+    [plugins."io.containerd.cri.v1.images".registry]
       config_path = "/etc/containerd/certs.d"
