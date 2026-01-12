@@ -1,0 +1,42 @@
+{{ $packageName := replaceAll .Package "%version%" "${PG_MAJOR}" }}
+ARG BASE=ghcr.io/cloudnative-pg/postgresql:{{ .DefaultVersion }}-minimal-{{ .DefaultDistro }}
+FROM $BASE AS builder
+
+ARG PG_MAJOR
+ARG EXT_VERSION
+
+USER 0
+
+# Install extension
+
+# RUN apt-get update && \
+# 	apt-get install -y --no-install-recommends "{{ $packageName }}=${EXT_VERSION}"
+
+FROM scratch
+ARG PG_MAJOR
+
+# Licenses
+# Include license files is essential for legal compliance and transparency.
+# It ensures proper attribution to original authors, fulfills open source license
+# requirements, and enables automated compliance scanning tools to verify licensing.
+
+# COPY --from=builder /usr/share/doc/{{ $packageName }}/copyright /licenses/{{ $packageName }}/
+
+# Libraries
+# Include the extension's shared objects and related dependencies under the /lib directory.
+# CNPG will load these libraries at runtime by configuring the dynamic linker path (LD_LIBRARY_PATH) and
+# the PostgreSQL GUC "dynamic_library_path" based on defaults and Cluster configuration.
+# For more details, see: https://cloudnative-pg.io/docs/1.28/imagevolume_extensions#how-it-works
+
+# COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/{{ .Name }}* /lib/
+# COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
+
+# Share
+# Include the extension's SQL scripts and control files under the /share/extension directory.
+# CNPG will configure PostgreSQL to include this path via the "extension_control_path" GUC to
+# seamlessly find and manage the current extension.
+# For more details, see: https://cloudnative-pg.io/docs/1.28/imagevolume_extensions#how-it-works
+
+# COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/{{ .Name }}* /share/extension/
+
+USER 65532:65532

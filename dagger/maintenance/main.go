@@ -4,15 +4,20 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"maps"
 	"path"
 	"slices"
+	"strings"
+	"text/template"
 	"time"
 
 	"go.yaml.in/yaml/v3"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"dagger/maintenance/internal/dagger"
 )
@@ -189,6 +194,91 @@ func (m *Maintenance) GenerateTestingValues(
 	result := target.WithNewFile("values.yaml", string(valuesYaml))
 
 	return result.File("values.yaml"), nil
+}
+
+// Scaffolds a new Postgres extension directory structure
+func (m *Maintenance) Create(
+	ctx context.Context,
+	// The source directory containing the extension template files
+	// +defaultPath="/templates"
+	templatesDir *dagger.Directory,
+	// The name of the extension
+	name string,
+	// The Postgres major versions the extension is supported for
+	// +default=["18"]
+	versions []string,
+	// The Debian distributions the extension is supported for
+	// +default=["trixie","bookworm"]
+	distros []string,
+	// The Debian package name for the extension. If the package name contains
+	// the postgres version, it can be templated using the "%version%" placeholder.
+	//  (default "postgresql-%version%-<name>")
+	// +optional
+	packageName string,
+) (*dagger.Directory, error) {
+	extDir := dag.Directory()
+
+	type Extension struct {
+		Name           string
+		Versions       []string
+		Distros        []string
+		Package        string
+		DefaultVersion int
+		DefaultDistro  string
+	}
+
+	if packageName == "" {
+		packageName = "postgresql-%version%-" + name
+	}
+
+	extension := Extension{
+		Name:           name,
+		Versions:       versions,
+		Distros:        distros,
+		Package:        packageName,
+		DefaultVersion: DefaultPgMajor,
+		DefaultDistro:  DefaultDistribution,
+	}
+
+	toTitle := func(s string) string {
+		return cases.Title(language.English).String(s)
+	}
+
+	funcMap := template.FuncMap{
+		"replaceAll": strings.ReplaceAll,
+		"toTitle":    toTitle,
+	}
+
+	executeTemplate := func(fileName string) error {
+		tmplFile := templatesDir.File(fileName + ".tmpl")
+		tmplContent, err := tmplFile.Contents(ctx)
+		if err != nil {
+			return err
+		}
+		tmpl, err := template.New(fileName).Funcs(funcMap).Parse(tmplContent)
+		if err != nil {
+			return err
+		}
+		buf := &bytes.Buffer{}
+		if err := tmpl.Execute(buf, extension); err != nil {
+			return err
+		}
+		extDir = extDir.WithNewFile(fileName, buf.String())
+		return nil
+	}
+
+	var templateFiles = []string{
+		"metadata.hcl",
+		"Dockerfile",
+		"README.md",
+	}
+	for _, fileName := range templateFiles {
+		if err := executeTemplate(fileName); err != nil {
+			return nil, err
+		}
+	}
+
+	return extDir, nil
 }
 
 // Tests the specified target using Chainsaw
