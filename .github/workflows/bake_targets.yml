@@ -118,42 +118,33 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{fromJson(needs.testbuild.outputs.images)}}
-        cnpg: ["main", "1.27"]
-    env:
-      # renovate: datasource=github-tags depName=kubernetes-sigs/kind versioning=semver
-      KIND_VERSION: "v0.30.0"
-      # renovate: datasource=docker depName=kindest/node
-      KIND_NODE_VERSION: "v1.34.0"
+        cnpg: ["main", "1.27", "1.28"]
     steps:
       - name: Checkout Code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
           persist-credentials: false
 
-      - name: Create kind cluster
-        uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
-        with:
-          version: ${{ env.KIND_VERSION }}
-          kubectl_version: ${{ env.KIND_NODE_VERSION }}
-          node_image: kindest/node:${{ env.KIND_NODE_VERSION }}
-          config: kind-config.yaml
+      - name: Install Task
+        uses: go-task/setup-task@0ab1b2a65bc55236a3bc64cde78f80e20e8885c2 # v1.0.0
 
-      - name: Install CNPG (${{ matrix.cnpg }})
+      - name: Install Dagger
         env:
-          CNPG_RELEASE: ${{ matrix.cnpg }}
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.19.8
         run: |
-          operator_manifest="https://raw.githubusercontent.com/cloudnative-pg/artifacts/release-$CNPG_RELEASE/manifests/operator-manifest.yaml"
-          if [[ "$CNPG_RELEASE" == "main" ]]; then
-            operator_manifest="https://raw.githubusercontent.com/cloudnative-pg/artifacts/main/manifests/operator-manifest.yaml"
-          fi
-          curl -sSfL "$operator_manifest" | kubectl apply --server-side -f -
-          kubectl wait --for=condition=Available --timeout=2m -n cnpg-system deployments cnpg-controller-manager
+          curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
+
+      - name: Set up environment
+        run: |
+          task e2e:setup-env
+          task e2e:export-kubeconfig
 
       - name: Generate Chainsaw testing values
         uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.7
+          DAGGER_VERSION: 0.19.8
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call

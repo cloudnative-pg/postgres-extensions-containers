@@ -8,6 +8,17 @@ vars:
   RED: \033[0;31m
   NC: \033[0m
 
+  E2E_NETWORK: pg-extensions-e2e
+  DAGGER_ENGINE_NAME: dagger-engine-pg-extensions
+  REGISTRY_NAME: registry.pg-extensions
+  REGISTRY_HOST_PORT: 5000
+  # renovate: datasource=git-refs depName=kind lookupName=https://github.com/aweris/daggerverse currentValue=main
+  DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
+  # renovate: datasource=docker depName=kindest/node versioning=docker
+  KIND_NODE_VERSION: v1.34.2@sha256:745f8ed46d8e99517774768227fd1a0af34a6bf395aef9c7ed98fbce0e263918
+  K8S_VERSION: '{{ regexReplaceAll "^v([0-9.]+).*" .KIND_NODE_VERSION "$1" }}'
+  KIND_CLUSTER_NAME: pg-extensions-{{ .K8S_VERSION }}
+
 tasks:
   default:
     desc: Build all targets (default)
@@ -15,7 +26,7 @@ tasks:
       - task: bake:all
 
   prereqs:
-    description: Ensure prerequisites are met
+    desc: Ensure prerequisites are met
     run: once
     silent: true
     cmds:
@@ -28,7 +39,7 @@ tasks:
       - echo -e "{{.GREEN}}All prerequisites satisfied!{{.NC}}"
 
   checks:
-    description: Run checks for the specified target
+    desc: Run checks for the specified target
     deps:
       - prereqs
     prefix: 'checks-{{.TARGET}}'
@@ -44,7 +55,7 @@ tasks:
         - name: TARGET
 
   checks:all:
-    description: Run checks for all the available targets
+    desc: Run checks for all the available targets
     vars:
       TARGETS:
         sh: dagger call -sm ./dagger/maintenance/ get-targets | tr -d '[]"' | tr ',' '\n'
@@ -56,7 +67,7 @@ tasks:
         task: checks
 
   bake:
-    description: Bake the specified target
+    desc: Bake the specified target
     deps:
       - prereqs
     prefix: 'bake-{{.TARGET}}'
@@ -81,7 +92,7 @@ tasks:
         - name: TARGET
 
   bake:all:
-    description: Bake all the available targets
+    desc: Bake all the available targets
     vars:
       TARGETS:
         sh: dagger call -sm ./dagger/maintenance/ get-targets | tr -d '[]"' | tr ',' '\n'
@@ -93,7 +104,7 @@ tasks:
         task: bake
 
   update-os-libs:
-    description: Update OS libs on the specified target
+    desc: Update OS libs on the specified target
     deps:
       - prereqs
     prefix: 'update-os-libs-{{.TARGET}}'
@@ -106,7 +117,7 @@ tasks:
         - name: TARGET
 
   update-os-libs:all:
-    description: Update OS libs for all the available targets
+    desc: Update OS libs for all the available targets
     vars:
       TARGETS:
         sh: dagger call -sm ./dagger/maintenance/ get-oslibs-targets | tr -d '[]"' | tr ',' '\n'
@@ -116,3 +127,168 @@ tasks:
         vars:
           TARGET: "{{.ITEM}}"
         task: update-os-libs
+
+  e2e:create-docker-network:
+    desc: Create Docker network to connect all the services, such as the Registry, Kind nodes, Chainsaw, etc.
+    run: once
+    internal: true
+    cmds:
+      - docker network create {{ .E2E_NETWORK }}
+    status:
+      - docker network inspect {{ .E2E_NETWORK }}
+
+  e2e:start-container-registry:
+    desc: Start a local Docker registry to push the built images for E2E tests
+    deps:
+      - e2e:create-docker-network
+    internal: true
+    run: once
+    vars:
+      # renovate: datasource=docker depName=registry versioning=docker
+      REGISTRY_VERSION: 3.0.0@sha256:cd92709b4191c5779cd7215ccd695db6c54652e7a62843197e367427efb84d0e
+    cmds:
+      - >
+        docker run -d --name {{ .REGISTRY_NAME }} --rm -p {{ .REGISTRY_HOST_PORT }}:5000
+        --network {{ .E2E_NETWORK }} registry:{{ .REGISTRY_VERSION }}
+    status:
+      - test "$(docker inspect -f {{`'{{json .State.Running}}'`}} {{ .REGISTRY_NAME }})" == "true"
+
+  e2e:start-dagger-engine:
+    desc: Start a custom Dagger engine so we can connect it to the E2E Docker network
+    deps:
+      - e2e:create-docker-network
+    internal: true
+    run: once
+    vars:
+      # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+      DAGGER_ENGINE_VERSION: v0.19.8
+    cmds:
+      - >
+        docker run -d -v /var/lib/dagger --name {{ .DAGGER_ENGINE_NAME }} --restart always --network {{ .E2E_NETWORK }}
+        --privileged registry.dagger.io/engine:{{ .DAGGER_ENGINE_VERSION }}
+    status:
+      - test "$(docker inspect -f {{`'{{json .State.Running}}'`}} {{ .DAGGER_ENGINE_NAME }})" == "true"
+
+  e2e:setup-kind:
+    desc: Setup Kind cluster for E2E tests
+    deps:
+      - e2e:start-container-registry
+      - e2e:start-dagger-engine
+    internal: true
+    run: once
+    vars:
+      REGISTRY_DIR: /etc/containerd/certs.d/localhost:{{ .REGISTRY_HOST_PORT }}
+      DOCKER_SOCKET:
+        sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
+    env:
+      _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
+    cmds:
+      - >
+        dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} --socket {{ .DOCKER_SOCKET }}
+        container with-env-variable --name=KIND_EXPERIMENTAL_DOCKER_NETWORK --value={{ .E2E_NETWORK }} with-env-variable --name=CACHE_BUSTER --value="$(date)"
+        with-file --source=kind-config.yaml --path=/root/kind-config.yaml
+        with-exec --args="kind","create","cluster","--name","{{ .KIND_CLUSTER_NAME }}","--image","kindest/node:{{ .KIND_NODE_VERSION }}","--config","/root/kind-config.yaml" sync
+      - docker exec "{{ .KIND_CLUSTER_NAME }}-control-plane" mkdir -p "{{ .REGISTRY_DIR }}"
+      - |
+        cat <<EOF | docker exec -i "{{ .KIND_CLUSTER_NAME }}-control-plane" cp /dev/stdin "{{ .REGISTRY_DIR }}/hosts.toml"
+        [host."http://{{ .REGISTRY_NAME }}:5000"]
+        EOF
+    status:
+      - >
+        test "$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }}
+        --socket {{ .DOCKER_SOCKET }} cluster --name {{ .KIND_CLUSTER_NAME }} exist)" == "true"
+
+  e2e:install-cnpg:
+    desc: Install CloudNativePG operator in the Kind cluster
+    deps:
+      - e2e:setup-kind
+    internal: true
+    vars:
+      # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver extractVersion=^v(?<version>\d+\.\d+)\.\d+$
+      CNPG_RELEASE: 1.28
+      # renovate: datasource=docker depName=alpine/kubectl versioning=docker
+      KUBECTL_VERSION: 1.34.2@sha256:96a7d245a74d461925a56e3024d2f027c2a7a822b3e9e0117ec558db42de9c35
+      DOCKER_SOCKET:
+        sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
+      CNPG_MANIFEST:
+        sh: |
+          if [ "{{ .CNPG_RELEASE }}" = "main" ]; then
+            echo "https://raw.githubusercontent.com/cloudnative-pg/artifacts/main/manifests/operator-manifest.yaml"
+          else
+            echo "https://raw.githubusercontent.com/cloudnative-pg/artifacts/release-{{ .CNPG_RELEASE }}/manifests/operator-manifest.yaml"
+          fi
+    env:
+      _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
+    cmds:
+      - |
+        KUBECONFIG=$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} \
+          --socket {{ .DOCKER_SOCKET }} container \
+          with-exec --args "kind","get","kubeconfig","--internal","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
+
+        dagger core container from --address=alpine/kubectl:{{ .KUBECTL_VERSION }} \
+        with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand \
+        with-env-variable --name=CACHEBUSTER --value="$(date)" \
+        with-exec --args="apply","--server-side","-f","{{ .CNPG_MANIFEST }}" --use-entrypoint sync
+
+        dagger core container from --address=alpine/kubectl:{{ .KUBECTL_VERSION }} \
+        with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand \
+        with-env-variable --name=CACHEBUSTER --value="$(date)" \
+        with-exec \
+        --args="wait","--for=condition=Available","--timeout=2m","-n","cnpg-system","deployments","cnpg-controller-manager" \
+        --use-entrypoint sync
+    status:
+      - |
+        KUBECONFIG=$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} \
+          --socket {{ .DOCKER_SOCKET }} container \
+          with-exec --args "kind","get","kubeconfig","--internal","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
+        dagger core container from --address=alpine/kubectl:{{ .KUBECTL_VERSION }} \
+        with-new-file --contents "${KUBECONFIG}" --path /root/.kube/config --expand \
+        with-env-variable --name=CACHEBUSTER --value="$(date)" \
+        with-exec \
+        --args="get","--namespace=cnpg-system","deployments.apps","cnpg-controller-manager" \
+        --use-entrypoint sync
+
+  e2e:export-kubeconfig:
+    desc: Export Kind cluster kubeconfig at path defined by KUBECONFIG_PATH var (default ~/.kube/config)
+    deps:
+      - e2e:setup-kind
+    vars:
+      KUBECONFIG_PATH: '{{.KUBECONFIG_PATH| default "~/.kube/config"}}'
+      DOCKER_SOCKET:
+        sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
+    env:
+      _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
+    cmds:
+      - |
+        CONFIG=$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} \
+          --socket {{ .DOCKER_SOCKET }} container \
+          with-exec --args "kind","get","kubeconfig","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
+        mkdir -p $(dirname {{ .KUBECONFIG_PATH }})
+        echo "${CONFIG}" > {{ .KUBECONFIG_PATH }}
+
+  e2e:setup-env:
+    desc: Setup E2E environment
+    silent: true
+    deps:
+      - e2e:start-container-registry
+      - e2e:start-dagger-engine
+      - e2e:install-cnpg
+    cmds:
+      - echo -e "{{.GREEN}}--- E2E environment setup complete ---{{.NC}}"
+
+  e2e:cleanup:
+    desc: Cleanup E2E resources
+    deps:
+      - e2e:start-dagger-engine
+    vars:
+      DOCKER_SOCKET:
+        sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
+    env:
+      _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
+    cmds:
+      - >
+        dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }}
+        --socket {{ .DOCKER_SOCKET }} cluster --name {{ .KIND_CLUSTER_NAME }} delete || true
+      - docker rm -fv {{ .DAGGER_ENGINE_NAME }} || true
+      - docker rm -fv {{ .REGISTRY_NAME }} || true
+      - docker network rm {{ .E2E_NETWORK }} || true
