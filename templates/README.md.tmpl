@@ -1,0 +1,72 @@
+# {{ toTitle .Name }}
+
+<!--
+Introduction: give a brief introduction of the extension and what it is useful for.
+Add a reference to the official documentation if available.
+-->
+
+{{ .Name }} is a PostgreSQL extension that provides support for
+vector data types and operations, enabling efficient storage and retrieval of
+high-dimensional vectors. It is particularly useful for applications involving
+machine learning, recommendation systems, and similarity search.
+
+## Usage
+
+<!--
+Usage: add instructions on how to use the extension with CloudNativePG.
+Include code snippets for Cluster and Database resources as needed.
+-->
+
+### 1. Add the {{ .Name }} extension image to your Cluster
+
+Define the `{{ .Name }}` extension under the `postgresql.extensions` section of
+your `Cluster` resource. For example:
+
+```yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cluster-{{ .Name }}
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:{{ .DefaultVersion }}-minimal-{{ .DefaultDistro }}
+  instances: 1
+
+  storage:
+    size: 1Gi
+
+  postgresql:
+    extensions:
+    - name: {{ .Name }}
+      image:
+        reference: ghcr.io/cloudnative-pg/{{ .Name }}:1.0-{{ .DefaultVersion }}-{{ .DefaultDistro }}
+```
+
+### 2. Enable the extension in a database
+
+You can install `{{ .Name }}` in a specific database by creating or updating a
+`Database` resource. For example, to enable it in the `app` database:
+
+```yaml
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: cluster-{{ .Name }}-app
+spec:
+  name: app
+  owner: app
+  cluster:
+    name: cluster-{{ .Name }}
+  extensions:
+  - name: {{ .Name }}
+    version: '1.0'
+```
+
+### 3. Verify installation
+
+Once the database is ready, connect to it with `psql` and run:
+
+```sql
+\dx
+```
+
+You should see `{{ .Name }}` listed among the installed extensions.

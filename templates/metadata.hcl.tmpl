@@ -1,0 +1,21 @@
+metadata = {
+  name                     = "{{ .Name }}"
+  sql_name                 = "{{ .Name }}"
+  image_name               = "{{ .Name }}"
+  shared_preload_libraries = []
+  extension_control_path   = []
+  dynamic_library_path     = []
+  ld_library_path          = []
+  auto_update_os_libs      = false
+
+  versions = {
+    {{- range $distro := .Distros}}
+    {{ $distro }} = {
+        {{- range $version := $.Versions}}
+        // renovate: suite={{ $distro }}-pgdg depName={{ replaceAll $.Package "%version%" $version }}
+        "{{ $version }}" = "<package-version-here>"
+        {{- end}}
+    }
+    {{- end}}
+  }
+}
