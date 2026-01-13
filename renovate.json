@@ -54,7 +54,7 @@
         "dagger/**/*.go"
       ],
       "matchStrings": [
-        "\\/\\/ renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))\\s+\\/\\/\\s+\\+default=[\\\"']?.+:(?<currentValue>.+?)[\\\"']?\\s"
+        "\\/\\/\\s+renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))\\s+\\/\\/\\s+\\+default=[\\\"']?[^:]+?:(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
       ]
     }
   ],

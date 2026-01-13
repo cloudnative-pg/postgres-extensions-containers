@@ -206,7 +206,7 @@ func (m *Maintenance) Test(
 	target string,
 	// Container image to use to run chainsaw
 	// renovate: datasource=docker depName=kyverno/chainsaw packageName=ghcr.io/kyverno/chainsaw versioning=docker
-	// +default="ghcr.io/kyverno/chainsaw:v0.2.14"
+	// +default="ghcr.io/kyverno/chainsaw:v0.2.14@sha256:c703e4d4ce7b89c5121fe957ab89b6e2d33f91fd15f8274a9f79ca1b2ba8ecef"
 	chainsawImage string,
 ) error {
 	extDir := source
