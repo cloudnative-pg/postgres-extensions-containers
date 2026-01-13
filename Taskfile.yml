@@ -270,6 +270,7 @@ tasks:
       - e2e:setup-kind
     vars:
       KUBECONFIG_PATH: '{{.KUBECONFIG_PATH| default "~/.kube/config"}}'
+      INTERNAL: '{{.INTERNAL| default "false"}}'
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
     env:
@@ -278,7 +279,7 @@ tasks:
       - |
         CONFIG=$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} \
           --socket {{ .DOCKER_SOCKET }} container \
-          with-exec --args "kind","get","kubeconfig","--name","{{ .KIND_CLUSTER_NAME }}" stdout)
+          with-exec --args "kind","get","kubeconfig","--name","{{ .KIND_CLUSTER_NAME }}","--internal={{ .INTERNAL }}" stdout)
         mkdir -p $(dirname {{ .KUBECONFIG_PATH }})
         echo "${CONFIG}" > {{ .KUBECONFIG_PATH }}
 
@@ -306,6 +307,8 @@ tasks:
         vars:
           TARGET: '{{ .TARGET }}'
           EXTENSION_IMAGE:
+            # We need to replace localhost with the registry container name as it is how
+            # the registry is reachable from within the Docker network.
             sh: sed -E 's/^localhost/{{ .REGISTRY_NAME }}/;t' <<< "{{ .EXTENSION_IMAGE }}"
 
   e2e:test:

@@ -98,13 +98,53 @@ Docker network and installs CloudNativePG by default.
 task e2e:setup-env
 ```
 
-The container registry will be exposed locally at `localhost:5000`.
+The local container registry will be exposed locally at `localhost:5000`.
 
 The Kubeconfig to connect to the Kind cluster can be retrieved with:
 
 ```bash
 task e2e:export-kubeconfig KUBECONFIG_PATH=<path-to-export-kubeconfig>
 ```
+
+### Build & Push the images to the registry
+
+Any public registry can be used to test the extension images, but using the local registry
+is the recommended approach for local testing.
+The `task bake` command can be used to build and push the images, which by default
+targets the local registry, but can be configured differently by setting the `registry` env variable.
+
+```bash
+task bake TARGET=<extension> PUSH=true
+```
+
+### Generate testing values for Chainsaw
+
+Local testing is performed using [Chainsaw](https://github.com/kyverno/chainsaw), which requires a set
+of specific values to be generated for the targeted extension image.
+The `e2e:generate-values` task generates these values and export them in the extension directory:
+
+```bash
+task e2e:generate-values EXTENSION_IMAGE="<image>" TARGET="<extension>"
+```
+
+### Execute the end-to-end tests
+
+The first step to run the end-to-end tests is getting the internal Kubeconfig for the Kind cluster so it
+can be provided to the test command:
+
+```bash
+task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
+```
+This command will export the Kubeconfig file to `./kubeconfig` file.
+
+The end-to-end tests can then be executed using the `e2e:test` task:
+
+```bash
+task e2e:test TARGET="<extension>" KUBECONFIG_PATH="./kubeconfig"
+```
+The framework executes by default a set of generic tests defined in the `test` folder, but
+more specific tests can be defined in the extension directory under the `test` folder which will be
+included automatically.
 
 ### Tear down the local test environment
 
