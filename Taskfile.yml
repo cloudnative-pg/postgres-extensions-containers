@@ -292,19 +292,35 @@ tasks:
     cmds:
       - echo -e "{{.GREEN}}--- E2E environment setup complete ---{{.NC}}"
 
+  e2e:generate-values:
+    desc: Generate Chainsaw testing values for the specified target in e2e environment
+    deps:
+      - e2e:start-dagger-engine
+      - e2e:start-container-registry
+    prefix: 'e2e:generate-values-{{ .TARGET }}'
+    silent: true
+    vars:
+      EXTENSION_IMAGE: '{{ .EXTENSION_IMAGE| default "" }}'
+    cmds:
+      - task: generate-values
+        vars:
+          TARGET: '{{ .TARGET }}'
+          EXTENSION_IMAGE:
+            sh: sed -E 's/^localhost/{{ .REGISTRY_NAME }}/;t' <<< "{{ .EXTENSION_IMAGE }}"
+
   e2e:test:
     desc: Test target extension using Chainsaw
     deps:
       - e2e:start-dagger-engine
-    prefix: 'e2e:test-{{.TARGET}}'
+    prefix: 'e2e:test-{{ .TARGET }}'
     silent: true
     vars:
-      KUBECONFIG_PATH: '{{.KUBECONFIG_PATH| default "~/.kube/config"}}'
+      KUBECONFIG_PATH: '{{ .KUBECONFIG_PATH | default "~/.kube/config" }}'
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
     cmds:
-      - echo -e "{{.BLUE}}Testing {{.TARGET}}...{{.NC}}"
-      - dagger call -sm ./dagger/maintenance/ test --source . --target {{.TARGET}} --kubeconfig {{ .KUBECONFIG_PATH }}
+      - echo -e "{{ .BLUE }}Testing {{ .TARGET }}...{{ .NC }}"
+      - dagger call -m ./dagger/maintenance/ test --source . --target {{ .TARGET }} --kubeconfig {{ .KUBECONFIG_PATH }}
     requires:
       vars:
         - name: TARGET
@@ -318,7 +334,7 @@ tasks:
       - for:
           var: TARGETS
         vars:
-          TARGET: "{{.ITEM}}"
+          TARGET: "{{ .ITEM }}"
         task: e2e:test
 
   e2e:cleanup:
