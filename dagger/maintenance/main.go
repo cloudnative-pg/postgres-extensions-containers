@@ -191,13 +191,16 @@ func (m *Maintenance) GenerateTestingValues(
 	return result.File("values.yaml"), nil
 }
 
-// Tests the specified extension using Chainsaw
+// Tests the specified target using Chainsaw
 func (m *Maintenance) Test(
 	ctx context.Context,
 	// The source directory containing the extension folders. Defaults to the current directory
 	// +ignore=["dagger", ".github"]
 	// +defaultPath="/"
 	source *dagger.Directory,
+	// Kubeconfig to connect to the target K8s
+	// +required
+	kubeconfig *dagger.File,
 	// The target extension to test
 	// +default="all"
 	target string,
@@ -205,9 +208,6 @@ func (m *Maintenance) Test(
 	// renovate: datasource=docker depName=kyverno/chainsaw packageName=ghcr.io/kyverno/chainsaw versioning=docker
 	// +default="ghcr.io/kyverno/chainsaw:v0.2.14"
 	chainsawImage string,
-	// Kubeconfig to connect to the target K8s
-	// +required
-	kubeconfig *dagger.File,
 ) error {
 	extDir := source
 	if target != "all" {

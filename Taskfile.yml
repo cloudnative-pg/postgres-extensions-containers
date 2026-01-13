@@ -193,7 +193,7 @@ tasks:
     internal: true
     run: once
     vars:
-      REGISTRY_DIR: /etc/containerd/certs.d/localhost:{{ .REGISTRY_HOST_PORT }}
+      REGISTRY_DIR: /etc/containerd/certs.d/{{ .REGISTRY_NAME }}:{{ .REGISTRY_HOST_PORT }}
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
     env:
