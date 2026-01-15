@@ -185,3 +185,47 @@ To clean up all the resources created by the `e2e:setup-env` task, run:
 ```bash
 task e2e:cleanup
 ```
+
+--- 
+
+## Create a new extension
+
+To create a new extension project, you can use the `create-extension` task:
+
+```bash
+task create-extension NAME=<extension-name>
+```
+
+The command will create a new directory named `<extension-name>` using default configurations.
+For a more advanced and customized setup, you can use the dagger command directly:
+
+```bash
+dagger call -sm ./dagger/maintenance/ create --help
+
+Scaffolds a new Postgres extension directory structure
+
+USAGE
+  dagger call create [arguments] <function>
+
+FUNCTIONS:
+
+[...]
+
+ARGUMENTS
+      --name string               The name of the extension [required]
+      --distros strings           The Debian distributions the extension is supported for (default [trixie,bookworm])
+      --package-name string       The Debian package name for the extension. If the package name contains
+                                  the postgres version, it can be templated using the "%version%" placeholder.
+                                   (default "postgresql-%version%-<name>")
+      --templates-dir Directory   The source directory containing the extension template files
+      --versions strings          The Postgres major versions the extension is supported for (default [18])
+```
+
+This command creates a new folder with the following files:
+
+- `Dockerfile`: the Dockerfile to build the extension container image.
+- `metadata.hcl`: the file providing specific metadata information used to build and test the extension.
+- `README.md`: a template README file to get started with documenting the extension usage.
+
+Those files are scaffolded with a generic template and are meant to be customized according to the
+specific extension requirements.
