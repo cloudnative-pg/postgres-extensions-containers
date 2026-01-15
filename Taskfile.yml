@@ -129,6 +129,14 @@ tasks:
           TARGET: "{{.ITEM}}"
         task: update-os-libs
 
+  create:
+    desc: Scaffold a new extension directory
+    cmds:
+      - dagger call -sm ./dagger/maintenance/ create --name {{.NAME}} export --path ./{{.NAME}}
+    requires:
+      vars:
+        - name: NAME
+
   generate-values:
     desc: Generate Chainsaw testing values for the specified target
     deps:
