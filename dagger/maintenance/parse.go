@@ -28,6 +28,7 @@ type extensionMetadata struct {
 	DynamicLibraryPath     []string   `hcl:"dynamic_library_path" cty:"dynamic_library_path"`
 	LdLibraryPath          []string   `hcl:"ld_library_path" cty:"ld_library_path"`
 	AutoUpdateOsLibs       bool       `hcl:"auto_update_os_libs" cty:"auto_update_os_libs"`
+	RequiredExtensions     []string   `hcl:"required_extensions" cty:"required_extensions"`
 	Versions               versionMap `hcl:"versions" cty:"versions"`
 	Remain                 hcl.Body   `hcl:",remain"`
 }

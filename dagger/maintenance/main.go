@@ -136,6 +136,10 @@ func (m *Maintenance) GetTargets(
 // Generates Chainsaw's testing external values in YAML format
 func (m *Maintenance) GenerateTestingValues(
 	ctx context.Context,
+	// The source directory containing the extension folders. Defaults to the current directory
+	// +ignore=["dagger", ".github"]
+	// +defaultPath="/"
+	source *dagger.Directory,
 	// Path to the target extension directory
 	target *dagger.Directory,
 	// URL reference to the extension image to test [REPOSITORY[:TAG]]
@@ -174,18 +178,23 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
+	extensions, generateExtErr := generateTestingValuesExtensions(
+		ctx,
+		source,
+		metadata,
+		targetExtensionImage,
+	)
+	if generateExtErr != nil {
+		return nil, generateExtErr
+	}
 	// Build values.yaml content
 	values := map[string]any{
 		"name":                     metadata.Name,
 		"sql_name":                 metadata.SQLName,
-		"image_name":               metadata.ImageName,
 		"shared_preload_libraries": metadata.SharedPreloadLibraries,
-		"extension_control_path":   metadata.ExtensionControlPath,
-		"dynamic_library_path":     metadata.DynamicLibraryPath,
-		"ld_library_path":          metadata.LdLibraryPath,
-		"extension_image":          targetExtensionImage,
 		"pg_image":                 pgImage,
 		"version":                  version,
+		"extensions":               extensions,
 	}
 	valuesYaml, err := yaml.Marshal(values)
 	if err != nil {
