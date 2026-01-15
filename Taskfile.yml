@@ -129,7 +129,7 @@ tasks:
           TARGET: "{{.ITEM}}"
         task: update-os-libs
 
-  create:
+  create-extension:
     desc: Scaffold a new extension directory
     cmds:
       - dagger call -sm ./dagger/maintenance/ create --name {{.NAME}} export --path ./{{.NAME}}
