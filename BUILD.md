@@ -124,7 +124,7 @@ of specific values to be generated for the targeted extension image.
 The `e2e:generate-values` task generates these values and export them in the extension directory:
 
 ```bash
-task e2e:generate-values EXTENSION_IMAGE="<image>" TARGET="<extension>"
+task e2e:generate-values EXTENSION_IMAGE="<my-local-image>" TARGET="<extension>"
 ```
 
 ### Execute the end-to-end tests

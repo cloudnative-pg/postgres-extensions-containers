@@ -138,7 +138,6 @@ jobs:
       - name: Set up environment
         run: |
           task e2e:setup-env
-          task e2e:export-kubeconfig
 
       - name: Generate Chainsaw testing values
         run: |
