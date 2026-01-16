@@ -7,6 +7,7 @@ metadata = {
   dynamic_library_path     = []
   ld_library_path          = []
   auto_update_os_libs      = false
+  required_extensions      = []
 
   versions = {
     bookworm = {
