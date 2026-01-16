@@ -19,7 +19,8 @@ const (
 
 // getImageAnnotations returns the OCI annotations given an image ref.
 func getImageAnnotations(imageRef string) (map[string]string, error) {
-	ref, err := name.ParseReference(imageRef)
+	// Setting Insecure option to allow fetching images from local registries with no TLS
+	ref, err := name.ParseReference(imageRef, name.Insecure)
 	if err != nil {
 		return nil, err
 	}
