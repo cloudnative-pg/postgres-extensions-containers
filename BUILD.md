@@ -84,67 +84,93 @@ task DRY_RUN=true
 task bake TARGET=pgvector DRY_RUN=true
 ```
 
-## Testing locally
+## Local testing guide
 
-Local testing can be performed by using a local Docker container registry and a Kind cluster with CNPG installed.
-The Taskfile includes utilities to set up and tear down such an environment.
+Testing your extensions locally ensures high-quality PRs and faster iteration
+cycles. This environment uses a local Docker container registry and a Kind
+cluster with CloudNativePG pre-installed.
 
-### Create a local test environment
+> [!IMPORTANT]
+> **Pre-submission requirement:** You must successfully run local tests before
+> submitting a Pull Request for any extension.
 
-The `e2e:setup-env` task takes care of setting up a Kind cluster with a local Docker container registry connected to the same
-Docker network and installs CloudNativePG by default.
+### Initialize the environment
+
+The `e2e:setup-env` utility automates the heavy lifting. It creates a Kind
+cluster, attaches a local Docker registry (available at `localhost:5000`), and
+installs the CloudNativePG operator.
 
 ```bash
 task e2e:setup-env
 ```
 
-The local container registry will be exposed locally at `localhost:5000`.
+### Get access to the cluster
 
-The Kubeconfig to connect to the Kind cluster can be retrieved with:
+Even though the cluster is running, your local `kubectl` doesn't know how to
+talk to it yet. You need to "export" the credentials (the Kubeconfig).
 
-```bash
-task e2e:export-kubeconfig KUBECONFIG_PATH=<path-to-export-kubeconfig>
-```
-
-### Build & Push the images to the registry
-
-Any public registry can be used to test the extension images, but using the local registry
-is the recommended approach for local testing.
-The `task bake` command can be used to build and push the images, which by default
-targets the local registry, but can be configured differently by setting the `registry` env variable.
+If you want to run `kubectl get pods` from your own laptop's terminal, use the
+standard export:
 
 ```bash
-task bake TARGET=<extension> PUSH=true
+task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig
+export KUBECONFIG=$PWD/kubeconfig
 ```
 
-### Generate testing values for Chainsaw
-
-Local testing is performed using [Chainsaw](https://github.com/kyverno/chainsaw), which requires a set
-of specific values to be generated for the targeted extension image.
-The `e2e:generate-values` task generates these values and export them in the extension directory:
-
-```bash
-task e2e:generate-values EXTENSION_IMAGE="<my-local-image>" TARGET="<extension>"
-```
-
-### Execute the end-to-end tests
-
-The first step to run the end-to-end tests is getting the internal Kubeconfig for the Kind cluster so it
-can be provided to the test command:
+If you are running a test script that is also running inside a Docker container
+on the same network, like in the case of Kind, it needs the "internal" address
+to find the API server:
 
 ```bash
 task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
 ```
-This command will export the Kubeconfig file to `./kubeconfig` file.
 
-The end-to-end tests can then be executed using the `e2e:test` task:
+### Build and push the extension (`bake`)
+
+Before the cluster can use your extension, you must build the image and push it
+to the local registry (see ["Push images for a specific project" above](#6-push-images-for-a-specific-project)):
+
+```bash
+task bake TARGET="<extension>" PUSH=true
+```
+
+This command tags the image for `localhost:5000` and pushes it automatically.
+
+> [!TIP]
+> You can change the default registry through the `registry` environment variable
+> (defined in the `docker/bake.hcl` file).  ### Prepare Testing Values
+
+### Prepare testing values
+
+We use [Chainsaw](https://github.com/kyverno/chainsaw) for declarative
+end-to-end testing. Before running tests, you must generate specific
+configuration values for your extension image.
+
+Run the following command to export these values into your extension's
+directory:
+
+```bash
+task e2e:generate-values TARGET="<extension>" EXTENSION_IMAGE="<my-local-image>"
+```
+
+### Execute End-to-End tests
+
+The testing framework requires an internal Kubeconfig to communicate correctly
+within the Docker network.
+
+First, export the internal configuration as shown above:
+
+```bash
+task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
+```
+
+Then, run the `e2e:test` task. This executes both the generic tests (located in
+the global `/test` folder) and any extension-specific tests (located in the
+target's `/test` folder):
 
 ```bash
 task e2e:test TARGET="<extension>" KUBECONFIG_PATH="./kubeconfig"
 ```
-The framework executes by default a set of generic tests defined in the `test` folder, but
-more specific tests can be defined in the extension directory under the `test` folder which will be
-included automatically.
 
 ### Tear down the local test environment
 
