@@ -135,6 +135,8 @@ tasks:
     prefix: 'generate-values-{{.TARGET}}'
     vars:
         EXTENSION_IMAGE: '{{ .EXTENSION_IMAGE| default "" }}'
+    env:
+      _EXPERIMENTAL_DAGGER_RUNNER_HOST: '{{ ._EXPERIMENTAL_DAGGER_RUNNER_HOST | default "" }}'
     cmds:
       - echo -e "{{.BLUE}}Generating values for target {{.TARGET}}...{{.NC}}"
       - >
@@ -305,6 +307,7 @@ tasks:
     cmds:
       - task: generate-values
         vars:
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
           TARGET: '{{ .TARGET }}'
           EXTENSION_IMAGE:
             # We need to replace localhost with the registry container name as it is how
