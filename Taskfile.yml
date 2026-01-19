@@ -133,6 +133,9 @@ tasks:
     desc: Scaffold a new extension directory
     cmds:
       - dagger call -sm ./dagger/maintenance/ create --name {{.NAME}} export --path ./{{.NAME}}
+    preconditions:
+      - sh: test ! -d {{ .NAME }}
+        msg: 'The provided extension already exists. Name: {{.NAME}}'
     requires:
       vars:
         - name: NAME
