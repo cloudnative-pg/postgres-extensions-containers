@@ -10,6 +10,7 @@ import (
 	"maps"
 	"path"
 	"slices"
+	"time"
 
 	"go.yaml.in/yaml/v3"
 
@@ -188,4 +189,97 @@ func (m *Maintenance) GenerateTestingValues(
 	result := target.WithNewFile("values.yaml", string(valuesYaml))
 
 	return result.File("values.yaml"), nil
+}
+
+// Tests the specified target using Chainsaw
+func (m *Maintenance) Test(
+	ctx context.Context,
+	// The source directory containing the extension folders. Defaults to the current directory
+	// +ignore=["dagger", ".github"]
+	// +defaultPath="/"
+	source *dagger.Directory,
+	// Kubeconfig to connect to the target K8s
+	// +required
+	kubeconfig *dagger.File,
+	// The target extension to test
+	// +default="all"
+	target string,
+	// Container image to use to run chainsaw
+	// renovate: datasource=docker depName=kyverno/chainsaw packageName=ghcr.io/kyverno/chainsaw versioning=docker
+	// +default="ghcr.io/kyverno/chainsaw:v0.2.14@sha256:c703e4d4ce7b89c5121fe957ab89b6e2d33f91fd15f8274a9f79ca1b2ba8ecef"
+	chainsawImage string,
+) error {
+	extDir := source
+	if target != "all" {
+		extDir = source.Filter(dagger.DirectoryFilterOpts{
+			Include: []string{path.Join(target, "**"), "test"},
+		})
+		hasMetadataFile, err := extDir.Exists(ctx, path.Join(target, metadataFile))
+		if err != nil {
+			return err
+		}
+		if !hasMetadataFile {
+			return fmt.Errorf("not a valid target, metadata.hcl file is missing. Target: %s", target)
+		}
+	}
+
+	targetExtensions, err := extensionsDirectories(ctx, extDir)
+	if err != nil {
+		return err
+	}
+
+	const valuesFile = "values.yaml"
+
+	for _, targetExtension := range targetExtensions {
+		extName, err := targetExtension.Name(ctx)
+		if err != nil {
+			return err
+		}
+
+		hasValues, err := targetExtension.Exists(ctx, valuesFile)
+		if err != nil {
+			return err
+		}
+		if !hasValues {
+			return fmt.Errorf("cannot execute tests for extension %q, values.yaml file is missing", target)
+		}
+
+		ctr := dag.Container().From(chainsawImage).
+			WithWorkdir("e2e").
+			WithEnvVariable("CACHEBUSTER", time.Now().String()).
+			WithDirectory("test", extDir.Directory("test")).
+			WithDirectory(extName, targetExtension).
+			WithFile("/etc/kubeconfig/config", kubeconfig).
+			WithEnvVariable("KUBECONFIG", "/etc/kubeconfig/config")
+
+		_, err = ctr.WithExec(
+			[]string{"test", "./test", "--values", path.Join(extName, valuesFile)},
+			dagger.ContainerWithExecOpts{
+				UseEntrypoint: true,
+			}).
+			Sync(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		hasIndividualTests, err := targetExtension.Exists(ctx, "test")
+		if err != nil {
+			return err
+		}
+		if !hasIndividualTests {
+			continue
+		}
+		_, err = ctr.WithExec(
+			[]string{"test", path.Join(extName, "test"), "--values", path.Join(extName, valuesFile)},
+			dagger.ContainerWithExecOpts{
+				UseEntrypoint: true,
+			}).
+			Sync(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

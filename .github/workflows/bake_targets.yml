@@ -138,33 +138,17 @@ jobs:
       - name: Set up environment
         run: |
           task e2e:setup-env
-          task e2e:export-kubeconfig
 
       - name: Generate Chainsaw testing values
-        uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
-        env:
-          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.8
-        with:
-          version: ${{ env.DAGGER_VERSION }}
-          verb: call
-          module: ./dagger/maintenance/
-          args: generate-testing-values --target ${{ inputs.extension_name }} --extension-image ${{ matrix.image }} export --path=${{ inputs.extension_name }}/values.yaml
-
-      - name: Install Chainsaw
-        uses: kyverno/action-install-chainsaw@06560d18422209e9c1e08e931d477d04bf2674c1 # v0.2.14
-
-      - name: Run Kyverno/Chainsaw
-        env:
-          EXT_NAME: ${{ inputs.extension_name }}
         run: |
-          # Common smoke tests
-          chainsaw test ./test --values "$EXT_NAME/values.yaml"
+          task e2e:generate-values EXTENSION_IMAGE="${{ matrix.image }}" TARGET="${{ inputs.extension_name }}"
 
-          # Specific smoke tests
-          if [ -d "$EXT_NAME/test" ]; then
-            chainsaw test "$EXT_NAME/test" --values "$EXT_NAME/values.yaml"
-          fi
+      - name: Run e2e tests
+        run: |
+          # Get Kind cluster internal kubeconfig
+          task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
+
+          task e2e:test TARGET="${{ inputs.extension_name }}" KUBECONFIG_PATH="./kubeconfig"
 
   copytoproduction:
     name: Copy images to production
