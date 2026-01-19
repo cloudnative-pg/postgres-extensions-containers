@@ -138,7 +138,7 @@ This command tags the image for `localhost:5000` and pushes it automatically.
 
 > [!TIP]
 > You can change the default registry through the `registry` environment variable
-> (defined in the `docker/bake.hcl` file).  ### Prepare Testing Values
+> (defined in the `docker/bake.hcl` file).
 
 ### Prepare testing values
 
@@ -151,6 +151,13 @@ directory:
 
 ```bash
 task e2e:generate-values TARGET="<extension>" EXTENSION_IMAGE="<my-local-image>"
+```
+
+For example, to generate the values for the local test of the local image, you could run something similar to the following:
+
+```bash
+# The actual name of the image might be different on your system
+task e2e:generate-values TARGET=pgvector EXTENSION_IMAGE="localhost:5000/pgvector-testing:0.8.1-18-trixie"
 ```
 
 ### Execute End-to-End tests
@@ -170,6 +177,12 @@ target's `/test` folder):
 
 ```bash
 task e2e:test TARGET="<extension>" KUBECONFIG_PATH="./kubeconfig"
+```
+
+You can test the `pgvector` extension with:
+
+```bash
+task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig"
 ```
 
 ### Tear down the local test environment
