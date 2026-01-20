@@ -94,6 +94,22 @@ cluster with CloudNativePG pre-installed.
 > **Pre-submission requirement:** You must successfully run local tests before
 > submitting a Pull Request for any extension.
 
+### Run e2e tests for a specific extension
+
+E2E tests are performed using [Chainsaw](https://github.com/kyverno/chainsaw)
+which enables declarative testing through a set of specific manifests.
+The Taskfile collects all the necessary steps to setup the environment and
+to execute the tests into a single command:
+
+```bash
+task e2e:test:full TARGET="<extension>"
+```
+
+If issues arise, follow the step-by-step guide below for easier
+troubleshooting and a better understanding of the process.
+
+## E2E Step by Step Guide
+
 ### Initialize the environment
 
 The `e2e:setup-env` utility automates the heavy lifting. It creates a Kind
