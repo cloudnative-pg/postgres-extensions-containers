@@ -42,6 +42,7 @@ spec:
     extensions:
     - name: {{ .Name }}
       image:
+        // renovate: suite={{ .DefaultDistro }}-pgdg depName=postgresql-{{ .DefaultVersion }}-{{ .Name }}
         reference: ghcr.io/cloudnative-pg/{{ .Name }}:1.0-{{ .DefaultVersion }}-{{ .DefaultDistro }}
 ```
 
