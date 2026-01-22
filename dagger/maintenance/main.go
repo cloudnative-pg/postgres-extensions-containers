@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"maps"
 	"path"
+	"regexp"
 	"slices"
 	"strings"
 	"text/template"
@@ -216,6 +217,42 @@ func (m *Maintenance) Create(
 	// +optional
 	packageName string,
 ) (*dagger.Directory, error) {
+	// Validate name parameter
+	if name == "" {
+		return nil, fmt.Errorf("name cannot be empty")
+	}
+	// Validate name contains only lowercase alphanumeric characters, hyphens, and underscores
+	validNamePattern := regexp.MustCompile(`^[a-z0-9_-]+$`)
+	if !validNamePattern.MatchString(name) {
+		return nil, fmt.Errorf(
+			"invalid extension name: %s (must contain only lowercase alphanumeric characters, hyphens, and underscores)",
+			name,
+		)
+	}
+
+	// Validate versions array is not empty
+	if len(versions) == 0 {
+		return nil, fmt.Errorf("versions array cannot be empty")
+	}
+
+	// Validate distros array is not empty
+	if len(distros) == 0 {
+		return nil, fmt.Errorf("distros array cannot be empty")
+	}
+
+	// Validate template files exist
+	var templateFiles = []string{
+		"metadata.hcl",
+		"Dockerfile",
+		"README.md",
+	}
+	for _, fileName := range templateFiles {
+		tmplFile := templatesDir.File(fileName + ".tmpl")
+		if _, err := tmplFile.Contents(ctx); err != nil {
+			return nil, fmt.Errorf("required template file %s.tmpl not found: %w", fileName, err)
+		}
+	}
+
 	extDir := dag.Directory()
 
 	type Extension struct {
@@ -267,11 +304,6 @@ func (m *Maintenance) Create(
 		return nil
 	}
 
-	var templateFiles = []string{
-		"metadata.hcl",
-		"Dockerfile",
-		"README.md",
-	}
 	for _, fileName := range templateFiles {
 		if err := executeTemplate(fileName); err != nil {
 			return nil, err
