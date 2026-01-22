@@ -166,7 +166,7 @@ generic tests (global `/test` folder) and extension-specific tests (target
 `/test` folder).
 
 ```bash
-task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
+task e2e:test TARGET="<extension>" KUBECONFIG_PATH="./kubeconfig"
 ```
 
 ---
