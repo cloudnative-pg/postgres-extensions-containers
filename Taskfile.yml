@@ -129,6 +129,20 @@ tasks:
           TARGET: "{{.ITEM}}"
         task: update-os-libs
 
+  create-extension:
+    desc: Scaffold a new extension directory. Usage - task create-extension NAME=myextension
+    cmds:
+      - dagger call -sm ./dagger/maintenance/ create --name {{.NAME}} export --path ./{{.NAME}}
+    preconditions:
+      - sh: test -n "{{.NAME}}"
+        msg: 'NAME variable is required. Usage - task create-extension NAME=myextension'
+      - sh: test ! -d {{.NAME}}
+        msg: 'Extension directory already exists at ./{{.NAME}}. Please choose a different name or remove the existing directory.'
+    requires:
+      vars:
+        - name: NAME
+          desc: The name of the extension to create (lowercase alphanumeric, hyphens, and underscores only)
+
   generate-values:
     desc: Generate Chainsaw testing values for the specified target
     deps:

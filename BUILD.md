@@ -18,19 +18,57 @@ which primarily include:
 5. **Docker Buildx:** The `docker buildx` plugin must be available.
 6. **Docker Context:** A valid Docker context must be configured.
 
----
-
-## Usage and Targets
-
-### 1. Check prerequisites only
-
 To verify that all prerequisites are correctly installed and configured:
 
 ```bash
 task prereqs
 ```
 
-### 2. Build configuration check (dry run)
+---
+
+## Scaffolding a New Extension
+
+To create a new extension project structure, use the `create-extension` task:
+
+```bash
+task create-extension NAME=<extension-name>
+```
+
+This command generates a new directory named after your extension with the
+following scaffolded files:
+
+- `Dockerfile`: The base file to build the extension container image.
+- `metadata.hcl`: Provides specific metadata information used to build and test
+  the extension.
+- `README.md`: A template to help you document the extension's usage.
+
+> [!NOTE]
+> These files are generated from generic templates and should be customized to
+> meet your extension's specific requirements.
+
+### Advanced Scaffolding
+
+For more complex setups, you can use the `dagger` command directly to customize
+distributions or package names:
+
+```bash
+dagger call -sm ./dagger/maintenance/ create --name="<name>" [ARGUMENTS]
+```
+
+**Common Arguments:**
+
+| Argument | Description | Default |
+| --- | --- | --- |
+| `--distros` | Debian distributions the extension supports. | `[trixie, bookworm]` |
+| `--package-name` | The Debian package name (uses `%version%` placeholder). | `postgresql-%version%-<name>` |
+| `--versions` | Supported Postgres major versions. | `[18]` |
+| `--templates-dir` | Source directory containing custom template files. | Internal template dir |
+
+---
+
+## Usage and Targets
+
+### 1. Build configuration check (dry run)
 
 To verify the configuration (running `docker buildx bake --check`) for all
 projects without building or pulling layers:
@@ -39,7 +77,7 @@ projects without building or pulling layers:
 task checks:all
 ```
 
-### 3. Build all projects
+### 2. Build all projects
 
 To build all discovered projects:
 
@@ -49,7 +87,7 @@ task
 task bake:all
 ```
 
-### 4. Build a specific project
+### 3. Build a specific project
 
 To build a single project (e.g., the directory named `pgvector`):
 
@@ -57,7 +95,7 @@ To build a single project (e.g., the directory named `pgvector`):
 task bake TARGET=pgvector
 ```
 
-### 5. Push all images
+### 4. Push all images
 
 To build all images and immediately push them to the configured registry:
 
@@ -65,7 +103,7 @@ To build all images and immediately push them to the configured registry:
 task bake:all PUSH=true
 ```
 
-### 6. Push images for a specific project
+### 5. Push images for a specific project
 
 To push images for a single project (e.g., the directory named `pgvector`):
 
@@ -73,7 +111,7 @@ To push images for a single project (e.g., the directory named `pgvector`):
 task bake TARGET=pgvector PUSH=true
 ```
 
-### 7. Dry run mode
+### 6. Dry run mode
 
 To see the commands that would be executed without running the actual
 `docker buildx bake` command, set the `DRY_RUN` flag:

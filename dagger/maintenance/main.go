@@ -4,15 +4,21 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"maps"
 	"path"
+	"regexp"
 	"slices"
+	"strings"
+	"text/template"
 	"time"
 
 	"go.yaml.in/yaml/v3"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"dagger/maintenance/internal/dagger"
 )
@@ -189,6 +195,122 @@ func (m *Maintenance) GenerateTestingValues(
 	result := target.WithNewFile("values.yaml", string(valuesYaml))
 
 	return result.File("values.yaml"), nil
+}
+
+// Scaffolds a new Postgres extension directory structure
+func (m *Maintenance) Create(
+	ctx context.Context,
+	// The source directory containing the extension template files
+	// +defaultPath="/templates"
+	templatesDir *dagger.Directory,
+	// The name of the extension
+	name string,
+	// The Postgres major versions the extension is supported for
+	// +default=["18"]
+	versions []string,
+	// The Debian distributions the extension is supported for
+	// +default=["trixie","bookworm"]
+	distros []string,
+	// The Debian package name for the extension. If the package name contains
+	// the postgres version, it can be templated using the "%version%" placeholder.
+	//  (default "postgresql-%version%-<name>")
+	// +optional
+	packageName string,
+) (*dagger.Directory, error) {
+	// Validate name parameter
+	if name == "" {
+		return nil, fmt.Errorf("name cannot be empty")
+	}
+	// Validate name contains only lowercase alphanumeric characters, hyphens, and underscores
+	validNamePattern := regexp.MustCompile(`^[a-z0-9_-]+$`)
+	if !validNamePattern.MatchString(name) {
+		return nil, fmt.Errorf(
+			"invalid extension name: %s (must contain only lowercase alphanumeric characters, hyphens, and underscores)",
+			name,
+		)
+	}
+
+	// Validate versions array is not empty
+	if len(versions) == 0 {
+		return nil, fmt.Errorf("versions array cannot be empty")
+	}
+
+	// Validate distros array is not empty
+	if len(distros) == 0 {
+		return nil, fmt.Errorf("distros array cannot be empty")
+	}
+
+	// Validate template files exist
+	var templateFiles = []string{
+		"metadata.hcl",
+		"Dockerfile",
+		"README.md",
+	}
+	for _, fileName := range templateFiles {
+		tmplFile := templatesDir.File(fileName + ".tmpl")
+		if _, err := tmplFile.Contents(ctx); err != nil {
+			return nil, fmt.Errorf("required template file %s.tmpl not found: %w", fileName, err)
+		}
+	}
+
+	extDir := dag.Directory()
+
+	type Extension struct {
+		Name           string
+		Versions       []string
+		Distros        []string
+		Package        string
+		DefaultVersion int
+		DefaultDistro  string
+	}
+
+	if packageName == "" {
+		packageName = "postgresql-%version%-" + name
+	}
+
+	extension := Extension{
+		Name:           name,
+		Versions:       versions,
+		Distros:        distros,
+		Package:        packageName,
+		DefaultVersion: DefaultPgMajor,
+		DefaultDistro:  DefaultDistribution,
+	}
+
+	toTitle := func(s string) string {
+		return cases.Title(language.English).String(s)
+	}
+
+	funcMap := template.FuncMap{
+		"replaceAll": strings.ReplaceAll,
+		"toTitle":    toTitle,
+	}
+
+	executeTemplate := func(fileName string) error {
+		tmplFile := templatesDir.File(fileName + ".tmpl")
+		tmplContent, err := tmplFile.Contents(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to read template file %s.tmpl: %w", fileName, err)
+		}
+		tmpl, err := template.New(fileName).Funcs(funcMap).Parse(tmplContent)
+		if err != nil {
+			return fmt.Errorf("failed to parse template %s.tmpl: %w", fileName, err)
+		}
+		buf := &bytes.Buffer{}
+		if err := tmpl.Execute(buf, extension); err != nil {
+			return fmt.Errorf("failed to execute template %s.tmpl: %w", fileName, err)
+		}
+		extDir = extDir.WithNewFile(fileName, buf.String())
+		return nil
+	}
+
+	for _, fileName := range templateFiles {
+		if err := executeTemplate(fileName); err != nil {
+			return nil, err
+		}
+	}
+
+	return extDir, nil
 }
 
 // Tests the specified target using Chainsaw
