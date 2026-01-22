@@ -42,7 +42,7 @@ spec:
     extensions:
     - name: {{ .Name }}
       image:
-        // renovate: suite={{ .DefaultDistro }}-pgdg depName=postgresql-{{ .DefaultVersion }}-{{ .Name }}
+        # renovate: suite={{ .DefaultDistro }}-pgdg depName={{ replaceAll .Package "%version%" (printf "%d" .DefaultVersion) }}
         reference: ghcr.io/cloudnative-pg/{{ .Name }}:1.0-{{ .DefaultVersion }}-{{ .DefaultDistro }}
 ```
 
@@ -63,6 +63,7 @@ spec:
     name: cluster-{{ .Name }}
   extensions:
   - name: {{ .Name }}
+    # renovate: suite={{ .DefaultDistro }}-pgdg depName={{ replaceAll .Package "%version%" (printf "%d" .DefaultVersion) }}
     version: '1.0'
 ```
 
