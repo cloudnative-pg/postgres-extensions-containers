@@ -349,6 +349,7 @@ tasks:
     vars:
       METADATA_FILE: "{{ .TARGET }}/bake-metadata.json"
       KUBECONFIG_PATH: "./kubeconfig"
+      DISTRO: '{{ .DISTRO | default "trixie" }}'
     cmds:
       - task: e2e:setup-env
       - task: bake
@@ -362,9 +363,10 @@ tasks:
           TARGET: "{{ .TARGET }}"
           EXTENSION_IMAGE:
             sh: >
-              jq 'to_entries | .[] | select(.key | endswith("-trixie")) | .value["image.name"] | split(",")[0]'
+              jq -r --arg distro "{{ .DISTRO }}"
+              'to_entries | .[] | select(.key | endswith("-" + $distro)) | .value["image.name"] | split(",")[0]'
               "{{ .METADATA_FILE }}"
-      - defer: rm -f {{ .TARGET }}/values.yaml
+      - defer: rm -f "{{ .TARGET }}/values.yaml"
       - task: e2e:export-kubeconfig
         vars:
           KUBECONFIG_PATH: "{{ .KUBECONFIG_PATH }}"

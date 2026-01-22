@@ -106,8 +106,15 @@ execution:
 task e2e:test:full TARGET="<extension>"
 ```
 
-If issues arise, follow the step-by-step guide below for granular
-troubleshooting.
+Example for testing the `pgvector` extension:
+
+```bash
+task e2e:test:full TARGET="pgvector"
+```
+
+**When to use the step-by-step guide:** If the automated test fails during
+environment setup, image building, or test execution, the step-by-step guide
+below provides granular control for debugging each phase independently.
 
 ---
 
