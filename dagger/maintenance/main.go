@@ -290,15 +290,15 @@ func (m *Maintenance) Create(
 		tmplFile := templatesDir.File(fileName + ".tmpl")
 		tmplContent, err := tmplFile.Contents(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to read template file %s.tmpl: %w", fileName, err)
 		}
 		tmpl, err := template.New(fileName).Funcs(funcMap).Parse(tmplContent)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse template %s.tmpl: %w", fileName, err)
 		}
 		buf := &bytes.Buffer{}
 		if err := tmpl.Execute(buf, extension); err != nil {
-			return err
+			return fmt.Errorf("failed to execute template %s.tmpl: %w", fileName, err)
 		}
 		extDir = extDir.WithNewFile(fileName, buf.String())
 		return nil
