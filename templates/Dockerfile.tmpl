@@ -36,8 +36,8 @@ ARG PG_MAJOR
 # Libraries
 # <REMOVE>
 # Include the extension's shared objects and related dependencies under the /lib directory.
-# CNPG will load these libraries at runtime by configuring the dynamic linker path (LD_LIBRARY_PATH) and
-# the PostgreSQL GUC "dynamic_library_path" based on defaults and Cluster configuration.
+# CNPG will configure PostgreSQL to locate these libraries at runtime by configuring
+# the "dynamic_library_path" GUC to include this path.
 # For more details, see: https://cloudnative-pg.io/docs/current/imagevolume_extensions#how-it-works
 # </REMOVE>
 # COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/{{ .Name }}* /lib/
