@@ -174,9 +174,12 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
+	k8sName := strings.ReplaceAll(metadata.Name, "_", "-")
+
 	// Build values.yaml content
 	values := map[string]any{
 		"name":                     metadata.Name,
+		"k8s_name":                 k8sName,
 		"sql_name":                 metadata.SQLName,
 		"image_name":               metadata.ImageName,
 		"shared_preload_libraries": metadata.SharedPreloadLibraries,

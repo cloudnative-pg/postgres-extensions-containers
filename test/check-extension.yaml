@@ -16,7 +16,7 @@ spec:
           - name: DB_URI
             valueFrom:
               secretKeyRef:
-                name: (join('-', [$values.name, 'app']))
+                name: (join('-', [$values.k8s_name, 'app']))
                 key: uri
         image: alpine/psql:latest
         command: ['sh', '-c']

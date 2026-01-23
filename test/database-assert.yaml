@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: (join('-', [$values.name, 'app']))
+  name: (join('-', [$values.k8s_name, 'app']))
 status:
   applied: true
   extensions:

@@ -29,7 +29,7 @@ your `Cluster` resource. For example:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: cluster-{{ .Name }}
+  name: cluster-{{ replaceAll .Name "_" "-" }}
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:{{ .DefaultVersion }}-minimal-{{ .DefaultDistro }}
   instances: 1
@@ -39,7 +39,7 @@ spec:
 
   postgresql:
     extensions:
-    - name: {{ .Name }}
+    - name: {{ replaceAll .Name "_" "-" }}
       image:
         # renovate: suite={{ .DefaultDistro }}-pgdg depName={{ replaceAll .Package "%version%" (printf "%d" .DefaultVersion) }}
         reference: ghcr.io/cloudnative-pg/{{ .Name }}:1.0-{{ .DefaultVersion }}-{{ .DefaultDistro }}
@@ -54,12 +54,12 @@ You can install `{{ .Name }}` in a specific database by creating or updating a
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: cluster-{{ .Name }}-app
+  name: cluster-{{ replaceAll .Name "_" "-" }}-app
 spec:
   name: app
   owner: app
   cluster:
-    name: cluster-{{ .Name }}
+    name: cluster-{{ replaceAll .Name "_" "-" }}
   extensions:
   - name: {{ .Name }}
     # renovate: suite={{ .DefaultDistro }}-pgdg depName={{ replaceAll .Package "%version%" (printf "%d" .DefaultVersion) }}
