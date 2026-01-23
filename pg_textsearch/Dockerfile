@@ -7,44 +7,34 @@ FROM $BASE AS builder
 
 ARG PG_MAJOR
 ARG EXT_VERSION
+ARG TARGETARCH
 
 USER 0
 
-# TODO: Remove this comment block after customizing the Dockerfile
-# Instructions:
-# 1. Remove all TODO comment blocks after completing the customization.
-# 2. Uncomment and customize the COPY/RUN commands below.
-# 3. If your extension requires additional system libraries, ensure they are
-#    copied to /lib.
-
-# Install extension via `apt-get`
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#       "postgresql-${PG_MAJOR}-pg_textsearch=${EXT_VERSION}"
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends ca-certificates wget unzip dpkg; \
+	case "${TARGETARCH}" in amd64|arm64) ;; *) echo "Unsupported TARGETARCH=${TARGETARCH}" >&2; exit 1 ;; esac; \
+	ZIP_URL="https://github.com/timescale/pg_textsearch/releases/download/v${EXT_VERSION}/pg-textsearch-v${EXT_VERSION}-pg${PG_MAJOR}-${TARGETARCH}.zip"; \
+	DEB_FILE="pg-textsearch-postgresql-${PG_MAJOR}_${EXT_VERSION}-1_${TARGETARCH}.deb"; \
+	LICENSE_TGZ_URL="https://github.com/timescale/pg_textsearch/releases/download/v${EXT_VERSION}/pg_textsearch-${EXT_VERSION}.tar.gz"; \
+	mkdir -p /tmp/pg_textsearch && cd /tmp/pg_textsearch; \
+	wget -O pg_textsearch.zip "$ZIP_URL"; \
+	unzip -q pg_textsearch.zip "$DEB_FILE"; \
+	dpkg-deb -x "./$DEB_FILE" /tmp/pkgroot; \
+	mkdir -p /out/lib /out/share/extension "/out/licenses/pg-textsearch-postgresql-${PG_MAJOR}"; \
+	cp -a "/tmp/pkgroot/usr/lib/postgresql/${PG_MAJOR}/lib/pg_textsearch"* /out/lib/; \
+	cp -a "/tmp/pkgroot/usr/share/postgresql/${PG_MAJOR}/extension/pg_textsearch"* /out/share/extension/; \
+	wget -qO- "$LICENSE_TGZ_URL" | tar -xzO "pg_textsearch-${EXT_VERSION}/LICENSE" > "/out/licenses/pg-textsearch-postgresql-${PG_MAJOR}/copyright"; \
+	cd /; \
+	rm -rf /tmp/pg_textsearch; \
+	rm -rf /var/lib/apt/lists/*
 
 FROM scratch
 ARG PG_MAJOR
 
-# Licenses
-# TODO: Uncomment and customize the COPY command below
-# Including license files is essential for legal compliance and transparency.
-# It ensures proper attribution to original authors, fulfills open source license
-# requirements, and enables automated compliance scanning tools to verify licensing.
-# COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pg_textsearch/copyright /licenses/postgresql-${PG_MAJOR}-pg_textsearch/
-
-# Libraries
-# TODO: Uncomment and customize the COPY command below
-# Include the extension's shared objects and related dependencies under the /lib directory.
-# CNPG will configure PostgreSQL to locate these libraries at runtime by configuring
-# the "dynamic_library_path" GUC to include this path.
-# For more details, see: https://cloudnative-pg.io/docs/current/imagevolume_extensions#how-it-works
-# COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/pg_textsearch* /lib/
-
-# Share
-# TODO: Uncomment and customize the COPY command below
-# Include the extension's SQL scripts and control files under the /share/extension directory.
-# CNPG will configure PostgreSQL to include this path via the "extension_control_path" GUC to
-# seamlessly find and manage the current extension.
-# For more details, see: https://cloudnative-pg.io/docs/current/imagevolume_extensions#how-it-works
-# COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/pg_textsearch* /share/extension/
+COPY --from=builder /out/licenses/pg-textsearch-postgresql-${PG_MAJOR}/copyright /licenses/pg-textsearch-postgresql-${PG_MAJOR}/
+COPY --from=builder /out/lib/pg_textsearch* /lib/
+COPY --from=builder /out/share/extension/pg_textsearch* /share/extension/
 
 USER 65532:65532
