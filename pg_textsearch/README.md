@@ -15,7 +15,7 @@ your `Cluster` resource. For example:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: cluster-pg_textsearch
+  name: cluster-pg-textsearch
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
   instances: 1
@@ -25,7 +25,7 @@ spec:
 
   postgresql:
     extensions:
-    - name: pg_textsearch
+    - name: pg-textsearch
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pg_textsearch
         reference: ghcr.io/cloudnative-pg/pg_textsearch:0.4.1-18-trixie
@@ -40,12 +40,12 @@ You can install `pg_textsearch` in a specific database by creating or updating a
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: cluster-pg_textsearch-app
+  name: cluster-pg-textsearch-app
 spec:
   name: app
   owner: app
   cluster:
-    name: cluster-pg_textsearch
+    name: cluster-pg-textsearch
   extensions:
   - name: pg_textsearch
     # renovate: suite=trixie-pgdg depName=postgresql-18-pg_textsearch
