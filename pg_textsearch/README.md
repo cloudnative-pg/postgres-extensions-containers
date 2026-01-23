@@ -1,24 +1,10 @@
-# Pg_textsearch
-<!--
-SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
-SPDX-License-Identifier: Apache-2.0
--->
+# PgTextsearch
 
-<!--
-TODO: Replace this section with a brief introduction of your extension.
-Describe what the extension does and what it is useful for.
-Add a reference to the official documentation if available.
--->
 
-The pg_textsearch PostgreSQL extension provides [describe the main functionality
-here]. For more information, see the [official documentation](https://example.com).
+[pg_textsearch](https://github.com/timescale/pg_textsearch) is an extension that adds
+**ranked full-text search (BM25)** to PostgreSQL.
 
 ## Usage
-
-<!--
-Usage: add instructions on how to use the extension with CloudNativePG.
-Include code snippets for Cluster and Database resources as needed.
--->
 
 ### 1. Add the pg_textsearch extension image to your Cluster
 
@@ -42,7 +28,7 @@ spec:
     - name: pg_textsearch
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pg_textsearch
-        reference: ghcr.io/cloudnative-pg/pg_textsearch:1.0-18-trixie
+        reference: ghcr.io/cloudnative-pg/pg_textsearch:0.4.1-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -63,7 +49,7 @@ spec:
   extensions:
   - name: pg_textsearch
     # renovate: suite=trixie-pgdg depName=postgresql-18-pg_textsearch
-    version: '1.0'
+    version: '0.4.1'
 ```
 
 ### 3. Verify installation
@@ -80,7 +66,7 @@ You should see `pg_textsearch` listed among the installed extensions.
 
 This extension is maintained by:
 
-- FirstName LastName (@GitHub_Handle)
+- Bryan Wong (@ImSingee)
 
 The maintainers are responsible for:
 
