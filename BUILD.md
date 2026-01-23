@@ -176,8 +176,15 @@ task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig
 export KUBECONFIG=$PWD/kubeconfig
 ```
 
-To allow the test suite (running within the Docker network) to reach the API
-server:
+> [!IMPORTANT]
+> The local registry running alongside the Kind cluster is reachable within
+> Kubernetes at `registry.extensions:5000`. When testing your local builds, you
+> must point the extension's `reference` to this internal address.
+> For example, if you are testing a locally built `pgvector` image, use:
+> `reference: registry.extensions:5000/pgvector-testing:<tag>`
+
+To allow the test suite (which runs within the Docker network) to reach the
+Kubernetes API server, export the internal Kubeconfig:
 
 ```bash
 task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
