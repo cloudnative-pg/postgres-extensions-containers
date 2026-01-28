@@ -328,6 +328,9 @@ tasks:
             # We need to replace localhost with the registry container name as it is how
             # the registry is reachable from within the Docker network.
             sh: sed -E 's/^localhost/{{ .REGISTRY_NAME }}/;t' <<< "{{ .EXTENSION_IMAGE }}"
+    requires:
+      vars:
+        - name: TARGET
 
   e2e:test:
     desc: Test target extension using Chainsaw
