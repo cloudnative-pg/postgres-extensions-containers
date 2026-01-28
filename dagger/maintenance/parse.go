@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"path"
 
 	"github.com/docker/buildx/bake"
@@ -90,6 +91,14 @@ func parseExtensionMetadata(ctx context.Context, extensionDirectory *dagger.Dire
 	type Config struct {
 		Metadata extensionMetadata `hcl:"metadata"`
 		Remain   hcl.Body          `hcl:",remain"`
+	}
+
+	hasMetadataFile, err := extensionDirectory.Exists(ctx, metadataFile)
+	if err != nil {
+		return nil, err
+	}
+	if !hasMetadataFile {
+		return nil, fmt.Errorf("not a valid target, metadata.hcl file is missing")
 	}
 
 	data, err := extensionDirectory.File(metadataFile).Contents(ctx)

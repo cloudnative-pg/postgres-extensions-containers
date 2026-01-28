@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"dagger/maintenance/internal/dagger"
 )
@@ -13,18 +14,27 @@ func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directo
 		return nil, err
 	}
 	out = append(out, configuration)
-	for _, deps := range metadata.RequiredExtensions {
-		depsMetadata, parseErr := parseExtensionMetadata(ctx, source.Directory(deps))
+
+	for _, dep := range metadata.RequiredExtensions {
+		depExists, err := source.Exists(ctx, dep)
+		if err != nil {
+			return nil, err
+		}
+		if !depExists {
+			return nil, fmt.Errorf("required dependency %q not found", dep)
+		}
+
+		depMetadata, parseErr := parseExtensionMetadata(ctx, source.Directory(dep))
 		if parseErr != nil {
 			return nil, parseErr
 		}
-		depsConfiguration, extErr := generateExtensionConfiguration(depsMetadata, "")
+		depsConfiguration, extErr := generateExtensionConfiguration(depMetadata, "")
 		if extErr != nil {
 			return nil, extErr
 		}
 		out = append(out, depsConfiguration)
-
 	}
+
 	return out, nil
 }
 
@@ -37,6 +47,7 @@ func generateExtensionConfiguration(metadata *extensionMetadata, extensionImage 
 			return nil, err
 		}
 	}
+
 	return map[string]any{
 		"name": metadata.Name,
 		"image": map[string]string{

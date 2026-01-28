@@ -178,15 +178,11 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
-	extensions, generateExtErr := generateTestingValuesExtensions(
-		ctx,
-		source,
-		metadata,
-		targetExtensionImage,
-	)
-	if generateExtErr != nil {
-		return nil, generateExtErr
+	extensions, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage)
+	if err != nil {
+		return nil, err
 	}
+
 	// Build values.yaml content
 	values := map[string]any{
 		"name":                     metadata.Name,
