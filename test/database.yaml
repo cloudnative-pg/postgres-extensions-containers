@@ -1,12 +1,12 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: (join('-', [$values.name, 'app']))
+  name: (join('-', [$values.k8s_name, 'app']))
 spec:
   name: app
   owner: app
   cluster:
-    name: ($values.name)
+    name: ($values.k8s_name)
   extensions:
   - name: ($values.sql_name)
     version: ($values.version)

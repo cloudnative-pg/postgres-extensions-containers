@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: ($values.name)
+  name: ($values.k8s_name)
 spec:
   imageName: ($values.pg_image)
   instances: 1
@@ -12,7 +12,7 @@ spec:
   postgresql:
     shared_preload_libraries: ($values.shared_preload_libraries)
     extensions:
-      - name: ($values.name)
+      - name: ($values.k8s_name)
         image:
           reference: ($values.extension_image)
         extension_control_path: ($values.extension_control_path)
