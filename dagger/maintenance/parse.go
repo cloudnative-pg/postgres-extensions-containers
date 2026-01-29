@@ -30,6 +30,7 @@ type extensionMetadata struct {
 	LdLibraryPath          []string   `hcl:"ld_library_path" cty:"ld_library_path"`
 	AutoUpdateOsLibs       bool       `hcl:"auto_update_os_libs" cty:"auto_update_os_libs"`
 	RequiredExtensions     []string   `hcl:"required_extensions" cty:"required_extensions"`
+	CreateExtension        bool       `hcl:"create_extension" cty:"create_extension"`
 	Versions               versionMap `hcl:"versions" cty:"versions"`
 	Remain                 hcl.Body   `hcl:",remain"`
 }
