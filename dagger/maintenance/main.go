@@ -174,6 +174,10 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
+	// Sanitize the extension name for Kubernetes compatibility.
+	// Underscores are valid in extension metadata but prohibited in K8s
+	// object names, which must follow DNS subdomain conventions
+	// (RFC-1123).
 	k8sName := strings.ReplaceAll(metadata.Name, "_", "-")
 
 	// Build values.yaml content
