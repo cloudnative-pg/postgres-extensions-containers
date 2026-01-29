@@ -4,7 +4,3 @@ metadata:
   name: (join('-', [$values.name, 'app']))
 status:
   applied: true
-  extensions:
-  - applied: true
-    name: ($values.sql_name)
-  observedGeneration: 1
