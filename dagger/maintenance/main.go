@@ -174,6 +174,17 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
+	var extensions []map[string]string
+	var expectedExtensions []map[string]any
+	if metadata.CreateExtension {
+		extensions = []map[string]string{
+			{"name": metadata.SQLName, "version": version},
+		}
+		expectedExtensions = []map[string]any{
+			{"applied": true, "name": metadata.SQLName},
+		}
+	}
+
 	// Build values.yaml content
 	values := map[string]any{
 		"name":                     metadata.Name,
@@ -186,6 +197,9 @@ func (m *Maintenance) GenerateTestingValues(
 		"extension_image":          targetExtensionImage,
 		"pg_image":                 pgImage,
 		"version":                  version,
+		"create_extension":         metadata.CreateExtension,
+		"extensions":               extensions,
+		"expected_extensions":      expectedExtensions,
 	}
 	valuesYaml, err := yaml.Marshal(values)
 	if err != nil {
