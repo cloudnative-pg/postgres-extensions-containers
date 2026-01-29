@@ -8,6 +8,7 @@ metadata = {
   ld_library_path          = ["system"]
   auto_update_os_libs      = true
   required_extensions      = []
+  create_extension         = true
 
   versions = {
     bookworm = {
