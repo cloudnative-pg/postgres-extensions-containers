@@ -12,6 +12,8 @@ import (
 	"path"
 	"regexp"
 	"slices"
+	"sort"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -409,4 +411,95 @@ func (m *Maintenance) Test(
 	}
 
 	return nil
+}
+
+// Generate extension's ClusterImageCatalogs starting from a base set of catalogs
+func (m *Maintenance) GenerateCatalogs(
+	ctx context.Context,
+	// The source directory containing the extension folders. Defaults to the current directory
+	// +ignore=["dagger", ".github"]
+	// +defaultPath="/"
+	source *dagger.Directory,
+	// The directory containing the starting catalogs. Defaults to "/image-catalogs"
+	// +defaultPath="/image-catalogs"
+	catalogsDir *dagger.Directory,
+) (*dagger.Directory, error) {
+	outDir := dag.Directory()
+
+	catalogs, err := getMinimalCatalogs(ctx, catalogsDir)
+	if err != nil {
+		return nil, fmt.Errorf("while retrieving base catalogs: %w", err)
+	}
+
+	targetExtensions, err := getExtensions(ctx, source)
+	if err != nil {
+		return nil, fmt.Errorf("while retrieving extensions: %w", err)
+	}
+	if len(targetExtensions) == 0 {
+		return nil, fmt.Errorf("no extensions found in source directory")
+	}
+
+	catalogWritten := false
+	for _, catalog := range catalogs {
+		catalogOS, ok := catalog.Metadata.Labels[LabelImageOS]
+		if !ok {
+			return nil, fmt.Errorf("while retrieving OS for %q catalog", catalog.Metadata.Name)
+		}
+
+		for dir, extension := range targetExtensions {
+			matrix, err := parseBuildMatrix(ctx, source, dir)
+			if err != nil {
+				return nil, fmt.Errorf("while parsing build Matrix for extension %s: %w", extension, err)
+			}
+			if !slices.Contains(matrix.Distributions, catalogOS) {
+				continue
+			}
+
+			for i := range catalog.Spec.Images {
+				img := &catalog.Spec.Images[i]
+				if !slices.Contains(matrix.MajorVersions, strconv.Itoa(img.Major)) {
+					continue
+				}
+
+				metadata, err := parseExtensionMetadata(ctx, source.Directory(dir))
+				if err != nil {
+					return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
+				}
+
+				targetExtensionImage, err := getExtensionImage(metadata, catalogOS, img.Major)
+				if err != nil {
+					return nil, fmt.Errorf("while retrieving extension %s image: %w", extension, err)
+				}
+
+				extensionsConfig := ExtensionConfiguration{
+					Name: metadata.Name,
+					ImageVolumeSource: ImageVolumeSource{
+						Reference: targetExtensionImage,
+					},
+					ExtensionControlPath: metadata.ExtensionControlPath,
+					DynamicLibraryPath:   metadata.DynamicLibraryPath,
+					LdLibraryPath:        metadata.LdLibraryPath,
+				}
+
+				img.Extensions = append(img.Extensions, extensionsConfig)
+
+				// Sort extensions by name
+				sort.Slice(img.Extensions, func(i, j int) bool {
+					return img.Extensions[i].Name < img.Extensions[j].Name
+				})
+			}
+		}
+
+		outDir, err = writeCatalogToDir(catalog, outDir)
+		if err != nil {
+			return nil, fmt.Errorf("while writing catalog %s: %w", catalog.Metadata.Name, err)
+		}
+		catalogWritten = true
+	}
+
+	if !catalogWritten {
+		return nil, fmt.Errorf("no catalogs matched the selection criteria")
+	}
+
+	return outDir, nil
 }
