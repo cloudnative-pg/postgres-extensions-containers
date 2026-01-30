@@ -17,6 +17,11 @@ const (
 	DefaultDistribution = "trixie"
 )
 
+var SupportedDistributions = []string{
+	"bookworm",
+	"trixie",
+}
+
 // getImageAnnotations returns the OCI annotations given an image ref.
 func getImageAnnotations(imageRef string) (map[string]string, error) {
 	// Setting Insecure option to allow fetching images from local registries with no TLS
@@ -51,10 +56,16 @@ func getImageAnnotations(imageRef string) (map[string]string, error) {
 // getDefaultExtensionImage returns the default extension image for a given extension,
 // resolved from the metadata.
 func getDefaultExtensionImage(metadata *extensionMetadata) (string, error) {
-	packageVersion := metadata.Versions[DefaultDistribution][strconv.Itoa(DefaultPgMajor)]
+	return getExtensionImage(metadata, DefaultDistribution, DefaultPgMajor)
+}
+
+// getExtensionImage returns the extension image for a given distribution and pgMajor,
+// resolved from the metadata.
+func getExtensionImage(metadata *extensionMetadata, distribution string, pgMajor int) (string, error) {
+	packageVersion := metadata.Versions[distribution][strconv.Itoa(pgMajor)]
 	if packageVersion == "" {
 		return "", fmt.Errorf("no package version found for distribution %q and version %d",
-			DefaultDistribution, DefaultPgMajor)
+			distribution, pgMajor)
 	}
 
 	re := regexp.MustCompile(`^(\d+(?:\.\d+)+)`)
@@ -64,7 +75,7 @@ func getDefaultExtensionImage(metadata *extensionMetadata) (string, error) {
 	}
 	version := matches[1]
 	image := fmt.Sprintf("ghcr.io/cloudnative-pg/%s:%s-%d-%s",
-		metadata.ImageName, version, DefaultPgMajor, DefaultDistribution)
+		metadata.ImageName, version, pgMajor, distribution)
 
 	return image, nil
 }
