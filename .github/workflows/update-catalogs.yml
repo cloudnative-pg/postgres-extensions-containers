@@ -1,6 +1,9 @@
 name: Update Catalogs
 
 on:
+  schedule:
+    # Refresh Catalogs once a week, on Mondays - 1h after postgres-container images
+    - cron: 0 9 * * 1
   workflow_dispatch:
   repository_dispatch:
     types: [update-catalogs]
