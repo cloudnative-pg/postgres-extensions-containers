@@ -98,7 +98,7 @@ func parseExtensionMetadata(ctx context.Context, extensionDirectory *dagger.Dire
 		return nil, err
 	}
 	if !hasMetadataFile {
-		return nil, fmt.Errorf("not a valid target, metadata.hcl file is missing")
+		return nil, fmt.Errorf("metadata.hcl file is missing")
 	}
 
 	data, err := extensionDirectory.File(metadataFile).Contents(ctx)

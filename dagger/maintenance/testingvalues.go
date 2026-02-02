@@ -26,7 +26,7 @@ func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directo
 
 		depMetadata, parseErr := parseExtensionMetadata(ctx, source.Directory(dep))
 		if parseErr != nil {
-			return nil, parseErr
+			return nil, fmt.Errorf("failed to parse dependency metadata %q: %w", dep, parseErr)
 		}
 		depsConfiguration, extErr := generateExtensionConfiguration(depMetadata, "")
 		if extErr != nil {
