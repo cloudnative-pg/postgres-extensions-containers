@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"path"
 
 	"github.com/docker/buildx/bake"
@@ -28,6 +29,7 @@ type extensionMetadata struct {
 	DynamicLibraryPath     []string   `hcl:"dynamic_library_path" cty:"dynamic_library_path"`
 	LdLibraryPath          []string   `hcl:"ld_library_path" cty:"ld_library_path"`
 	AutoUpdateOsLibs       bool       `hcl:"auto_update_os_libs" cty:"auto_update_os_libs"`
+	RequiredExtensions     []string   `hcl:"required_extensions" cty:"required_extensions"`
 	Versions               versionMap `hcl:"versions" cty:"versions"`
 	Remain                 hcl.Body   `hcl:",remain"`
 }
@@ -89,6 +91,14 @@ func parseExtensionMetadata(ctx context.Context, extensionDirectory *dagger.Dire
 	type Config struct {
 		Metadata extensionMetadata `hcl:"metadata"`
 		Remain   hcl.Body          `hcl:",remain"`
+	}
+
+	hasMetadataFile, err := extensionDirectory.Exists(ctx, metadataFile)
+	if err != nil {
+		return nil, err
+	}
+	if !hasMetadataFile {
+		return nil, fmt.Errorf("metadata.hcl file is missing")
 	}
 
 	data, err := extensionDirectory.File(metadataFile).Contents(ctx)
