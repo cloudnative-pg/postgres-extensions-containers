@@ -466,7 +466,7 @@ func (m *Maintenance) GenerateCatalogs(
 					return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
 				}
 
-				targetExtensionImage, err := getExtensionImage(metadata, catalogOS, img.Major)
+				targetExtensionImage, err := getExtensionImageWithTimestamp(metadata, catalogOS, img.Major)
 				if err != nil {
 					return nil, fmt.Errorf("while retrieving extension %s image: %w", extension, err)
 				}
