@@ -455,15 +455,15 @@ func (m *Maintenance) GenerateCatalogs(
 				continue
 			}
 
+			metadata, err := parseExtensionMetadata(ctx, source.Directory(dir))
+			if err != nil {
+				return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
+			}
+
 			for i := range catalog.Spec.Images {
 				img := &catalog.Spec.Images[i]
 				if !slices.Contains(matrix.MajorVersions, strconv.Itoa(img.Major)) {
 					continue
-				}
-
-				metadata, err := parseExtensionMetadata(ctx, source.Directory(dir))
-				if err != nil {
-					return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
 				}
 
 				targetExtensionImage, err := getExtensionImageWithTimestamp(metadata, catalogOS, img.Major)

@@ -103,7 +103,7 @@ func getExtensionImageWithTimestamp(metadata *extensionMetadata, distribution st
 	}
 	if latestTag == "" {
 		return "", fmt.Errorf(
-			"no image found for image %s (version=%s pgMajor=%d os=%s",
+			"no image found for image %s (version=%s pgMajor=%d os=%s)",
 			imageName, version, pgMajor, distribution,
 		)
 	}
