@@ -1,4 +1,4 @@
-name: Update Catalogs
+name: Update Extension Image Catalogs
 
 on:
   schedule:

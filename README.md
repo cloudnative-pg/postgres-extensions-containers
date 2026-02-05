@@ -158,3 +158,19 @@ docker buildx imagetools inspect <image> --raw | jq '.annotations'
 # Using skopeo
 skopeo inspect docker://<image> | jq '.Labels'
 ```
+
+## Image catalogs
+
+
+## Image catalogs
+
+To simplify the deployment of PostgreSQL extensions, this project automatically
+generates `ClusterImageCatalog` resources. These catalogs provide a curated
+list of compatible extension images for PostgreSQL 18+ versions.
+
+- **Frequency:** Built once a week.
+- **Location:** Published in the [`artifacts`
+  project](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs).
+- **Naming Convention:** These are based on the `minimal` catalog and use the
+  `catalog-extensions` prefix (e.g., `catalog-extensions-trixie.yaml`).
+
