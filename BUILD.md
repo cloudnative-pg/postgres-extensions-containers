@@ -167,6 +167,11 @@ registry (available at `localhost:5000`).
 task e2e:setup-env
 ```
 
+> [!INFO]
+> You can customize the local registry's port using the `REGISTRY_HOST_PORT` variable.
+> If you setup the environment with a custom `REGISTRY_HOST_PORT`, take care to include
+> this variable when running tasks that interact with the local registry.
+
 ### Get access to the cluster
 
 To interact with the cluster via `kubectl` from your local terminal:

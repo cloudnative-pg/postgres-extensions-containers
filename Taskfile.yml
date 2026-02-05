@@ -11,7 +11,9 @@ vars:
   E2E_NETWORK: pg-extensions-e2e
   DAGGER_ENGINE_NAME: dagger-engine-pg-extensions
   REGISTRY_NAME: registry.pg-extensions
+  REGISTRY_HOST_IP: localhost
   REGISTRY_HOST_PORT: 5000
+  REGISTRY_INTERNAL_PORT: 5000
   # renovate: datasource=git-refs depName=kind lookupName=https://github.com/aweris/daggerverse currentValue=main
   DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
   # renovate: datasource=docker depName=kindest/node versioning=docker
@@ -72,6 +74,8 @@ tasks:
       - prereqs
     prefix: 'bake-{{.TARGET}}'
     silent: true
+    env:
+      registry: '{{ .REGISTRY_HOST_IP }}:{{ .REGISTRY_HOST_PORT }}'
     vars:
       PUSH: '{{.PUSH | default "false"}}'
       DRY_RUN: '{{.DRY_RUN | default "false"}}'
@@ -181,7 +185,7 @@ tasks:
       REGISTRY_VERSION: 3.0.0@sha256:6c5666b861f3505b116bb9aa9b25175e71210414bd010d92035ff64018f9457e
     cmds:
       - >
-        docker run -d --name {{ .REGISTRY_NAME }} --rm -p {{ .REGISTRY_HOST_PORT }}:5000
+        docker run -d --name {{ .REGISTRY_NAME }} --rm -p {{ .REGISTRY_HOST_PORT }}:{{ .REGISTRY_INTERNAL_PORT }}
         --network {{ .E2E_NETWORK }} registry:{{ .REGISTRY_VERSION }}
     status:
       - test "$(docker inspect -f {{`'{{json .State.Running}}'`}} {{ .REGISTRY_NAME }})" == "true"
@@ -210,7 +214,7 @@ tasks:
     internal: true
     run: once
     vars:
-      REGISTRY_DIR: /etc/containerd/certs.d/{{ .REGISTRY_NAME }}:{{ .REGISTRY_HOST_PORT }}
+      REGISTRY_DIR: /etc/containerd/certs.d/{{ .REGISTRY_NAME }}:{{ .REGISTRY_INTERNAL_PORT }}
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
     env:
@@ -224,7 +228,7 @@ tasks:
       - docker exec "{{ .KIND_CLUSTER_NAME }}-control-plane" mkdir -p "{{ .REGISTRY_DIR }}"
       - |
         cat <<EOF | docker exec -i "{{ .KIND_CLUSTER_NAME }}-control-plane" cp /dev/stdin "{{ .REGISTRY_DIR }}/hosts.toml"
-        [host."http://{{ .REGISTRY_NAME }}:5000"]
+        [host."http://{{ .REGISTRY_NAME }}:{{ .REGISTRY_INTERNAL_PORT }}"]
         EOF
     status:
       - >
@@ -327,7 +331,7 @@ tasks:
           EXTENSION_IMAGE:
             # We need to replace localhost with the registry container name as it is how
             # the registry is reachable from within the Docker network.
-            sh: sed -E 's/^localhost/{{ .REGISTRY_NAME }}/;t' <<< "{{ .EXTENSION_IMAGE }}"
+            sh: sed -E 's/^{{ .REGISTRY_HOST_IP }}:{{ .REGISTRY_HOST_PORT }}/{{ .REGISTRY_NAME }}:{{ .REGISTRY_INTERNAL_PORT }}/;t' <<< "{{ .EXTENSION_IMAGE }}"
     requires:
       vars:
         - name: TARGET
