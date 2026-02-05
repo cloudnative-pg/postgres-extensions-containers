@@ -161,9 +161,6 @@ skopeo inspect docker://<image> | jq '.Labels'
 
 ## Image catalogs
 
-
-## Image catalogs
-
 To simplify the deployment of PostgreSQL extensions, this project automatically
 generates `ClusterImageCatalog` resources. These catalogs provide a curated
 list of compatible extension images for PostgreSQL 18+ versions.
