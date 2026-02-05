@@ -108,7 +108,19 @@ func getExtensionImageWithTimestamp(metadata *extensionMetadata, distribution st
 		)
 	}
 
-	return fmt.Sprintf("%s:%s", imageName, latestTag), nil
+	imageRef := fmt.Sprintf("%s:%s", imageName, latestTag)
+
+	ref, err := name.ParseReference(imageRef, name.Insecure)
+	if err != nil {
+		return "", fmt.Errorf("while parsing image reference %s: %w", imageRef, err)
+	}
+
+	desc, err := remote.Get(ref)
+	if err != nil {
+		return "", fmt.Errorf("while fetching digest for image %s: %w", imageRef, err)
+	}
+
+	return fmt.Sprintf("%s@%s", imageRef, desc.Digest.String()), nil
 }
 
 // extractExtensionVersion returns the extension version for a given distribution and pgMajor,
