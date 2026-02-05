@@ -4,3 +4,5 @@ metadata:
   name: (join('-', [$values.name, 'app']))
 status:
   applied: true
+  extensions: ($values.database_config.expected_status)
+  observedGeneration: 1
