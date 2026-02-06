@@ -1,54 +1,47 @@
 # SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
 # SPDX-License-Identifier: Apache-2.0
-#
-
-# TODO: REMOVE ALL COMMENTS BELOW BEFORE FINALIZING
-# ############################################################
-# IMPORTANT: this file is a template. All comments (lines starting # with "#"
-# or block comments) MUST be removed from the final `metadata.hcl` file before
-# publishing or using it in production. The comments are only explanatory notes
-# for authors of the contribution and must not remain in the final
-# `metadata.hcl`.
-# ############################################################
-#
-# Field notes (keep here only while editing the template):
-#
-# - `image_name`: MUST be unique across the container registry because
-#   it identifies the image (e.g. ghcr.io/cloudnative-pg/<image_name>).
-#
-# - `shared_preload_libraries`: list libraries to be added to
-#   `shared_preload_libraries` in Postgres. Normally empty.
-#   Example: ["pgaudit"].
-#
-# - `extension_control_path`: if EMPTY (`[]`), the operator follows the CNPG
-#   convention and will add the image's `share` directory to
-#   `extension_control_path`.
-#   See: https://cloudnative-pg.io/docs/current/imagevolume_extensions#image-specifications
-#
-# - `dynamic_library_path`: if EMPTY (`[]`) the operator will add the image's
-#   `lib` directory to `dynamic_library_path`.
-#
-# - `ld_library_path`: this SHOULD be defined when your extension needs
-#   additional (usually system) libraries loaded into Postgres before startup. If
-#   left EMPTY (`[]`) the operator will NOT alter `ld_library_path`. See the
-#   `postgis` extension metadata for an example usage.
-#
-# - `auto_update_os_libs`: set to true to allow the maintenance tooling
-#   to update OS libraries automatically; look at the `postgis` example.
-#
-# - `required_extensions`: must contain the name(s) of the sibling
-#   folders in this repository that contain a required extension.
-#
-# ############################################################
 metadata = {
   name                     = "{{ .Name }}"
   sql_name                 = "{{ .Name }}"
+
+  # TODO: Remove this comment block after customizing the file.
+  # `image_name`: MUST be unique across the container registry because
+  # it identifies the image (e.g. ghcr.io/cloudnative-pg/<image_name>)
   image_name               = "{{ .Name }}"
+
+  # TODO: Remove this comment block after customizing the file.
+  # `shared_preload_libraries`: list libraries to be added to
+  # `shared_preload_libraries` in Postgres. Normally empty.
+  # Example: ["pgaudit"].
   shared_preload_libraries = []
+
+  # TODO: Remove this comment block after customizing the file.
+  # `extension_control_path`: if EMPTY (`[]`), the operator follows the CNPG
+  # convention and will add the image's `share` directory to
+  # `extension_control_path`.
+  # See: https://cloudnative-pg.io/docs/current/imagevolume_extensions#image-specifications
   extension_control_path   = []
+
+  # TODO: Remove this comment block after customizing the file.
+  # `dynamic_library_path`: if EMPTY (`[]`) the operator will add the image's
+  # `lib` directory to `dynamic_library_path`.
   dynamic_library_path     = []
+
+  # TODO: Remove this comment block after customizing the file.
+  # `ld_library_path`: this SHOULD be defined when your extension needs
+  # additional (usually system) libraries loaded into Postgres before startup.
+  # If left EMPTY (`[]`) the operator will NOT alter `ld_library_path`. See the
+  # `postgis` extension metadata for an example usage.
   ld_library_path          = []
+
+  # TODO: Remove this comment block after customizing the file.
+  # `auto_update_os_libs`: set to true to allow the maintenance tooling
+  # to update OS libraries automatically; look at the `postgis` example.
   auto_update_os_libs      = false
+
+  # TODO: Remove this comment block after customizing the file.
+  # `required_extensions`: must contain the name(s) of the sibling
+  # folders in this repository that contain a required extension.
   required_extensions      = []
 
   versions = {
