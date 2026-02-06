@@ -168,9 +168,9 @@ task e2e:setup-env
 ```
 
 > [!INFO]
-> You can customize the local registry's port using the `REGISTRY_HOST_PORT` variable.
-> If you setup the environment with a custom `REGISTRY_HOST_PORT`, take care to include
-> this variable when running tasks that interact with the local registry.
+> Use the `REGISTRY_HOST_PORT` variable to customize the local registry port.
+> If changed, you must pass this variable to all subsequent tasks that interact
+> with the registry to ensure connectivity.
 
 ### Get access to the cluster
 
@@ -182,9 +182,10 @@ export KUBECONFIG=$PWD/kubeconfig
 ```
 
 > [!IMPORTANT]
-> The local registry running alongside the Kind cluster is reachable within
-> Kubernetes at `registry.extensions:5000`. When testing your local builds, you
-> must point the extension's `reference` to this internal address.
+> By default, the local registry running alongside the Kind cluster is
+> reachable within Kubernetes at `registry.extensions:5000`. When testing your
+> local builds, you must point the extension's `reference` to this internal
+> address.
 > For example, if you are testing a locally built `pgvector` image, use:
 > `reference: registry.extensions:5000/pgvector-testing:<tag>`
 
