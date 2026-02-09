@@ -167,7 +167,7 @@ registry (available at `localhost:5000`).
 task e2e:setup-env
 ```
 
-> [!INFO]
+> [!NOTE]
 > Use the `REGISTRY_HOST_PORT` variable to customize the local registry port.
 > If changed, you must pass this variable to all subsequent tasks that interact
 > with the registry to ensure connectivity.
@@ -183,11 +183,11 @@ export KUBECONFIG=$PWD/kubeconfig
 
 > [!IMPORTANT]
 > By default, the local registry running alongside the Kind cluster is
-> reachable within Kubernetes at `registry.extensions:5000`. When testing your
+> reachable within Kubernetes at `registry.pg-extensions:5000`. When testing your
 > local builds, you must point the extension's `reference` to this internal
 > address.
 > For example, if you are testing a locally built `pgvector` image, use:
-> `reference: registry.extensions:5000/pgvector-testing:<tag>`
+> `reference: registry.pg-extensions:5000/pgvector-testing:<tag>`
 
 To allow the test suite (which runs within the Docker network) to reach the
 Kubernetes API server, export the internal Kubeconfig:
