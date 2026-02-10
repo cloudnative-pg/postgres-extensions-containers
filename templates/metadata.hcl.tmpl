@@ -47,6 +47,12 @@ metadata = {
   # `required_extensions`: must contain the name(s) of the sibling
   # folders in this repository that contain a required extension.
   required_extensions      = []
+
+  # TODO: Remove this comment block after customizing the file.
+  # `create_extension`: if set to `true` (default), the test suite will
+  # automatically run `CREATE EXTENSION` for this project during E2E tests.
+  # Set to `false` if the image only provides libraries or tools without
+  # a formal Postgres extension object.
   create_extension         = true
 
   versions = {
