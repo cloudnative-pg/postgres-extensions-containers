@@ -182,7 +182,7 @@ export KUBECONFIG=$PWD/kubeconfig
 ```
 
 > [!IMPORTANT]
-> By default, the local registry running alongside the Kind cluster is
+> The local registry running alongside the Kind cluster is
 > reachable within Kubernetes at `registry.pg-extensions:5000`. When testing your
 > local builds, you must point the extension's `reference` to this internal
 > address.
