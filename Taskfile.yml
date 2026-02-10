@@ -11,7 +11,7 @@ vars:
   E2E_NETWORK: pg-extensions-e2e
   DAGGER_ENGINE_NAME: dagger-engine-pg-extensions
   REGISTRY_NAME: registry.pg-extensions
-  REGISTRY_HOST_IP: localhost
+  REGISTRY_HOST_NAME: localhost
   REGISTRY_HOST_PORT: 5000
   REGISTRY_INTERNAL_PORT: 5000
   # renovate: datasource=git-refs depName=kind lookupName=https://github.com/aweris/daggerverse currentValue=main
@@ -75,7 +75,7 @@ tasks:
     prefix: 'bake-{{.TARGET}}'
     silent: true
     env:
-      registry: '{{ .REGISTRY_HOST_IP }}:{{ .REGISTRY_HOST_PORT }}'
+      registry: '{{ .REGISTRY_HOST_NAME }}:{{ .REGISTRY_HOST_PORT }}'
     vars:
       PUSH: '{{.PUSH | default "false"}}'
       DRY_RUN: '{{.DRY_RUN | default "false"}}'
@@ -331,7 +331,7 @@ tasks:
           EXTENSION_IMAGE:
             # We need to replace localhost with the registry container name as it is how
             # the registry is reachable from within the Docker network.
-            sh: sed -E 's/^{{ .REGISTRY_HOST_IP }}:{{ .REGISTRY_HOST_PORT }}/{{ .REGISTRY_NAME }}:{{ .REGISTRY_INTERNAL_PORT }}/;t' <<< "{{ .EXTENSION_IMAGE }}"
+            sh: sed -E 's/^{{ .REGISTRY_HOST_NAME }}:{{ .REGISTRY_HOST_PORT }}/{{ .REGISTRY_NAME }}:{{ .REGISTRY_INTERNAL_PORT }}/;t' <<< "{{ .EXTENSION_IMAGE }}"
     requires:
       vars:
         - name: TARGET
