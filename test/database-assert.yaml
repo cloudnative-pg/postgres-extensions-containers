@@ -2,7 +2,4 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
   name: (join('-', [$values.name, 'app']))
-status:
-  applied: true
-  extensions: ($values.database_config.expected_status)
-  observedGeneration: 1
+status: ($values.database_assert_status)

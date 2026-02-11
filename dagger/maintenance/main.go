@@ -191,6 +191,7 @@ func (m *Maintenance) GenerateTestingValues(
 	}
 
 	databaseConfig := generateDatabaseConfig(extensionInfos)
+	databaseAssertStatus := generateDatabaseAssertStatus(extensionInfos)
 
 	// Build values.yaml content
 	values := TestingValues{
@@ -202,6 +203,7 @@ func (m *Maintenance) GenerateTestingValues(
 		CreateExtension:        metadata.CreateExtension,
 		Extensions:             extensions,
 		DatabaseConfig:         databaseConfig,
+		DatabaseAssertStatus:   databaseAssertStatus,
 	}
 	valuesYaml, err := yaml.Marshal(values)
 	if err != nil {
