@@ -180,15 +180,17 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
-	extensions, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage)
+	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version)
 	if err != nil {
 		return nil, err
 	}
 
-	databaseConfig, err := generateDatabaseConfig(ctx, source, extensions)
-	if err != nil {
-		return nil, err
+	extensions := make([]*ExtensionConfiguration, len(extensionInfos))
+	for i, info := range extensionInfos {
+		extensions[i] = info.Configuration
 	}
+
+	databaseConfig := generateDatabaseConfig(extensionInfos)
 
 	// Build values.yaml content
 	values := TestingValues{
