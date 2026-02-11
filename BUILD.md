@@ -167,6 +167,11 @@ registry (available at `localhost:5000`).
 task e2e:setup-env
 ```
 
+> [!NOTE]
+> Use the `REGISTRY_HOST_PORT` variable to customize the local registry port.
+> If changed, you must pass this variable to all subsequent tasks that interact
+> with the registry to ensure connectivity.
+
 ### Get access to the cluster
 
 To interact with the cluster via `kubectl` from your local terminal:
@@ -177,11 +182,12 @@ export KUBECONFIG=$PWD/kubeconfig
 ```
 
 > [!IMPORTANT]
-> The local registry running alongside the Kind cluster is reachable within
-> Kubernetes at `registry.extensions:5000`. When testing your local builds, you
-> must point the extension's `reference` to this internal address.
+> The local registry running alongside the Kind cluster is
+> reachable within Kubernetes at `registry.pg-extensions:5000`. When testing your
+> local builds, you must point the extension's `reference` to this internal
+> address.
 > For example, if you are testing a locally built `pgvector` image, use:
-> `reference: registry.extensions:5000/pgvector-testing:<tag>`
+> `reference: registry.pg-extensions:5000/pgvector-testing:<tag>`
 
 To allow the test suite (which runs within the Docker network) to reach the
 Kubernetes API server, export the internal Kubeconfig:
@@ -200,7 +206,8 @@ task bake TARGET="<extension>" PUSH=true
 ```
 
 > [!NOTE]
-> The destination registry is controlled by the `registry` variable defined within the `docker/bake.hcl` file.
+> The destination registry is controlled by the `REGISTRY_HOST_NAME` and
+> `REGISTRY_HOST_PORT` variables defined in the `Taskfile.yml`.
 
 ### Prepare testing values
 
