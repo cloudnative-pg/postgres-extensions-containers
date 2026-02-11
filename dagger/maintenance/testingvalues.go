@@ -34,13 +34,25 @@ type TestingValues struct {
 	DatabaseConfig         *DatabaseConfig           `yaml:"database_config"`
 }
 
-func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directory, metadata *extensionMetadata, extensionImage string) ([]*ExtensionConfiguration, error) {
-	var out []*ExtensionConfiguration
+type testingExtensionInfo struct {
+	Configuration   *ExtensionConfiguration
+	SQLName         string
+	Version         string
+	CreateExtension bool
+}
+
+func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directory, metadata *extensionMetadata, extensionImage string, version string) ([]*testingExtensionInfo, error) {
+	var out []*testingExtensionInfo
 	configuration, err := generateExtensionConfiguration(metadata, extensionImage)
 	if err != nil {
 		return nil, err
 	}
-	out = append(out, configuration)
+	out = append(out, &testingExtensionInfo{
+		Configuration:   configuration,
+		SQLName:         metadata.SQLName,
+		Version:         version,
+		CreateExtension: metadata.CreateExtension,
+	})
 
 	for _, dep := range metadata.RequiredExtensions {
 		depExists, err := source.Exists(ctx, dep)
@@ -59,7 +71,24 @@ func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directo
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, depConfiguration)
+
+		depAnnotations, err := getImageAnnotations(depConfiguration.ImageVolumeSource.Reference)
+		if err != nil {
+			return nil, err
+		}
+		depVersion := depAnnotations["org.opencontainers.image.version"]
+		if depVersion == "" {
+			return nil, fmt.Errorf(
+				"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
+				depConfiguration.ImageVolumeSource.Reference)
+		}
+
+		out = append(out, &testingExtensionInfo{
+			Configuration:   depConfiguration,
+			SQLName:         depMetadata.SQLName,
+			Version:         depVersion,
+			CreateExtension: depMetadata.CreateExtension,
+		})
 	}
 
 	return out, nil
@@ -86,45 +115,28 @@ func generateExtensionConfiguration(metadata *extensionMetadata, extensionImage 
 	}, nil
 }
 
-func generateDatabaseConfig(ctx context.Context, source *dagger.Directory, extensionsConfig []*ExtensionConfiguration) (*DatabaseConfig, error) {
+func generateDatabaseConfig(extensionInfos []*testingExtensionInfo) *DatabaseConfig {
 	var databaseConfig DatabaseConfig
-	for _, extension := range extensionsConfig {
-		extMetadata, err := parseExtensionMetadata(ctx, source.Directory(extension.Name))
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse dependency metadata %q: %w", extension.Name, err)
-		}
-
-		extAnnotations, err := getImageAnnotations(extension.ImageVolumeSource.Reference)
-		if err != nil {
-			return nil, err
-		}
-
-		extVersion := extAnnotations["org.opencontainers.image.version"]
-		if extVersion == "" {
-			return nil, fmt.Errorf(
-				"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
-				extension.ImageVolumeSource.Reference)
-		}
-
+	for _, info := range extensionInfos {
 		ensureOption := "absent"
-		if extMetadata.CreateExtension {
+		if info.CreateExtension {
 			ensureOption = "present"
 		}
 
 		databaseConfig.ExtensionsSpec = append(databaseConfig.ExtensionsSpec,
 			ExtensionSpec{
 				Ensure:  ensureOption,
-				Name:    extMetadata.SQLName,
-				Version: extVersion,
+				Name:    info.SQLName,
+				Version: info.Version,
 			},
 		)
 		databaseConfig.ExpectedStatus = append(databaseConfig.ExpectedStatus,
 			ExpectedStatus{
-				Name:    extMetadata.SQLName,
+				Name:    info.SQLName,
 				Applied: true,
 			},
 		)
 	}
 
-	return &databaseConfig, nil
+	return &databaseConfig
 }
