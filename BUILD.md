@@ -206,7 +206,8 @@ task bake TARGET="<extension>" PUSH=true
 ```
 
 > [!NOTE]
-> The destination registry is controlled by the `registry` variable defined within the `docker/bake.hcl` file.
+> The destination registry is controlled by the `REGISTRY_HOST_NAME` and
+> `REGISTRY_HOST_PORT` variables defined in the `Taskfile.yml`.
 
 ### Prepare testing values
 

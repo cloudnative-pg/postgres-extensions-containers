@@ -13,6 +13,7 @@ vars:
   REGISTRY_NAME: registry.pg-extensions
   REGISTRY_HOST_NAME: localhost
   REGISTRY_HOST_PORT: 5000
+  # Internal port exposed by the registry container image (always 5000)
   REGISTRY_INTERNAL_PORT: 5000
   # renovate: datasource=git-refs depName=kind lookupName=https://github.com/aweris/daggerverse currentValue=main
   DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
@@ -46,6 +47,8 @@ tasks:
       - prereqs
     prefix: 'checks-{{.TARGET}}'
     silent: true
+    env:
+      registry: '{{ .REGISTRY_HOST_NAME }}:{{ .REGISTRY_HOST_PORT }}'
     preconditions:
       - sh: test -f "{{.TARGET}}/metadata.hcl"
         msg: 'Not a valid target, metadata.hcl file is missing. Target: {{.TARGET}}'
@@ -329,8 +332,8 @@ tasks:
           _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
           TARGET: '{{ .TARGET }}'
           EXTENSION_IMAGE:
-            # We need to replace localhost with the registry container name as it is how
-            # the registry is reachable from within the Docker network.
+            # Rewrite host:port to the internal registry name and port used
+            # within the Docker network.
             sh: sed -E 's/^{{ .REGISTRY_HOST_NAME }}:{{ .REGISTRY_HOST_PORT }}/{{ .REGISTRY_NAME }}:{{ .REGISTRY_INTERNAL_PORT }}/;t' <<< "{{ .EXTENSION_IMAGE }}"
     requires:
       vars:
