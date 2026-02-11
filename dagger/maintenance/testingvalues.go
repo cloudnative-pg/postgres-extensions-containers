@@ -13,14 +13,8 @@ type ExtensionSpec struct {
 	Version string `yaml:"version"`
 }
 
-type ExpectedStatus struct {
-	Applied bool   `yaml:"applied"`
-	Name    string `yaml:"name"`
-}
-
 type DatabaseConfig struct {
-	ExtensionsSpec []ExtensionSpec  `yaml:"extensions_spec"`
-	ExpectedStatus []ExpectedStatus `yaml:"expected_status"`
+	ExtensionsSpec []ExtensionSpec `yaml:"extensions_spec,omitempty"`
 }
 
 type TestingValues struct {
@@ -32,6 +26,7 @@ type TestingValues struct {
 	CreateExtension        bool                      `yaml:"create_extension"`
 	Extensions             []*ExtensionConfiguration `yaml:"extensions"`
 	DatabaseConfig         *DatabaseConfig           `yaml:"database_config"`
+	DatabaseAssertStatus   map[string]any            `yaml:"database_assert_status"`
 }
 
 type testingExtensionInfo struct {
@@ -118,25 +113,41 @@ func generateExtensionConfiguration(metadata *extensionMetadata, extensionImage 
 func generateDatabaseConfig(extensionInfos []*testingExtensionInfo) *DatabaseConfig {
 	var databaseConfig DatabaseConfig
 	for _, info := range extensionInfos {
-		ensureOption := "absent"
-		if info.CreateExtension {
-			ensureOption = "present"
+		if !info.CreateExtension {
+			continue
 		}
 
 		databaseConfig.ExtensionsSpec = append(databaseConfig.ExtensionsSpec,
 			ExtensionSpec{
-				Ensure:  ensureOption,
+				Ensure:  "present",
 				Name:    info.SQLName,
 				Version: info.Version,
-			},
-		)
-		databaseConfig.ExpectedStatus = append(databaseConfig.ExpectedStatus,
-			ExpectedStatus{
-				Name:    info.SQLName,
-				Applied: true,
 			},
 		)
 	}
 
 	return &databaseConfig
+}
+
+func generateDatabaseAssertStatus(extensionInfos []*testingExtensionInfo) map[string]any {
+	status := map[string]any{
+		"applied":            true,
+		"observedGeneration": 1,
+	}
+
+	var extensions []map[string]any
+	for _, info := range extensionInfos {
+		if !info.CreateExtension {
+			continue
+		}
+		extensions = append(extensions, map[string]any{
+			"applied": true,
+			"name":    info.SQLName,
+		})
+	}
+	if len(extensions) > 0 {
+		status["extensions"] = extensions
+	}
+
+	return status
 }
