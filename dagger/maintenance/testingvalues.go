@@ -29,6 +29,7 @@ type TestingValues struct {
 	SharedPreloadLibraries []string                  `yaml:"shared_preload_libraries"`
 	PgImage                string                    `yaml:"pg_image"`
 	Version                string                    `yaml:"version"`
+	CreateExtension        bool                      `yaml:"create_extension"`
 	Extensions             []*ExtensionConfiguration `yaml:"extensions"`
 	DatabaseConfig         *DatabaseConfig           `yaml:"database_config"`
 }
