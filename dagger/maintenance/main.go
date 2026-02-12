@@ -180,19 +180,30 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
-	extensions, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage)
+	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version)
 	if err != nil {
 		return nil, err
 	}
 
+	extensions := make([]*ExtensionConfiguration, len(extensionInfos))
+	for i, info := range extensionInfos {
+		extensions[i] = info.Configuration
+	}
+
+	databaseConfig := generateDatabaseConfig(extensionInfos)
+	databaseAssertStatus := generateDatabaseAssertStatus(extensionInfos)
+
 	// Build values.yaml content
-	values := map[string]any{
-		"name":                     metadata.Name,
-		"sql_name":                 metadata.SQLName,
-		"shared_preload_libraries": metadata.SharedPreloadLibraries,
-		"pg_image":                 pgImage,
-		"version":                  version,
-		"extensions":               extensions,
+	values := TestingValues{
+		Name:                   metadata.Name,
+		SQLName:                metadata.SQLName,
+		SharedPreloadLibraries: metadata.SharedPreloadLibraries,
+		PgImage:                pgImage,
+		Version:                version,
+		CreateExtension:        metadata.CreateExtension,
+		Extensions:             extensions,
+		DatabaseConfig:         databaseConfig,
+		DatabaseAssertStatus:   databaseAssertStatus,
 	}
 	valuesYaml, err := yaml.Marshal(values)
 	if err != nil {
