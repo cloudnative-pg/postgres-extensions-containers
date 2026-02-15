@@ -2,6 +2,7 @@ metadata = {
   name                     = "pgaudit"
   sql_name                 = "pgaudit"
   image_name               = "pgaudit"
+  licenses                 = "PostgreSQL"
   shared_preload_libraries = ["pgaudit"]
   extension_control_path   = []
   dynamic_library_path     = []
