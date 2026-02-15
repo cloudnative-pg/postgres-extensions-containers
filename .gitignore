@@ -28,3 +28,6 @@
 
 # Go workspace file
 go.work
+
+# Chainsaw values files
+**/values.yaml

@@ -19,7 +19,7 @@ jobs:
       extensions: ${{ steps.get-extensions.outputs.extensions }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
 
@@ -28,7 +28,7 @@ jobs:
         uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.8
+          DAGGER_VERSION: 0.19.11
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
@@ -51,10 +51,10 @@ jobs:
         extension: ${{ fromJson(needs.fetch-extensions.outputs.extensions) }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Log in to the GitHub Container registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -64,7 +64,7 @@ jobs:
         uses: dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644 # v8.2.0
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.8
+          DAGGER_VERSION: 0.19.11
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
@@ -77,7 +77,7 @@ jobs:
           git diff
 
       - name: Create a PR if versions have been updated on main
-        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8
         if: github.ref == 'refs/heads/main'
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
