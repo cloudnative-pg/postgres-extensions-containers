@@ -228,6 +228,48 @@ generic tests (global `/test` folder) and extension-specific tests (target
 task e2e:test TARGET="<extension>" KUBECONFIG_PATH="./kubeconfig"
 ```
 
+### Testing with Private Registries
+
+When testing extensions hosted in private container registries, you need to
+configure both Kubernetes authentication and provide credentials when creating testing values.
+
+#### Step 1: Create a pull secret in your cluster
+
+First, create a Kubernetes pull secret in the namespace where tests will run:
+
+```bash
+kubectl create secret docker-registry my-registry-secret \
+  --docker-server=<registry-url> \
+  --docker-username=<username> \
+  --docker-password=<password> \
+  --namespace=<test-namespace>
+```
+
+#### Step 2: Generate test values with registry credentials
+
+Use the `generate-values` task with registry credentials so required image information can
+be fetched from the registry and included in the generated values file:
+
+```bash
+export REGISTRY_PASSWORD="<your-password>"
+task generate-values \
+  TARGET="<extension>" \
+  EXTENSION_IMAGE="<private-registry/image:tag>" \
+  REGISTRY_USERNAME="<username>"
+```
+
+#### Step 3: Run tests with namespace and pull secret reference
+
+Pass the namespace and pull secret name to the test execution using extra
+Chainsaw arguments:
+
+```bash
+task e2e:test \
+  TARGET="<extension>" \
+  KUBECONFIG_PATH="./kubeconfig" \
+  EXTRA_ARGS="--namespace,<test-namespace>,--set,pull_secret=my-registry-secret"
+```
+
 ---
 
 ### Tear down the local test environment
