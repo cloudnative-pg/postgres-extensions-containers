@@ -2,6 +2,7 @@ metadata = {
   name                     = "postgis"
   sql_name                 = "postgis"
   image_name               = "postgis-extension"
+  licenses                 = "GPL-2.0-or-later AND Apache-2.0 AND MIT AND LGPL-2.1-only AND LGPL-3.0-or-later"
   shared_preload_libraries = []
   extension_control_path   = []
   dynamic_library_path     = []
