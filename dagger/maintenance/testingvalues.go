@@ -36,7 +36,8 @@ type testingExtensionInfo struct {
 	CreateExtension bool
 }
 
-func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directory, metadata *extensionMetadata, extensionImage string, version string) ([]*testingExtensionInfo, error) {
+func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directory, metadata *extensionMetadata,
+	extensionImage string, version string, registryUsername string, registryPassword *dagger.Secret) ([]*testingExtensionInfo, error) {
 	var out []*testingExtensionInfo
 	configuration, err := generateExtensionConfiguration(metadata, extensionImage)
 	if err != nil {
@@ -67,7 +68,7 @@ func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directo
 			return nil, err
 		}
 
-		depAnnotations, err := getImageAnnotations(depConfiguration.ImageVolumeSource.Reference)
+		depAnnotations, err := getImageAnnotations(ctx, depConfiguration.ImageVolumeSource.Reference, registryUsername, registryPassword)
 		if err != nil {
 			return nil, err
 		}

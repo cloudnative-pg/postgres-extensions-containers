@@ -147,6 +147,12 @@ func (m *Maintenance) GenerateTestingValues(
 	// URL reference to the extension image to test [REPOSITORY[:TAG]]
 	// +optional
 	extensionImage string,
+	// Registry username for authentication (optional)
+	// +optional
+	registryUsername string,
+	// Registry password or token for authentication (optional)
+	// +optional
+	registryPassword *dagger.Secret,
 ) (*dagger.File, error) {
 	metadata, err := parseExtensionMetadata(ctx, target)
 	if err != nil {
@@ -161,7 +167,7 @@ func (m *Maintenance) GenerateTestingValues(
 		}
 	}
 
-	annotations, err := getImageAnnotations(targetExtensionImage)
+	annotations, err := getImageAnnotations(ctx, targetExtensionImage, registryUsername, registryPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +186,7 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
-	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version)
+	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version, registryUsername, registryPassword)
 	if err != nil {
 		return nil, err
 	}
