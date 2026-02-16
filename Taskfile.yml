@@ -157,13 +157,17 @@ tasks:
     prefix: 'generate-values-{{.TARGET}}'
     vars:
         EXTENSION_IMAGE: '{{ .EXTENSION_IMAGE| default "" }}'
+        REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME| default "" }}'
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: '{{ ._EXPERIMENTAL_DAGGER_RUNNER_HOST | default "" }}'
+      REGISTRY_PASSWORD: '{{ .REGISTRY_PASSWORD | default "" }}'
     cmds:
       - echo -e "{{.BLUE}}Generating values for target {{.TARGET}}...{{.NC}}"
       - >
         dagger call -sm ./dagger/maintenance/ generate-testing-values
-        --target {{ .TARGET }} --extension-image="{{ .EXTENSION_IMAGE }}" export --path {{.TARGET}}/values.yaml
+        --target {{ .TARGET }} --extension-image="{{ .EXTENSION_IMAGE }}"
+        --registry-username="{{ .REGISTRY_USERNAME }}" --registry-password="env://REGISTRY_PASSWORD"
+        export --path {{.TARGET}}/values.yaml
     requires:
       vars:
         - name: TARGET
