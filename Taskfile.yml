@@ -247,7 +247,7 @@ tasks:
       # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver extractVersion=^v(?<version>\d+\.\d+)\.\d+$
       CNPG_RELEASE: 1.28
       # renovate: datasource=docker depName=alpine/kubectl versioning=docker
-      KUBECTL_VERSION: 1.35.0@sha256:862d86046bbcad03c252bbc10ab8bf893e7aa50aa7a20de8bfc46727dd645883
+      KUBECTL_VERSION: 1.35.1@sha256:3ba8fa68626c826ebd1bb48ecc4e34490266440a5d4748c7e7e3bb377939f66d
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
       CNPG_MANIFEST:
