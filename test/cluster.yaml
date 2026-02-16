@@ -9,6 +9,9 @@ spec:
   storage:
     size: 1Gi
 
+  imagePullSecrets:
+  - name: ($values.pull_secret)
+
   postgresql:
     shared_preload_libraries: ($values.shared_preload_libraries)
     extensions: ($values.extensions)
