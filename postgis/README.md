@@ -29,7 +29,7 @@ spec:
     - name: postgis
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
-        reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.1-18-trixie
+        reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.2-18-trixie
       ld_library_path:
       - system
 ```
@@ -52,7 +52,7 @@ spec:
   extensions:
   - name: postgis
     # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
-    version: '3.6.1'
+    version: '3.6.2'
   - name: postgis_raster
   - name: postgis_sfcgal
   - name: fuzzystrmatch
