@@ -347,11 +347,12 @@ tasks:
     silent: true
     vars:
       KUBECONFIG_PATH: '{{ .KUBECONFIG_PATH | default "~/.kube/config" }}'
+      EXTRA_ARGS: '{{ .EXTRA_ARGS | default "" }}'
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
     cmds:
       - echo -e "{{ .BLUE }}Testing {{ .TARGET }}...{{ .NC }}"
-      - dagger call -m ./dagger/maintenance/ test --source . --target {{ .TARGET }} --kubeconfig {{ .KUBECONFIG_PATH }}
+      - dagger call -m ./dagger/maintenance/ test --source . --target {{ .TARGET }} --kubeconfig {{ .KUBECONFIG_PATH }} --extra-args "{{ .EXTRA_ARGS }}"
     requires:
       vars:
         - name: TARGET
