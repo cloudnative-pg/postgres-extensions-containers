@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
+# SPDX-License-Identifier: Apache-2.0
 
 ARG BASE=ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
 FROM $BASE AS builder
@@ -15,7 +17,6 @@ RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         timescaledb-2-oss-postgresql-${PG_MAJOR}=${EXT_VERSION}*
-
 ######################################################################
 # Final SCRATCH image
 ######################################################################
