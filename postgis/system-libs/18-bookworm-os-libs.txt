@@ -22,7 +22,6 @@ libdav1d6_1.0.0-2+deb12u1_amd64.deb MD5Sum:e041891f3cff962c8ecd994865318ee3
 libde265-0_1.0.11-1+deb12u2_amd64.deb MD5Sum:27c287d4fd4e486eb99514cf973cef67
 libdeflate0_1.14-1_amd64.deb MD5Sum:e505f1277c856889aa2b539320e3e154
 libexpat1_2.5.0-1+deb12u2_amd64.deb MD5Sum:f5150efb6f21c50361fc1971ab8de870
-libpng16-16_1.6.39-2+deb12u1_amd64.deb MD5Sum:3b6afe93541fb27c3651f30fbe3293f4
 libfreetype6_2.12.1+dfsg-5+deb12u4_amd64.deb MD5Sum:8ee3bd604ace008bee4083b14746dedb
 libfontconfig1_2.14.1-4_amd64.deb MD5Sum:522c4fa1fecd36d0f11eb6970fcd1364
 libfreexl1_1.0.6-2_amd64.deb MD5Sum:7c2dce7741605298d647487bc584cf36
