@@ -30,7 +30,6 @@ libcfitsio10t64_4.6.2-2_amd64.deb MD5Sum:856f7ba809c5e389e30d711356d158d9
 libcurl4t64_8.14.1-2+deb13u2_amd64.deb MD5Sum:14495a2bf1fe6f95d760fd6896923fbd
 libde265-0_1.0.15-1+b3_amd64.deb MD5Sum:0c323aaaf6ea41343412aa9da949ef36
 libdeflate0_1.23-2_amd64.deb MD5Sum:7c4b5c0d85726d2d9475d48d3587c775
-libpng16-16t64_1.6.48-1+deb13u1_amd64.deb MD5Sum:17c99d19cdb7c665cf111c5cc7122c88
 libfreetype6_2.13.3+dfsg-1_amd64.deb MD5Sum:524c5fb5949c0b3612d29922a3d1f518
 libfontconfig1_2.15.0-2.3_amd64.deb MD5Sum:51964bf406139551c59047e6cbdd4940
 libminizip1t64_1%3a1.3.dfsg+really1.3.1-1+b1_amd64.deb MD5Sum:4fd908eee3d3daac83c9746532996757
