@@ -147,7 +147,7 @@ annotations as defined by the [OCI Image Format Specification](https://github.co
 | `org.opencontainers.image.title` | Human-readable image title |
 | `org.opencontainers.image.description` | Image description |
 | `org.opencontainers.image.source` | Source repository URL |
-| `org.opencontainers.image.licenses` | License identifier (Apache-2.0) |
+| `org.opencontainers.image.licenses` | License identifier |
 
 You can inspect these labels using container tools:
 
