@@ -50,7 +50,7 @@ jobs:
               - 'postgis/**'
               - *shared
             timescaledb-oss:
-              - 'timescaledb/**'
+              - 'timescaledb-oss/**'
               - *shared
             pgaudit:
               - 'pgaudit/**'
