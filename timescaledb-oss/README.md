@@ -1,11 +1,17 @@
 # TimescaleDB (Apache 2.0 Edition)
 
-[TimescaleDB](https://github.com/timescale/timescaledb) is an open-source time-series database built on PostgreSQL. It enables fast analytics, efficient storage, and powerful querying for time-series workloads.
+[TimescaleDB](https://github.com/timescale/timescaledb) is an open-source
+time-series database built on PostgreSQL. It enables fast analytics, efficient
+storage, and powerful querying for time-series workloads.
 
-**Note**: This image contains only the Apache 2.0 licensed components of TimescaleDB to ensure CNCF licensing compliance. Advanced features requiring the Timescale License (TSL) are not included.
+> [!NOTE]
+> This image contains only the Apache 2.0 licensed components of TimescaleDB
+> (known as "TimescaleDB Apache-2 Edition") to ensure CNCF licensing
+> compliance. Advanced features requiring the Timescale License (TSL) are not
+> included.
 
-This image provides a convenient way to deploy and manage the open-source core of `TimescaleDB` with
-[CloudNativePG](https://cloudnative-pg.io/).
+This image provides a convenient way to deploy and manage the open-source core
+of TimescaleDB with [CloudNativePG](https://cloudnative-pg.io/).
 
 ## Usage
 
@@ -36,7 +42,7 @@ spec:
     extensions:
     - name: timescaledb
       image:
-        reference: ghcr.io/cloudnative-pg/timescaledb:2.24.0-18-trixie
+        reference: ghcr.io/cloudnative-pg/timescaledb-oss:2.24.0-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -89,11 +95,17 @@ SELECT create_hypertable('sensor_data', 'time');
 INSERT INTO sensor_data VALUES (NOW(), 1, 21.5, 45.0);
 ```
 
+## Maintainers
+
+This container image is maintained by @shuusan.
+
 ## License
 
-This image contains only the Apache 2.0 licensed components of TimescaleDB. Features requiring the Timescale License (TSL) are not included to ensure compliance with CNCF licensing requirements.
+This image contains only the Apache 2.0 licensed components of TimescaleDB.
+Features requiring the Timescale License (TSL) are not included to ensure
+compliance with CNCF licensing requirements.
 
-All relevant license and copyright information for the `timescaledb` extension
+All relevant license and copyright information for the `timescaledb-oss` extension
 and its dependencies are bundled within the image at:
 
 ```text
@@ -102,3 +114,6 @@ and its dependencies are bundled within the image at:
 
 By using this image, you agree to comply with the terms of the licenses
 contained therein.
+
+For further information, refer to
+[Software Licensing: Timescale License (TSL)](https://www.tigerdata.com/legal/licenses).
