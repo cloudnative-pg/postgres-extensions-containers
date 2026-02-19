@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
 # SPDX-License-Identifier: Apache-2.0
 metadata = {
-  name                     = "timescaledb"
+  name                     = "timescaledb-oss"
   sql_name                 = "timescaledb"
   image_name               = "timescaledb"
   shared_preload_libraries = ["timescaledb"]
