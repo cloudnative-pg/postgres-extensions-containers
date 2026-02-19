@@ -29,7 +29,7 @@ COPY --from=builder /usr/share/doc/timescaledb-2-oss-postgresql-${PG_MAJOR}/copy
 # Libraries — .so and bitcode for TimescaleDB
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/timescaledb* /lib/
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/timescaledb-2* /lib/
- 
+
 # Extension SQL + control files
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/timescaledb* /share/extension/
 
