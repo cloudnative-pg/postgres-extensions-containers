@@ -49,7 +49,7 @@ jobs:
             postgis:
               - 'postgis/**'
               - *shared
-            timescaledb:
+            timescaledb-oss:
               - 'timescaledb/**'
               - *shared
             pgaudit:
