@@ -3,7 +3,7 @@
 metadata = {
   name                     = "timescaledb-oss"
   sql_name                 = "timescaledb"
-  image_name               = "timescaledb"
+  image_name               = "timescaledb-oss"
   shared_preload_libraries = ["timescaledb"]
   extension_control_path   = []
   dynamic_library_path     = []
