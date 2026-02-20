@@ -7,5 +7,4 @@ spec:
   owner: app
   cluster:
     name: ($values.name)
-  extensions:
-  - name: ($values.sql_name)
+  extensions: ($values.database_config.extensions_spec)

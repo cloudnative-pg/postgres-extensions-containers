@@ -28,7 +28,8 @@ spec:
     extensions:
     - name: postgis
       image:
-        reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.1-18-trixie
+        # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
+        reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.2-18-trixie
       ld_library_path:
       - system
 ```
@@ -50,6 +51,8 @@ spec:
     name: cluster-postgis
   extensions:
   - name: postgis
+    # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
+    version: '3.6.2'
   - name: postgis_raster
   - name: postgis_sfcgal
   - name: fuzzystrmatch
@@ -72,7 +75,7 @@ You should see `postgis`, `postgis_raster` (and so on) listed among the installe
 
 ### 4. Verify OS dependencies are properly satisfied
 
-PostGIS requires several OS dependencies that are being provided via the `/system` directory.
+PostGIS requires several OS dependencies that are being provided via the `system` directory.
 CloudNativePG makes them available to PostgreSQL by adding the directory to LD_LIBRARY_PATH for the PostgreSQL process.
 
 To verify that all PostGIS shared libraries requirements are being properly satisfied,

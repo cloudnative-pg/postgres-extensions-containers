@@ -11,10 +11,4 @@ spec:
 
   postgresql:
     shared_preload_libraries: ($values.shared_preload_libraries)
-    extensions:
-      - name: ($values.name)
-        image:
-          reference: ($values.extension_image)
-        extension_control_path: ($values.extension_control_path)
-        dynamic_library_path: ($values.dynamic_library_path)
-        ld_library_path: ($values.ld_library_path)
+    extensions: ($values.extensions)

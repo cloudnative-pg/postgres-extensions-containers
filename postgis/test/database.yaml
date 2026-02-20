@@ -9,10 +9,17 @@ spec:
     name: ($values.name)
   extensions:
   - name: ($values.sql_name)
+    version: ($values.version)
   - name: postgis_raster
+    version: ($values.version)
   - name: postgis_sfcgal
+    version: ($values.version)
   - name: fuzzystrmatch
   - name: address_standardizer
+    version: ($values.version)
   - name: address_standardizer_data_us
+    version: ($values.version)
   - name: postgis_tiger_geocoder
+    version: ($values.version)
   - name: postgis_topology
+    version: ($values.version)

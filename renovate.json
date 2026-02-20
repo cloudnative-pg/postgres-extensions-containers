@@ -2,7 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "docker:pinDigests"
+    "docker:pinDigests",
+    "customManagers:githubActionsVersions"
   ],
   "enabledManagers": [
     "github-actions",
@@ -10,6 +11,7 @@
   ],
   "customManagers": [
     {
+      "description": "updates the deb package versions in the metadata.hcl files",
       "customType": "regex",
       "managerFilePatterns": [
         "**/*.hcl"
@@ -19,6 +21,41 @@
       ],
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
       "datasourceTemplate": "deb"
+    },
+    {
+      "description": "updates the container image versions in the README.md files",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "**/README.md"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*reference: ghcr.io\\/cloudnative-pg\\/[A-Za-z0-9_-]+:(?<currentValue>([0-9]\\.?)+)",
+        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*version: '(?<currentValue>([0-9]\\.?)+)'"
+      ],
+      "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
+      "datasourceTemplate": "deb",
+      "extractVersionTemplate": "^(?<version>[^-+]+)"
+    },
+    {
+      "description": "updates the Taskfile dependencies",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "Taskfile.yml"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?(?: currentValue=(?<currentValue>[^\\s]+?))?\\s+[A-Za-z0-9_]+?_SHA\\s*:\\s*[\"']?(?<currentDigest>[a-f0-9]+?)[\"']?\\s",
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s+[^:]+\\s*:\\s*[\"']?(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
+      ]
+    },
+    {
+      "description": "updates the dagger dependencies",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "dagger/**/*.go"
+      ],
+      "matchStrings": [
+        "\\/\\/\\s+renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))\\s+\\/\\/\\s+\\+default=[\\\"']?[^:]+?:(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
+      ]
     }
   ],
   "packageRules": [

@@ -29,7 +29,7 @@ jobs:
       matrix: ${{ steps.get-matrix.outputs.matrix}}
     steps:
       - name: Checkout
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
 
@@ -40,7 +40,7 @@ jobs:
           filters: |
             _shared: &shared
               - 'docker-bake.hcl'
-              - 'Makefile'
+              - 'Taskfile.yml'
               - 'kind-config.yaml'
               - 'test/**'
               - '.github/workflows/bake*.yml'
@@ -93,3 +93,16 @@ jobs:
       extension_name: ${{ matrix.extension }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  Catalogs:
+    name: Update Catalogs
+    needs: Bake
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4
+        with:
+          event-type: update-catalogs

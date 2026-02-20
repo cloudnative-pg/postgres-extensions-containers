@@ -27,12 +27,12 @@ jobs:
       images: ${{ steps.images.outputs.images }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
 
       - name: Log in to the GitHub Container registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -44,12 +44,13 @@ jobs:
           platforms: 'linux/arm64'
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
       - name: Build and push
         uses: docker/bake-action@5be5f02ff8819ecd3092ea6b2e6261c31774f2b4 # v6
         id: build
         env:
+          BUILDX_METADATA_PROVENANCE: disabled
           environment: testing
           registry: ghcr.io/${{ github.repository_owner }}
           revision: ${{ github.sha }}
@@ -93,7 +94,7 @@ jobs:
         image: ${{fromJson(needs.testbuild.outputs.images)}}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
 
@@ -118,76 +119,37 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{fromJson(needs.testbuild.outputs.images)}}
-        cnpg: ["main", "1.27"]
-    env:
-      # renovate: datasource=github-tags depName=kubernetes-sigs/kind versioning=semver
-      KIND_VERSION: "v0.30.0"
-      # renovate: datasource=docker depName=kindest/node
-      KIND_NODE_VERSION: "v1.34.0"
+        cnpg: ["main", "1.27", "1.28"]
     steps:
       - name: Checkout Code
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
 
-      - name: Install Go
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6
-        with:
-          cache: false
-          go-version: 'stable'
+      - name: Install Task
+        uses: go-task/setup-task@0ab1b2a65bc55236a3bc64cde78f80e20e8885c2 # v1.0.0
 
-      - name: Create kind cluster
-        uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
-        with:
-          version: ${{ env.KIND_VERSION }}
-          kubectl_version: ${{ env.KIND_NODE_VERSION }}
-          node_image: kindest/node:${{ env.KIND_NODE_VERSION }}
-          config: kind-config.yaml
-
-      - name: Install CNPG (${{ matrix.cnpg }})
+      - name: Install Dagger
         env:
-          CNPG_RELEASE: ${{ matrix.cnpg }}
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.19.11
         run: |
-          operator_manifest="https://raw.githubusercontent.com/cloudnative-pg/artifacts/release-$CNPG_RELEASE/manifests/operator-manifest.yaml"
-          if [[ "$CNPG_RELEASE" == "main" ]]; then
-            operator_manifest="https://raw.githubusercontent.com/cloudnative-pg/artifacts/main/manifests/operator-manifest.yaml"
-          fi
-          curl -sSfL "$operator_manifest" | kubectl apply --server-side -f -
-          kubectl wait --for=condition=Available --timeout=2m -n cnpg-system deployments cnpg-controller-manager
+          curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
 
-      - name: Generate Chainsaw runtime values
-        env:
-          EXT_NAME: ${{ inputs.extension_name }}
-          EXT_IMAGE: ${{ matrix.image }}
+      - name: Set up environment
         run: |
-          # Get the PG base image
-          export PG_IMAGE=$(skopeo inspect "docker://$EXT_IMAGE" -f '{{ json .Labels }}' | jq -r '."io.cloudnativepg.image.base.name"')
+          task e2e:setup-env
 
-          go install github.com/tmccombs/hcl2json@v0.6.8
-          go install github.com/mikefarah/yq/v4@v4
-
-          # Convert metadata.hcl to YAML and merge it with runtime values to generate a valid Chainsaw values.yaml
-          yq eval -P '
-            .metadata.extension_image = strenv(EXT_IMAGE) |
-            .metadata.pg_image = strenv(PG_IMAGE) |
-            .metadata
-          ' <(hcl2json "$EXT_NAME/metadata.hcl") > "$EXT_NAME/values.yaml"
-          cat "$EXT_NAME/values.yaml"
-
-      - name: Install Chainsaw
-        uses: kyverno/action-install-chainsaw@6354895e0f99ab23d3e38d85cf5c71b5dc21d727 # v0.2.13
-
-      - name: Run Kyverno/Chainsaw
-        env:
-          EXT_NAME: ${{ inputs.extension_name }}
+      - name: Generate Chainsaw testing values
         run: |
-          # Common smoke tests
-          chainsaw test ./test --values "$EXT_NAME/values.yaml"
+          task e2e:generate-values EXTENSION_IMAGE="${{ matrix.image }}" TARGET="${{ inputs.extension_name }}"
 
-          # Specific smoke tests
-          if [ -d "$EXT_NAME/test" ]; then
-            chainsaw test "$EXT_NAME/test" --values "$EXT_NAME/values.yaml"
-          fi
+      - name: Run e2e tests
+        run: |
+          # Get Kind cluster internal kubeconfig
+          task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
+
+          task e2e:test TARGET="${{ inputs.extension_name }}" KUBECONFIG_PATH="./kubeconfig"
 
   copytoproduction:
     name: Copy images to production

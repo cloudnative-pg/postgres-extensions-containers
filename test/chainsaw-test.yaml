@@ -7,22 +7,38 @@ spec:
     apply: 5s
     assert: 3m
     delete: 30s
-  description: Verify an extension is properly installed
+  description: >-
+    Validates the end-to-end lifecycle of a PostgreSQL extension, including cluster
+    initialization, database resource creation, and functional verification.
   steps:
-  - name: Create a Cluster with the extension
+  - name: Provision PostgreSQL Cluster
+    description: >-
+      Deploy a Cluster resource using the built extension container image. 
+      This step validates that the custom image is compatible with the operator 
+      and that the instance can initialize and reach a Healthy phase.
     try:
     - apply:
         file: cluster.yaml
+    - assert:
+        file: cluster-assert.yaml
+
+  - name: Initialize Database and Extension
+    description: Create the Database custom resource and trigger the 'CREATE EXTENSION' logic via CNPG.
+    try:
     - apply:
         file: database.yaml
     - assert:
-        file: cluster-assert.yaml
-    - assert:
+        timeout: 30s
         file: database-assert.yaml
 
-  - name: Verify the extension is installed
+  - name: Functional Verification
+    description: >-
+      Execute a SQL-level check against pg_extension to confirm the extension 
+      is successfully registered in the database catalog.
     try:
     - apply:
         file: check-extension.yaml
     - assert:
+        timeout: 30s
         file: check-extension-assert.yaml
+
