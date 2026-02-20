@@ -13,12 +13,12 @@ metadata = {
   create_extension         = true
   versions = {
     trixie = {
-        // renovate: datasource=postgresql depName=timescaledb-2-oss-postgresql-18 versioning=deb
-        "18" = "2.24.0~debian13-1801"
+        // renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb
+        "18" = "2.25.1+dfsg-1.pgdg13+1"
     }
     bookworm = {
-        // renovate: datasource=postgresql depName=timescaledb-2-oss-postgresql-18 versioning=deb
-        "18" = "2.24.0~debian12-1801"
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-timescaledb
+        "18" = "2.25.1+dfsg-1.pgdg12+1"
     }
   }
 }
