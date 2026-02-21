@@ -3,3 +3,5 @@
 # https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners
 
 * @cloudnative-pg/maintainers @NiccoloFei
+# pg_ivm
+/pg_ivm/ @shusaan @cloudnative-pg/maintainers @NiccoloFei
