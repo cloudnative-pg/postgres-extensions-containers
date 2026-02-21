@@ -2,10 +2,14 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"regexp"
 	"strconv"
 
+	"dagger/maintenance/internal/dagger"
+
+	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/google/go-containerregistry/pkg/name"
 	containerregistryv1 "github.com/google/go-containerregistry/pkg/v1"
@@ -24,14 +28,29 @@ var SupportedDistributions = []string{
 }
 
 // getImageAnnotations returns the OCI annotations given an image ref.
-func getImageAnnotations(imageRef string) (map[string]string, error) {
+// If username and password are provided, they will be used for registry authentication.
+func getImageAnnotations(ctx context.Context, imageRef string, username string, password *dagger.Secret) (map[string]string, error) {
 	// Setting Insecure option to allow fetching images from local registries with no TLS
 	ref, err := name.ParseReference(imageRef, name.Insecure)
 	if err != nil {
 		return nil, err
 	}
 
-	head, err := remote.Get(ref)
+	var opts []remote.Option
+	if password != nil {
+		plainPassword, err := password.Plaintext(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read registry password: %w", err)
+		}
+
+		auth := authn.FromConfig(authn.AuthConfig{
+			Username: username,
+			Password: plainPassword,
+		})
+		opts = append(opts, remote.WithAuth(auth))
+	}
+
+	head, err := remote.Get(ref, opts...)
 	if err != nil {
 		return nil, err
 	}

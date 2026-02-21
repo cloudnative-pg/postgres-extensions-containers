@@ -172,6 +172,20 @@ task e2e:setup-env
 > If changed, you must pass this variable to all subsequent tasks that interact
 > with the registry to ensure connectivity.
 
+#### Configuring credentials for private registries
+
+If you need to pull images from a private registry during testing, you can
+configure authentication credentials when setting up the environment:
+
+```bash
+REGISTRY_PASSWORD="your-password" task e2e:setup-env \
+  REGISTRY_HOST="registry.example.com" \
+  REGISTRY_USERNAME="your-username"
+```
+
+These credentials are configured at the kubelet level, allowing pods to pull
+images from the private registry without requiring ImagePullSecrets.
+
 ### Get access to the cluster
 
 To interact with the cluster via `kubectl` from your local terminal:
@@ -216,6 +230,18 @@ the E2E tests:
 
 ```bash
 task e2e:generate-values TARGET="<extension>" EXTENSION_IMAGE="<my-local-image>"
+```
+
+#### Using private registries
+
+If your extension image is hosted in a private registry, you can provide authentication
+credentials when generating test values:
+
+```bash
+REGISTRY_PASSWORD="your-password" task generate-values \
+  TARGET="<extension>" \
+  EXTENSION_IMAGE="<my-private-registry>/image:tag" \
+  REGISTRY_USERNAME="your-username"
 ```
 
 ### Execute End-to-End tests

@@ -147,6 +147,12 @@ func (m *Maintenance) GenerateTestingValues(
 	// URL reference to the extension image to test [REPOSITORY[:TAG]]
 	// +optional
 	extensionImage string,
+	// Registry username for authentication (optional)
+	// +optional
+	registryUsername string,
+	// Registry password or token for authentication (optional)
+	// +optional
+	registryPassword *dagger.Secret,
 ) (*dagger.File, error) {
 	metadata, err := parseExtensionMetadata(ctx, target)
 	if err != nil {
@@ -161,7 +167,7 @@ func (m *Maintenance) GenerateTestingValues(
 		}
 	}
 
-	annotations, err := getImageAnnotations(targetExtensionImage)
+	annotations, err := getImageAnnotations(ctx, targetExtensionImage, registryUsername, registryPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +186,7 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
-	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version)
+	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version, registryUsername, registryPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -348,6 +354,9 @@ func (m *Maintenance) Test(
 	// renovate: datasource=docker depName=kyverno/chainsaw packageName=ghcr.io/kyverno/chainsaw versioning=docker
 	// +default="ghcr.io/kyverno/chainsaw:v0.2.14@sha256:c703e4d4ce7b89c5121fe957ab89b6e2d33f91fd15f8274a9f79ca1b2ba8ecef"
 	chainsawImage string,
+	// Additional arguments to pass to Chainsaw test command
+	// +optional
+	extraArgs []string,
 ) error {
 	extDir := source
 	if target != "all" {
@@ -392,8 +401,15 @@ func (m *Maintenance) Test(
 			WithFile("/etc/kubeconfig/config", kubeconfig).
 			WithEnvVariable("KUBECONFIG", "/etc/kubeconfig/config")
 
+		chainsawTestArgs := []string{
+			"test",
+			"./test",
+			"--values", path.Join(extName, valuesFile),
+		}
+		chainsawTestArgs = append(chainsawTestArgs, extraArgs...)
+
 		_, err = ctr.WithExec(
-			[]string{"test", "./test", "--values", path.Join(extName, valuesFile)},
+			chainsawTestArgs,
 			dagger.ContainerWithExecOpts{
 				UseEntrypoint: true,
 			}).
@@ -410,8 +426,16 @@ func (m *Maintenance) Test(
 		if !hasIndividualTests {
 			continue
 		}
+
+		chainsawTestArgs = []string{
+			"test",
+			path.Join(extName, "test"),
+			"--values", path.Join(extName, valuesFile),
+		}
+		chainsawTestArgs = append(chainsawTestArgs, extraArgs...)
+
 		_, err = ctr.WithExec(
-			[]string{"test", path.Join(extName, "test"), "--values", path.Join(extName, valuesFile)},
+			chainsawTestArgs,
 			dagger.ContainerWithExecOpts{
 				UseEntrypoint: true,
 			}).

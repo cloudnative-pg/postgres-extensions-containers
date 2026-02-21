@@ -6,6 +6,9 @@ spec:
   imageName: ($values.pg_image)
   instances: 1
 
+  imagePullSecrets:
+  - name: ($values.pull_secret)
+
   storage:
     size: 1Gi
 
