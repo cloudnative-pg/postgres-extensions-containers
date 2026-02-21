@@ -2,6 +2,7 @@ metadata = {
   name                     = "pgvector"
   sql_name                 = "vector"
   image_name               = "pgvector"
+  licenses                 = ["PostgreSQL"]
   shared_preload_libraries = []
   extension_control_path   = []
   dynamic_library_path     = []
