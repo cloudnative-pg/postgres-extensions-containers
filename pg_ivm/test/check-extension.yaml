@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: extension-installed
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: data-test
+        env:
+          - name: EXT_VERSION
+            value: ($values.version)
+          - name: DB_URI
+            valueFrom:
+              secretKeyRef:
+                name: (join('-', [$values.name, 'app']))
+                key: uri
+        image: alpine/psql:latest
+        command: ['sh', '-c']
+        args:
+         - |
+           set -e
+           DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'pg_ivm' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           psql "$DB_URI" -c "CREATE TABLE base_table (id INT PRIMARY KEY, value TEXT);"
+           psql "$DB_URI" -c "INSERT INTO base_table VALUES (1, 'test');"
+           psql "$DB_URI" -c "CREATE INCREMENTAL MATERIALIZED VIEW test_ivm AS SELECT * FROM base_table;"
+           test "$(psql "$DB_URI" -tAc "SELECT COUNT(*) FROM test_ivm" -q)" = "1"
+           psql "$DB_URI" -c "INSERT INTO base_table VALUES (2, 'test2');"
+           test "$(psql "$DB_URI" -tAc "SELECT COUNT(*) FROM test_ivm" -q)" = "2"
