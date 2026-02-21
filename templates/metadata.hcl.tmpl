@@ -10,10 +10,14 @@ metadata = {
   image_name               = "{{ .Name }}"
 
   # TODO: Remove this comment block after customizing the file.
-  # `licenses`: The SPDX license identifier(s) for the extension software.
-  # Examples: "Apache-2.0", "PostgreSQL", "GPL-2.0-only".
-  # See: https://spdx.org/licenses/
-  licenses                 = "Apache-2.0"
+  # `licenses`: A list of SPDX identifiers representing the software's licenses.
+  # Formatting Rules:
+  # - Must be a list of strings: ["MIT", "Apache-2.0"]
+  # - Use SPDX IDs exactly as they appear at https://spdx.org/licenses/
+  # - These are automatically joined with " AND " to populate the OCI label
+  #   org.opencontainers.image.licenses
+  # Examples: "Apache-2.0", "PostgreSQL", "MIT".
+  licenses                 = ["Apache-2.0"]
 
   # TODO: Remove this comment block after customizing the file.
   # `shared_preload_libraries`: list libraries to be added to
