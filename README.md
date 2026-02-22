@@ -29,6 +29,7 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | Extension | Description | Project URL |
 | :--- | :--- | :--- |
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [https://github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
+| **[pg_ivm](pg_ivm)** | Incremental View Maintenance for PostgreSQL | [https://github.com/sraoss/pg_ivm](https://github.com/sraoss/pg_ivm) |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [https://github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [https://postgis.net/](https://postgis.net/) |
 
