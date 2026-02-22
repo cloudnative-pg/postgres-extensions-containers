@@ -4,6 +4,7 @@ metadata = {
   name                     = "timescaledb-oss"
   sql_name                 = "timescaledb"
   image_name               = "timescaledb-oss"
+  licenses                 = ["Apache-2.0"]
   shared_preload_libraries = ["timescaledb"]
   extension_control_path   = []
   dynamic_library_path     = []
