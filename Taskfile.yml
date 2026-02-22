@@ -18,7 +18,7 @@ vars:
   # renovate: datasource=git-refs depName=kind lookupName=https://github.com/aweris/daggerverse currentValue=main
   DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
   # renovate: datasource=docker depName=kindest/node versioning=docker
-  KIND_NODE_VERSION: v1.35.0@sha256:4613778f3cfcd10e615029370f5786704559103cf27bef934597ba562b269661
+  KIND_NODE_VERSION: v1.35.1@sha256:05d7bcdefbda08b4e038f644c4df690cdac3fba8b06f8289f30e10026720a1ab
   K8S_VERSION: '{{ regexReplaceAll "^v([0-9.]+).*" .KIND_NODE_VERSION "$1" }}'
   KIND_CLUSTER_NAME: pg-extensions-{{ .K8S_VERSION }}
 
