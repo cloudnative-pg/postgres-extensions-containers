@@ -254,6 +254,21 @@ generic tests (global `/test` folder) and extension-specific tests (target
 task e2e:test TARGET="<extension>" KUBECONFIG_PATH="./kubeconfig"
 ```
 
+#### Pass arguments to chainsaw test
+
+Is possible to pass arguments to the [Chainsaw test command](https://kyverno.github.io/chainsaw/latest/reference/commands/chainsaw_test/) by using the `EXTRA_ARGS` 
+argument, like:
+
+```bash
+task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig" EXTRA_ARGS="--skip-delete"
+```
+
+or multiple arguments separated by commas, like:
+
+```bash
+task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig" EXTRA_ARGS="--skip-delete,--values=pgvector/extra_args.yaml"
+```
+
 ---
 
 ### Tear down the local test environment
