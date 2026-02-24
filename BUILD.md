@@ -266,7 +266,7 @@ task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig" EXTRA_ARGS="--ski
 or multiple arguments separated by commas, like:
 
 ```bash
-task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig" EXTRA_ARGS="--skip-delete,--values=pgvector/extra_args.yaml"
+task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig" EXTRA_ARGS="--skip-delete"
 ```
 
 ---
