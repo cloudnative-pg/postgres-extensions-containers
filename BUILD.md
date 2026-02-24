@@ -256,7 +256,7 @@ task e2e:test TARGET="<extension>" KUBECONFIG_PATH="./kubeconfig"
 
 #### Pass arguments to chainsaw test
 
-Is possible to pass arguments to the [Chainsaw test command](https://kyverno.github.io/chainsaw/latest/reference/commands/chainsaw_test/) by using the `EXTRA_ARGS` 
+It is possible to pass arguments to the [Chainsaw test command](https://kyverno.github.io/chainsaw/latest/reference/commands/chainsaw_test/) by using the `EXTRA_ARGS` 
 argument, like:
 
 ```bash
