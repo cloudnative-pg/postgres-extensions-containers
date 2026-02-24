@@ -241,7 +241,7 @@ tasks:
         EOF
       - |
         if [ -n "{{ .REGISTRY_HOST }}" ] && [ -n "{{ .REGISTRY_USERNAME }}" ] && [ -n "${REGISTRY_PASSWORD}" ]; then
-          AUTH=$(echo -n "{{ .REGISTRY_USERNAME }}:${REGISTRY_PASSWORD}" | base64)
+          AUTH=$(echo -n "{{ .REGISTRY_USERNAME }}:${REGISTRY_PASSWORD}" | base64 -w0)
           docker exec "{{ .KIND_CLUSTER_NAME }}-control-plane" mkdir -p /var/lib/kubelet
           cat <<EOF | docker exec -i "{{ .KIND_CLUSTER_NAME }}-control-plane" cp /dev/stdin /var/lib/kubelet/config.json
         {
