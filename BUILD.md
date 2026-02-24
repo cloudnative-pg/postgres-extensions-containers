@@ -260,13 +260,7 @@ Is possible to pass arguments to the [Chainsaw test command](https://kyverno.git
 argument, like:
 
 ```bash
-task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig" EXTRA_ARGS="--skip-delete"
-```
-
-or multiple arguments separated by commas, like:
-
-```bash
-task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig" EXTRA_ARGS="--skip-delete"
+task e2e:test TARGET="pgvector" KUBECONFIG_PATH="./kubeconfig" EXTRA_ARGS="--skip-delete,--fail-fast"
 ```
 
 ---
