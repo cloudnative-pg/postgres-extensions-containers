@@ -37,17 +37,19 @@ func getImageAnnotations(ctx context.Context, imageRef string, username string, 
 	}
 
 	var opts []remote.Option
-	if password != nil {
+	if password != nil && username != "" {
 		plainPassword, err := password.Plaintext(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read registry password: %w", err)
 		}
 
-		auth := authn.FromConfig(authn.AuthConfig{
-			Username: username,
-			Password: plainPassword,
-		})
-		opts = append(opts, remote.WithAuth(auth))
+		if plainPassword != "" {
+			auth := authn.FromConfig(authn.AuthConfig{
+				Username: username,
+				Password: plainPassword,
+			})
+			opts = append(opts, remote.WithAuth(auth))
+		}
 	}
 
 	head, err := remote.Get(ref, opts...)
