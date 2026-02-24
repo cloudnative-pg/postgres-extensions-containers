@@ -157,13 +157,17 @@ tasks:
     prefix: 'generate-values-{{.TARGET}}'
     vars:
         EXTENSION_IMAGE: '{{ .EXTENSION_IMAGE| default "" }}'
+        REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME| default "" }}'
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: '{{ ._EXPERIMENTAL_DAGGER_RUNNER_HOST | default "" }}'
+      REGISTRY_PASSWORD: '{{ .REGISTRY_PASSWORD | default "" }}'
     cmds:
       - echo -e "{{.BLUE}}Generating values for target {{.TARGET}}...{{.NC}}"
       - >
         dagger call -sm ./dagger/maintenance/ generate-testing-values
-        --target {{ .TARGET }} --extension-image="{{ .EXTENSION_IMAGE }}" export --path {{.TARGET}}/values.yaml
+        --target {{ .TARGET }} --extension-image="{{ .EXTENSION_IMAGE }}"
+        --registry-username="{{ .REGISTRY_USERNAME }}" --registry-password="env://REGISTRY_PASSWORD"
+        export --path {{.TARGET}}/values.yaml
     requires:
       vars:
         - name: TARGET
@@ -218,6 +222,8 @@ tasks:
     run: once
     vars:
       REGISTRY_DIR: /etc/containerd/certs.d/{{ .REGISTRY_NAME }}:{{ .REGISTRY_INTERNAL_PORT }}
+      REGISTRY_HOST: '{{ .REGISTRY_HOST | default "" }}'
+      REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME | default "" }}'
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
     env:
@@ -233,6 +239,20 @@ tasks:
         cat <<EOF | docker exec -i "{{ .KIND_CLUSTER_NAME }}-control-plane" cp /dev/stdin "{{ .REGISTRY_DIR }}/hosts.toml"
         [host."http://{{ .REGISTRY_NAME }}:{{ .REGISTRY_INTERNAL_PORT }}"]
         EOF
+      - |
+        if [ -n "{{ .REGISTRY_HOST }}" ] && [ -n "{{ .REGISTRY_USERNAME }}" ] && [ -n "${REGISTRY_PASSWORD}" ]; then
+          AUTH=$(echo -n "{{ .REGISTRY_USERNAME }}:${REGISTRY_PASSWORD}" | base64 -w0)
+          docker exec "{{ .KIND_CLUSTER_NAME }}-control-plane" mkdir -p /var/lib/kubelet
+          cat <<EOF | docker exec -i "{{ .KIND_CLUSTER_NAME }}-control-plane" cp /dev/stdin /var/lib/kubelet/config.json
+        {
+          "auths": {
+            "{{ .REGISTRY_HOST }}": {
+              "auth": "${AUTH}"
+            }
+          }
+        }
+        EOF
+        fi
     status:
       - >
         test "$(dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }}
@@ -241,7 +261,10 @@ tasks:
   e2e:install-cnpg:
     desc: Install CloudNativePG operator in the Kind cluster
     deps:
-      - e2e:setup-kind
+      - task: e2e:setup-kind
+        vars:
+          REGISTRY_HOST: '{{ .REGISTRY_HOST }}'
+          REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
     internal: true
     vars:
       # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver extractVersion=^v(?<version>\d+\.\d+)\.\d+$
@@ -310,10 +333,16 @@ tasks:
   e2e:setup-env:
     desc: Setup E2E environment
     silent: true
+    vars:
+      REGISTRY_HOST: '{{ .REGISTRY_HOST | default "" }}'
+      REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME | default "" }}'
     deps:
       - e2e:start-container-registry
       - e2e:start-dagger-engine
-      - e2e:install-cnpg
+      - task: e2e:install-cnpg
+        vars:
+          REGISTRY_HOST: '{{ .REGISTRY_HOST }}'
+          REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
     cmds:
       - echo -e "{{.GREEN}}--- E2E environment setup complete ---{{.NC}}"
 
@@ -326,11 +355,15 @@ tasks:
     silent: true
     vars:
       EXTENSION_IMAGE: '{{ .EXTENSION_IMAGE| default "" }}'
+      REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME| default "" }}'
+    env:
+      REGISTRY_PASSWORD: '{{ .REGISTRY_PASSWORD | default "" }}'
     cmds:
       - task: generate-values
         vars:
           _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
           TARGET: '{{ .TARGET }}'
+          REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
           EXTENSION_IMAGE:
             # Rewrite host:port to the internal registry name and port used
             # within the Docker network.
@@ -347,11 +380,12 @@ tasks:
     silent: true
     vars:
       KUBECONFIG_PATH: '{{ .KUBECONFIG_PATH | default "~/.kube/config" }}'
+      EXTRA_ARGS: '{{ .EXTRA_ARGS | default "" }}'
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
     cmds:
       - echo -e "{{ .BLUE }}Testing {{ .TARGET }}...{{ .NC }}"
-      - dagger call -m ./dagger/maintenance/ test --source . --target {{ .TARGET }} --kubeconfig {{ .KUBECONFIG_PATH }}
+      - dagger call -m ./dagger/maintenance/ test --source . --target {{ .TARGET }} --kubeconfig {{ .KUBECONFIG_PATH }} --extra-args "{{ .EXTRA_ARGS }}"
     requires:
       vars:
         - name: TARGET
@@ -374,8 +408,13 @@ tasks:
       METADATA_FILE: "{{ .TARGET }}/bake-metadata.json"
       KUBECONFIG_PATH: "./kubeconfig"
       DISTRO: '{{ .DISTRO | default "trixie" }}'
+      REGISTRY_HOST: '{{ .REGISTRY_HOST | default "" }}'
+      REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME | default "" }}'
     cmds:
       - task: e2e:setup-env
+        vars:
+          REGISTRY_HOST: '{{ .REGISTRY_HOST }}'
+          REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
       - task: bake
         vars:
           PUSH: "true"
@@ -385,6 +424,7 @@ tasks:
       - task: e2e:generate-values
         vars:
           TARGET: "{{ .TARGET }}"
+          REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
           EXTENSION_IMAGE:
             sh: >
               jq -r --arg distro "{{ .DISTRO }}"
