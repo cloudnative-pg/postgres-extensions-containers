@@ -30,6 +30,7 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | :--- | :--- | :--- |
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [https://github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [https://github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
+| **[VectorChord](vchord)** | Scalable and disk-efficient vector search for PostgreSQL | [https://github.com/tensorchord/VectorChord](https://github.com/tensorchord/VectorChord) |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [https://postgis.net/](https://postgis.net/) |
 
 
@@ -170,4 +171,3 @@ list of compatible extension images for PostgreSQL 18+ versions.
   project](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs).
 - **Naming Convention:** These are based on the `minimal` catalog and use the
   `catalog-extensions` prefix (e.g., `catalog-extensions-trixie.yaml`).
-

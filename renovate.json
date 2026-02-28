@@ -23,6 +23,16 @@
       "datasourceTemplate": "deb"
     },
     {
+      "description": "updates github release versions in vchord metadata.hcl",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "vchord/metadata.hcl"
+      ],
+      "matchStrings": [
+        "\\/\\/\\s*renovate:\\s*datasource=(?<datasource>[a-z-.]+?)\\s+depName=(?<depName>[^\\s]+?)(?:\\s+versioning=(?<versioning>[^\\s]+?))?(?:\\s+extractVersion=(?<extractVersion>[^\\s]+?))?\\s*\"[A-Za-z0-9_-]+\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ]
+    },
+    {
       "description": "updates the container image versions in the README.md files",
       "customType": "regex",
       "managerFilePatterns": [
