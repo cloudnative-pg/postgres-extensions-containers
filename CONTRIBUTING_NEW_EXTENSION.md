@@ -24,7 +24,7 @@ cd postgres-extensions-containers
 ```sh
 task prereqs      # Check if Go, Task, and Docker are ready
 task checks:all   # Validate current configurations
-task bake:all     # Build all existing extensions to confirm the Dagger engine
+task bake:all     # Optional: build all existing extensions to confirm the Dagger engine
 ```
 
 ---
