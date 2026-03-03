@@ -185,13 +185,22 @@ task e2e:test:full TARGET="<extension-name>"
 
 ### Local Manual Verification
 
-Once the image is built, we recommend pulling it from your local registry,
-inspecting it manually to ensure the file structure is correct, and testing it
-with CloudNativePG.
+Once the automated tests have run, the Kind cluster remains active. You can
+"drop in" to this environment to verify the instructions you wrote in your
+`README.md`.
+
+#### Export the Kubeconfig:
+
+```sh
+task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig
+export KUBECONFIG=$PWD/kubeconfig
+```
+
+#### Identify the Image Tag
 
 Once the image is built and pushed to the local registry (`localhost:5000`),
-you should verify the generated tags. You can use `skopeo` to inspect the local
-registry:
+you should verify the generated tags. You can use tools like `skopeo` to
+inspect the local registry:
 
 ```bash
 skopeo list-tags --tls-verify=false docker://localhost:5000/<extension-name>-testing
@@ -203,11 +212,30 @@ skopeo list-tags --tls-verify=false docker://localhost:5000/<extension-name>-tes
 Verify that the output lists tags for all expected PostgreSQL and Debian
 version combinations.
 
+#### Test the Extension
+
+Create a `Cluster` resource using the instructions from your `README.md`.
+Pay close attention to the image location. Inside the Kubernetes cluster, the
+local registry is reachable at `registry.pg-extensions:5000`:
+
+```yaml
+image: registry.pg-extensions:5000/<extension-name>-testing:<tag>
+```
+
 ### Extending Tests
 
 While the framework provides a generic smoke test, we highly encourage you to
 add **extension-specific tests**. Review the [`postgis`](./postgis) directory
 for an example of additional testing using the Chainsaw framework.
+
+### Cleanup
+
+Once you have finished your manual verification, tear down the test
+environment:
+
+```bash
+task e2e:cleanup
+```
 
 ## 5. Phase Five: Documentation & The Pull Request
 
