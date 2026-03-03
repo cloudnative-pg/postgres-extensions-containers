@@ -37,7 +37,7 @@ During this phase, you must verify that the extension is available in the PGDG
 (PostgreSQL Global Development Group) repositories and identify its versioning
 logic.
 
-### Identify the Package & Version
+### Identifying the Package & Version
 
 You must verify the package across both the current Debian `stable` and
 `oldstable` distributions to ensure compatibility. Use a temporary container to
@@ -99,7 +99,7 @@ paths.
 > **PostgreSQL module** rather than an extension. In this case, remember to set
 > the `create_extension` option to `false` in your `metadata.hcl` file.
 
-### Open an Issue
+### Opening an Issue
 
 > [!IMPORTANT]
 > **Community Commitment:** By opening the issue, you are confirming your
@@ -128,7 +128,7 @@ submit your proposal:
 
 ## 3. Phase Three: Implementation & Scaffolding
 
-### Create a Branch
+### Creating a Branch
 
 ```sh
 git checkout -b dev/<extension-name>
@@ -189,14 +189,14 @@ Once the automated tests have run, the Kind cluster remains active. You can
 "drop in" to this environment to verify the instructions you wrote in your
 `README.md`.
 
-#### Export the Kubeconfig:
+#### Exporting the Kubeconfig
 
 ```sh
 task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig
 export KUBECONFIG=$PWD/kubeconfig
 ```
 
-#### Identify the Image Tag
+#### Identifying the Image Tag
 
 Once the image is built and pushed to the local registry (`localhost:5000`),
 you should verify the generated tags. You can use tools like `skopeo` to
@@ -212,7 +212,7 @@ skopeo list-tags --tls-verify=false docker://localhost:5000/<extension-name>-tes
 Verify that the output lists tags for all expected PostgreSQL and Debian
 version combinations.
 
-#### Test the Extension
+#### Testing the Extension
 
 Create a `Cluster` resource using the instructions from your `README.md`.
 Pay close attention to the image location. Inside the Kubernetes cluster, the
@@ -228,7 +228,7 @@ While the framework provides a generic smoke test, we highly encourage you to
 add **extension-specific tests**. Review the [`postgis`](./postgis) directory
 for an example of additional testing using the Chainsaw framework.
 
-### Cleanup
+### Cleaning up
 
 Once you have finished your manual verification, tear down the test
 environment:
@@ -236,6 +236,8 @@ environment:
 ```bash
 task e2e:cleanup
 ```
+
+---
 
 ## 5. Phase Five: Documentation & The Pull Request
 
