@@ -141,15 +141,20 @@ jobs:
           task e2e:setup-env
 
       - name: Generate Chainsaw testing values
+        env:
+          MATRIX_IMAGE: ${{ matrix.image }}
+          EXTENSION_NAME: ${{ inputs.extension_name }}
         run: |
-          task e2e:generate-values EXTENSION_IMAGE="${{ matrix.image }}" TARGET="${{ inputs.extension_name }}"
+          task e2e:generate-values EXTENSION_IMAGE="${MATRIX_IMAGE}" TARGET="${EXTENSION_NAME}"
 
       - name: Run e2e tests
+        env:
+          EXTENSION_NAME: ${{ inputs.extension_name }}
         run: |
           # Get Kind cluster internal kubeconfig
           task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
 
-          task e2e:test TARGET="${{ inputs.extension_name }}" KUBECONFIG_PATH="./kubeconfig"
+          task e2e:test TARGET="${EXTENSION_NAME}" KUBECONFIG_PATH="./kubeconfig"
 
   copytoproduction:
     name: Copy images to production

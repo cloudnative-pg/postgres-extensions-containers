@@ -61,8 +61,9 @@ jobs:
           CHANGES: ${{ steps.filter.outputs.changes }}
           # Input Extension name
           INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
+          if [[ "${EVENT_NAME}" == 'workflow_dispatch' ]]; then
             CHANGES="[\"$INPUT_EXTENSION_NAME\"]"
           fi
 
