@@ -30,7 +30,7 @@ spec:
     - name: pgvector
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pgvector
-        reference: ghcr.io/cloudnative-pg/pgvector:0.8.1-18-trixie
+        reference: ghcr.io/cloudnative-pg/pgvector:0.8.2-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -51,7 +51,7 @@ spec:
   extensions:
   - name: vector
     # renovate: suite=trixie-pgdg depName=postgresql-18-pgvector
-    version: '0.8.1'
+    version: '0.8.2'
 ```
 
 ### 3. Verify installation
