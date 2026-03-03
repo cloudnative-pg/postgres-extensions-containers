@@ -49,7 +49,7 @@ For Debian `stable` (13, `trixie`):
 docker run -u root -ti --rm ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
 ```
 
-For Debian `olstable` (12, `bookworm`):
+For Debian `oldstable` (12, `bookworm`):
 
 ```sh
 docker run -u root -ti --rm ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm
@@ -111,7 +111,7 @@ submit your proposal:
 
 1. Point your browser to ["New Extension Proposal"](https://github.com/cloudnative-pg/postgres-extensions-containers/issues/new/choose).
 2. Provide the package name, versioning info, and a link to the upstream source.
-3. State the licence clearly:
+3. State the license clearly:
     - CNCF-Allowed: licenses on the [CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md) (e.g., Apache-2.0, MIT, or PostgreSQL) are generally pre-approved.
     - Other Open Source: licenses like FSF-approved (GNU GPL) will be evaluated on a case-by-case basis.
     - Redistribution: since we redistribute unmodified software, ensure you
@@ -200,8 +200,8 @@ skopeo list-tags --tls-verify=false docker://localhost:5000/<extension-name>-tes
 > [!IMPORTANT]
 > Remember to add the `-testing` suffix to the container registry.
 
-You should see an output similar to this, confirming all PostgreSQL and Debian
-version combinations were built correctly.
+Verify that the output lists tags for all expected PostgreSQL and Debian
+version combinations.
 
 ### Extending Tests
 

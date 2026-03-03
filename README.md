@@ -75,7 +75,7 @@ When proposing a new extension, the following criteria must be met:
   [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt).
   This ensures compatibility with the base images and standard package
   management procedures.
-- **Licence inclusion:** all necessary licence agreements for the extension and
+- **License inclusion:** all necessary license agreements for the extension and
   its dependencies must be included within the extension folder (refer to the
   examples in the `pgvector` and `postgis` folders).
 

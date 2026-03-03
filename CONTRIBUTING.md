@@ -21,6 +21,6 @@ discovery to local testing and submission:
 ## Development Environment
 
 If you are working on the build system or testing framework itself, please
-refer to [BUILD.md](/BUILD.md) for technical details on how Dagger and Task are
+refer to [BUILD.md](./BUILD.md) for technical details on how Dagger and Task are
 used to manage the pipeline.
 
