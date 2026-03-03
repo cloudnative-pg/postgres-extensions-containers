@@ -144,7 +144,7 @@ task create-extension NAME=<extension-name>
 
 > [!NOTE]
 > For advanced scaffolding (custom distros or versions), see
-> [`BUILD.md`](./BUILD.md).
+> [`BUILD.md`](./BUILD.md#advanced-scaffolding).
 
 ### Customizing the Files
 
@@ -166,7 +166,7 @@ Testing is the most critical part of the lifecycle.
 
 > [!NOTE]
 > For a detailed breakdown of the testing infrastructure, refer to
-> [`BUILD.md`](./BUILD.md).
+> [`BUILD.md`](./BUILD.md#local-testing-guide).
 
 The repository provides a framework for full End-to-End validation. Ensure that
 the entire pipeline is working:
