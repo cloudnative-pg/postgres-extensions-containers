@@ -42,8 +42,7 @@ spec:
     - name: pg-crash
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pg-crash
-        #reference: ghcr.io/cloudnative-pg/pg-crash:0.3-18-trixie
-        reference: registry.pg-extensions:5000/pg-crash-testing:0.3-18-trixie
+        reference: ghcr.io/cloudnative-pg/pg-crash:0.3-18-trixie
     shared_preload_libraries:
     - pg_crash
     parameters:
