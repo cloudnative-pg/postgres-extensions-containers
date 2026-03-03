@@ -4,6 +4,12 @@ This guide explains how to build Postgres extensions container images for
 [CloudNativePG](https://cloudnative-pg.io) locally, using
 [Docker Bake](https://docs.docker.com/build/bake/).
 
+> [!IMPORTANT]
+> If you are looking to contribute a new PostgreSQL extension to this
+> repository, please refer to the [`CONTRIBUTING_NEW_EXTENSION.md` file](CONTRIBUTING_NEW_EXTENSION.md).
+> This guide covers the entire lifecycle, from proposing the extension and
+> scaffolding the project to local validation and submitting a Pull Request.
+
 ## Prerequisites
 
 Before you begin, ensure that you have met the following
@@ -45,6 +51,8 @@ following scaffolded files:
 > [!NOTE]
 > These files are generated from generic templates and should be customized to
 > meet your extension's specific requirements.
+> For a complete walkthrough of the requirements and package discovery phase,
+> see [`CONTRIBUTING_NEW_EXTENSION.md`](./CONTRIBUTING_NEW_EXTENSION.md).
 
 ### Advanced Scaffolding
 

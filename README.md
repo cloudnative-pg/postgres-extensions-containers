@@ -5,10 +5,16 @@
 This repository provides **maintenance scripts** for building **immutable
 container images** containing PostgreSQL extensions supported by
 [CloudNativePG](https://cloudnative-pg.io/). These images are designed to
-integrate seamlessly with the [`image volume extensions` feature](https://cloudnative-pg.io/documentation/current/imagevolume_extensions/)
-in CloudNativePG.
+integrate seamlessly with the image volume extensions feature in CloudNativePG.
 
-For detailed instructions on building the images, see the [`BUILD.md` file](BUILD.md).
+## Documentation
+
+- [Adding a New Extension](./CONTRIBUTING_NEW_EXTENSION.md): A step-by-step
+  guide for contributors.
+- [Building Locally](./BUILD.md): Technical instructions for the build system
+  (Dagger/Task).
+- [CloudNativePG Documentation](https://cloudnative-pg.io/documentation/current/imagevolume_extensions/):
+  How to use these images in your cluster.
 
 ---
 
@@ -56,17 +62,20 @@ The project adheres to the following frameworks:
 
 When proposing a new extension, the following criteria must be met:
 
-- **Licensing and IP ownership:** the extension's licensing must be compatible
-  with the project's goals. We approve all licences that are on the CNCF
-  Allowed Third-Party Licence Policy list (see
-  [CNCF Allowed Licence Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md#cncf-allowlist-license-policy)).
+- **Licensing and IP ownership:** We redistribute unmodified third-party
+  software as container images. We prioritize licenses explicitly allowed by the
+  [CNCF License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md),
+  which includes the PostgreSQL License (relevant to this project). Other
+  open-source licenses, such as FSF-approved licenses (e.g., GNU GPL), will be
+  considered on a case-by-case basis to ensure compliance with redistribution
+  requirements.
 - **Structure:** only one extension can be included within an extension folder.
 - **Debian Packages:** Extension images must be built using a Debian package
   provided by a trusted source like the
   [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt).
   This ensures compatibility with the base images and standard package
   management procedures.
-- **Licence inclusion:** all necessary licence agreements for the extension and
+- **License inclusion:** all necessary license agreements for the extension and
   its dependencies must be included within the extension folder (refer to the
   examples in the `pgvector` and `postgis` folders).
 
