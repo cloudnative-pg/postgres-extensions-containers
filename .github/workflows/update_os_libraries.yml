@@ -37,8 +37,10 @@ jobs:
 
       - name: Set extensions output
         id: get-extensions
+        env:
+          EXTENSIONS_OUTPUT: ${{ steps.get-extensions-dagger.outputs.output }}
         run: |
-          EXTENSIONS='${{ steps.get-extensions-dagger.outputs.output }}'
+          EXTENSIONS="${EXTENSIONS_OUTPUT}"
           echo "extensions=$(echo "$EXTENSIONS" | jq -c .)" >> $GITHUB_OUTPUT
 
   update-extension-os-libs:
