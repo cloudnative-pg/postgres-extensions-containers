@@ -12,6 +12,7 @@ metadata = {
   auto_update_os_libs      = false
   required_extensions      = []
   create_extension         = true
+
   versions = {
     trixie = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb
