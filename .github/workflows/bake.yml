@@ -12,6 +12,7 @@ on:
           - pgvector
           - postgis
           - pgaudit
+          - pg-crash
 
 defaults:
   run:
@@ -51,6 +52,9 @@ jobs:
               - *shared
             pgaudit:
               - 'pgaudit/**'
+              - *shared
+            pg-crash:
+              - 'pg-crash/**'
               - *shared
 
       # Compute a matrix containing the list of all extensions that have been modified
