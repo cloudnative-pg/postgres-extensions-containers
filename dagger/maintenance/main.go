@@ -142,7 +142,7 @@ func (m *Maintenance) GenerateTestingValues(
 	// +ignore=["dagger", ".github"]
 	// +defaultPath="/"
 	source *dagger.Directory,
-	// The target extension to test
+	// The target extension to generate values for
 	target string,
 	// URL reference to the extension image to test [REPOSITORY[:TAG]]
 	// +optional
