@@ -1,4 +1,8 @@
-# TimescaleDB (Apache 2.0 Edition)
+# `TimescaleDB` (Apache 2.0 Edition)
+<!--
+SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
+SPDX-License-Identifier: Apache-2.0
+-->
 
 [TimescaleDB](https://github.com/timescale/timescaledb) is an open-source
 time-series database built on PostgreSQL. It enables fast analytics, efficient
@@ -42,7 +46,7 @@ spec:
     extensions:
     - name: timescaledb
       image:
-        reference: ghcr.io/cloudnative-pg/timescaledb-oss:2.24.0-18-trixie
+        reference: ghcr.io/cloudnative-pg/timescaledb-oss:2.25.1-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -62,7 +66,7 @@ spec:
     name: cluster-timescaledb
   extensions:
   - name: timescaledb
-    version: '2.24.0'
+    version: '2.25.1'
 ```
 
 ### 3. Verify installation
