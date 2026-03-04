@@ -142,8 +142,8 @@ func (m *Maintenance) GenerateTestingValues(
 	// +ignore=["dagger", ".github"]
 	// +defaultPath="/"
 	source *dagger.Directory,
-	// Path to the target extension directory
-	target *dagger.Directory,
+	// The target extension to test
+	target string,
 	// URL reference to the extension image to test [REPOSITORY[:TAG]]
 	// +optional
 	extensionImage string,
@@ -154,7 +154,7 @@ func (m *Maintenance) GenerateTestingValues(
 	// +optional
 	registryPassword *dagger.Secret,
 ) (*dagger.File, error) {
-	metadata, err := parseExtensionMetadata(ctx, target)
+	metadata, err := parseExtensionMetadata(ctx, source.Directory(target))
 	if err != nil {
 		return nil, err
 	}
@@ -216,9 +216,9 @@ func (m *Maintenance) GenerateTestingValues(
 		return nil, err
 	}
 
-	result := target.WithNewFile("values.yaml", string(valuesYaml))
+	result := dag.File("values.yaml", string(valuesYaml))
 
-	return result.File("values.yaml"), nil
+	return result, nil
 }
 
 // Scaffolds a new Postgres extension directory structure
