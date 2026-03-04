@@ -34,9 +34,10 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 
 | Extension | Description | Project URL |
 | :--- | :--- | :--- |
-| **[pgAudit](pgaudit)** | PostgreSQL audit extension | [https://github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
-| **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [https://github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
-| **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [https://postgis.net/](https://postgis.net/) |
+| **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
+| **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension| [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) |
+| **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
+| **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) |
 
 
 Extensions are provided only for the OS versions already built by the
