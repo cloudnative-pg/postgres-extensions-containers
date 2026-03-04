@@ -1,29 +1,33 @@
-# Pg-Crash
+# `pg_crash`
 <!--
 SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
 SPDX-License-Identifier: Apache-2.0
 -->
 
-<!--
-TODO: Replace this section with a brief introduction of your extension.
-Describe what the extension does and what it is useful for.
-Add a reference to the official documentation if available.
--->
+[pg_crash](https://github.com/cybertec-postgresql/pg_crash) is a PostgreSQL
+extension designed for **fault injection** and **chaos engineering**. It allows
+administrators to simulate various failure scenarios—such as backend crashes
+and signal handling issues—to verify the resilience of High Availability (HA)
+clusters and self-healing mechanisms.
 
-The pg-crash PostgreSQL extension provides [describe the main functionality
-here]. For more information, see the [official documentation](https://example.com).
+> [!CAUTION]
+> **DO NOT USE THIS IMAGE IN PRODUCTION.**
+> This extension is designed to intentionally destabilize and terminate
+> PostgreSQL processes. Deploying it in production will cause service downtime
+> and potential data availability issues.
+
+This extension image is maintained by the CNPG project and superseds the
+[`pgcrash-containers` project](https://github.com/cloudnative-pg/pgcrash-containers).
 
 ## Usage
 
-<!--
-Usage: add instructions on how to use the extension with CloudNativePG.
-Include code snippets for Cluster and Database resources as needed.
--->
+The `pg_crash` extension must be loaded via `shared_preload_libraries`. It
+operates by periodically sending random signals (selected from a user-defined
+list) to PostgreSQL backend processes.
 
-### Add the pg-crash extension image to your Cluster
-
-Define the `pg-crash` extension under the `postgresql.extensions` section of
-your `Cluster` resource. For example:
+The following example configures a cluster to experience "Chaos" by randomly
+sending signals every 60 seconds. This is ideal for testing how quickly
+CloudNativePG detects a failure and promotes a new primary.
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -32,7 +36,7 @@ metadata:
   name: cluster-pg-crash
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
-  instances: 1
+  instances: 3
 
   storage:
     size: 1Gi
@@ -46,6 +50,7 @@ spec:
     shared_preload_libraries:
     - pg_crash
     parameters:
+      log_min_messages: 'DEBUG1'
       # See https://www.postgresql.org/docs/current/server-shutdown.html
       # SIGHUP  (1)  - Reload
       # SIGINT  (2)  - Fast shutdown
@@ -55,25 +60,14 @@ spec:
       crash.delay: '60'
 ```
 
-## Contributors
-
-This extension is maintained by:
-
-- FirstName LastName (@GitHub_Handle)
-
-The maintainers are responsible for:
-
-- Monitoring upstream releases and security vulnerabilities.
-- Ensuring compatibility with supported PostgreSQL versions.
-- Reviewing and merging contributions specific to this extension's container
-  image and lifecycle.
-
 ---
 
 ## Licenses and Copyright
 
-This container image contains software that may be licensed under various
-open-source licenses.
+`pg_crash`:
+
+- **Copyright:** (c) 2017, 2025 CYBERTEC PostgreSQL International GmbH
+- **License:** BSD 3-Clause License
 
 All relevant license and copyright information for the `pg-crash` extension
 and its dependencies are bundled within the image at:
