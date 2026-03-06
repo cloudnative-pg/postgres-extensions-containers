@@ -205,7 +205,7 @@ tasks:
     run: once
     vars:
       # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-      DAGGER_ENGINE_VERSION: v0.20.0
+      DAGGER_ENGINE_VERSION: v0.20.1
     cmds:
       - >
         docker run -d -v /var/lib/dagger --name {{ .DAGGER_ENGINE_NAME }} --restart always --network {{ .E2E_NETWORK }}
