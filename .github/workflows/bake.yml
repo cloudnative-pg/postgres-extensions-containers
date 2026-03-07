@@ -12,6 +12,7 @@ on:
           - pgvector
           - postgis
           - pgaudit
+          - timescaledb-oss
 
 defaults:
   run:
@@ -51,6 +52,9 @@ jobs:
               - *shared
             pgaudit:
               - 'pgaudit/**'
+              - *shared
+            timescaledb-oss:
+              - 'timescaledb-oss/**'
               - *shared
 
       # Compute a matrix containing the list of all extensions that have been modified
