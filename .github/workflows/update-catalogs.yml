@@ -51,7 +51,7 @@ jobs:
 
       - name: Sign catalogs
         run: |
-          for file in artifacts/image-catalogs/*.yaml; do
+          for file in artifacts/image-catalogs-extensions/*.yaml; do
               echo "Signing $file..."
               cosign sign-blob "$file" --bundle "$file.sigstore.json" --yes
           done

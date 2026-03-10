@@ -178,5 +178,5 @@ list of compatible extension images for PostgreSQL 18+ versions.
 - **Location:** Published in the [`artifacts`
   project](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs).
 - **Naming Convention:** These are based on the `minimal` catalog and use the
-  `catalog-extensions` prefix (e.g., `catalog-extensions-trixie.yaml`).
+  `catalog-minimal` prefix (e.g., `catalog-minimal-trixie.yaml`).
 
