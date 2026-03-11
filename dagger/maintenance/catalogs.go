@@ -28,6 +28,7 @@ type ExtensionConfiguration struct {
 	ExtensionControlPath []string          `yaml:"extension_control_path,omitempty"`
 	DynamicLibraryPath   []string          `yaml:"dynamic_library_path,omitempty"`
 	LdLibraryPath        []string          `yaml:"ld_library_path,omitempty"`
+	BinPath              []string          `yaml:"bin_path,omitempty"`
 }
 
 type ImageCatalog struct {

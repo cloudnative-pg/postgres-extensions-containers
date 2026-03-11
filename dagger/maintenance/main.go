@@ -514,6 +514,7 @@ func (m *Maintenance) GenerateCatalogs(
 					ExtensionControlPath: metadata.ExtensionControlPath,
 					DynamicLibraryPath:   metadata.DynamicLibraryPath,
 					LdLibraryPath:        metadata.LdLibraryPath,
+					BinPath:              metadata.BinPath,
 				}
 
 				img.Extensions = append(img.Extensions, extensionsConfig)
