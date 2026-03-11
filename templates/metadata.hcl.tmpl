@@ -52,10 +52,10 @@ metadata = {
   # TODO: Remove this comment block after customizing the file.
   # `bin_path`: this SHOULD be defined when your extension needs executables
   # to be present in the PATH of the PostgreSQL process to function properly.
-  # Each path is appended to the PATH environment variable for the
-  # Postgres process.
-  # If left EMPTY (`[]`) the operator will NOT alter `PATH`.
-  # Used in tests and to generate image catalogs.
+  # For most extensions, the default empty list (`[]`) is correct and the
+  # operator will NOT alter `PATH`.
+  # Each path provided is appended to the `PATH` environment variable for the
+  # Postgres process. Used in tests and to generate image catalogs.
   bin_path                 = []
 
   # TODO: Remove this comment block after customizing the file.
