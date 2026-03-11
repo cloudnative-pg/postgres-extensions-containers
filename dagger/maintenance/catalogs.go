@@ -107,7 +107,7 @@ func writeCatalogToDir(catalog *ImageCatalog, outDir *dagger.Directory) (*dagger
 		return nil, err
 	}
 
-	outName := fmt.Sprintf("catalog-extensions-%s.yaml", catalog.Metadata.Labels[LabelImageOS])
+	outName := fmt.Sprintf("catalog-minimal-%s.yaml", catalog.Metadata.Labels[LabelImageOS])
 
 	return outDir.WithNewFile(outName, buf.String()), nil
 }
