@@ -15,6 +15,10 @@ clusters and self-healing mechanisms.
 > This extension is designed to intentionally destabilize and terminate
 > PostgreSQL processes. Deploying it in production will cause service downtime
 > and potential data availability issues.
+>
+> Only deploy this extension in **dedicated test or staging namespaces**.
+> Consider using Kubernetes admission controllers or OPA/Gatekeeper policies
+> to prevent accidental deployment to production clusters.
 
 This extension image is maintained by the CNPG project and supersedes the
 [`pgcrash-containers` project](https://github.com/cloudnative-pg/pgcrash-containers).
