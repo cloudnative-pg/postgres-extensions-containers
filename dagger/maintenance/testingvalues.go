@@ -10,7 +10,6 @@ import (
 type ExtensionSpec struct {
 	Ensure  string `yaml:"ensure"`
 	Name    string `yaml:"name"`
-	Version string `yaml:"version"`
 }
 
 type DatabaseConfig struct {
@@ -123,7 +122,6 @@ func generateDatabaseConfig(extensionInfos []*testingExtensionInfo) *DatabaseCon
 			ExtensionSpec{
 				Ensure:  "present",
 				Name:    info.SQLName,
-				Version: info.Version,
 			},
 		)
 	}
