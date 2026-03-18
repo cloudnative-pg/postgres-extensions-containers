@@ -17,7 +17,7 @@
         "**/*.hcl"
       ],
       "matchStrings": [
-        "\\/\\/\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*\"[A-Za-z0-9_-]+\"\\s*=\\s*\"(?<currentValue>.*)\""
+        "\\/\\/\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s*(sql|package)\\s*=\\s*\"(?<currentValue>.*)\""
       ],
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
       "datasourceTemplate": "deb"
