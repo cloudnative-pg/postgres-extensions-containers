@@ -138,11 +138,12 @@ other tools to identify the base PostgreSQL version and OS distribution.
 
 ### CloudNativePG-Specific Labels
 
-| Label | Description | Example |
-| :--- | :--- | :--- |
-| `io.cloudnativepg.image.base.name` | Base PostgreSQL container image | `ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm` |
-| `io.cloudnativepg.image.base.pgmajor` | PostgreSQL major version | `18` |
-| `io.cloudnativepg.image.base.os` | Operating system distribution | `bookworm` |
+| Label | Description                      | Example |
+| :--- |:---------------------------------| :--- |
+| `io.cloudnativepg.image.base.name` | Base PostgreSQL container image  | `ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm` |
+| `io.cloudnativepg.image.base.pgmajor` | PostgreSQL major version         | `18` |
+| `io.cloudnativepg.image.base.os` | Operating system distribution    | `bookworm` |
+| `io.cloudnativepg.image.sql.version` | PostgreSQL extension SQL version | `0.8.2` |
 
 ### Standard OCI Labels
 
