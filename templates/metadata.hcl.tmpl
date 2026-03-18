@@ -79,8 +79,15 @@ metadata = {
     {{- range $distro := .Distros}}
     {{ $distro }} = {
         {{- range $version := $.Versions}}
-        // renovate: suite={{ $distro }}-pgdg depName={{ replaceAll $.Package "%version%" $version }}
-        "{{ $version }}" = "<package-version-here>"
+        "{{ $version }}" = {
+          // renovate: suite={{ $distro }}-pgdg depName={{ replaceAll $.Package "%version%" $version }}
+          package = "<package-version-here>"
+          // TODO: Remove this comment after adding the sql version if extension uses CREATE EXTENSION
+          // TODO: Adjust the extractVersion regex pattern based on your extension's versioning scheme
+          // Examples: \d+\.\d+ for major.minor (e.g., "18.0"), \d+\.\d+\.\d+ for major.minor.patch (e.g., "0.8.2")
+          // renovate: suite={{ $distro }}-pgdg depName={{ replaceAll $.Package "%version%" $version }} extractVersion=^(?<version>\d+\.\d+\.\d+).*$
+          sql = "<sql-version-here>"
+        }
         {{- end}}
     }
     {{- end}}
