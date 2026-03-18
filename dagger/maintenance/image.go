@@ -147,16 +147,16 @@ func getExtensionImageWithTimestamp(metadata *extensionMetadata, distribution st
 // extractExtensionVersion returns the extension version for a given distribution and pgMajor,
 // extracted from the extension's metadata.
 func extractExtensionVersion(versions versionMap, distribution string, pgMajor int) (string, error) {
-	packageVersion := versions[distribution][strconv.Itoa(pgMajor)]
-	if packageVersion == "" {
+	extVersion, ok := versions[distribution][strconv.Itoa(pgMajor)]
+	if !ok {
 		return "", fmt.Errorf("no package version found for distribution %q and version %d",
 			distribution, pgMajor)
 	}
 
 	re := regexp.MustCompile(`^(\d+(?:\.\d+)+)`)
-	matches := re.FindStringSubmatch(packageVersion)
+	matches := re.FindStringSubmatch(extVersion.Package)
 	if len(matches) < 2 {
-		return "", fmt.Errorf("cannot extract extension version from %q", packageVersion)
+		return "", fmt.Errorf("cannot extract extension version from %q", extVersion.Package)
 	}
 
 	return matches[1], nil
