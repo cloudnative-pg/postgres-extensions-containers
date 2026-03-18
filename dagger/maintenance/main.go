@@ -179,10 +179,10 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage)
 	}
 
-	version := annotations["org.opencontainers.image.version"]
+	version := annotations["io.cloudnativepg.image.sql.version"]
 	if version == "" {
 		return nil, fmt.Errorf(
-			"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
+			"extension image %s doesn't have an 'io.cloudnativepg.image.sql.version' annotation",
 			targetExtensionImage)
 	}
 
