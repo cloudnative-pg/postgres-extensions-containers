@@ -180,7 +180,7 @@ func (m *Maintenance) GenerateTestingValues(
 	}
 
 	version := annotations["io.cloudnativepg.image.sql.version"]
-	if version == "" {
+	if version == "" && metadata.CreateExtension {
 		return nil, fmt.Errorf(
 			"extension image %s doesn't have an 'io.cloudnativepg.image.sql.version' annotation",
 			targetExtensionImage)

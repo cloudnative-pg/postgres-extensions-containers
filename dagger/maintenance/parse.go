@@ -20,7 +20,6 @@ type buildMatrix struct {
 
 type extensionVersion struct {
 	Package string `hcl:"package" cty:"package"`
-	Sql     string `hcl:"sql" cty:"sql"`
 }
 
 type versionMap map[string]map[string]extensionVersion

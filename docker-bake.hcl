@@ -113,7 +113,7 @@ function getExtensionPackage {
 
 function getExtensionSqlVersion {
   params = [ distro, pgVersion ]
-  result = metadata.versions[distro][pgVersion]["sql"]
+  result = lookup(metadata.versions[distro][pgVersion], "sql", "")
 }
 
 // Parse the packageVersion to extract the MM.mm.pp extension version.
