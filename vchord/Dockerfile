@@ -7,6 +7,7 @@ ARG EXT_VERSION
 USER 0
 
 RUN set -eux; \
+    export DEBIAN_FRONTEND=noninteractive; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         build-essential \
@@ -14,10 +15,16 @@ RUN set -eux; \
         curl \
         gnupg \
         lsb-release \
-        software-properties-common \
         "postgresql-server-dev-${PG_MAJOR}"; \
-    curl -fsSL https://apt.llvm.org/llvm.sh | bash -s -- 18; \
-    apt-get update; \
+    codename="$(. /etc/os-release && echo "${VERSION_CODENAME}")"; \
+    if [ "${codename}" = "bookworm" ]; then \
+        install -d -m 0755 /etc/apt/keyrings; \
+        curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key \
+          | gpg --dearmor -o /etc/apt/keyrings/llvm.gpg; \
+        echo "deb [signed-by=/etc/apt/keyrings/llvm.gpg] http://apt.llvm.org/${codename}/ llvm-toolchain-${codename}-18 main" \
+          > /etc/apt/sources.list.d/llvm.list; \
+        apt-get update; \
+    fi; \
     apt-get install -y --no-install-recommends clang-18 libclang-18-dev; \
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable; \
     . "$HOME/.cargo/env"; \

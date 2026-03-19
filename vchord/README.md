@@ -9,7 +9,7 @@ This image provides a convenient way to deploy and manage `vchord` with
 
 ## Usage
 
-### 1. Add PgVector and VectorChord extension images to your Cluster
+### 1. Add pgvector and VectorChord extension images to your Cluster
 
 `vchord` depends on `pgvector`, so both extensions must be configured in your
 `Cluster` resource:
