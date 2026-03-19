@@ -108,6 +108,7 @@ func generateExtensionConfiguration(metadata *extensionMetadata, extensionImage 
 		ExtensionControlPath: metadata.ExtensionControlPath,
 		DynamicLibraryPath:   metadata.DynamicLibraryPath,
 		LdLibraryPath:        metadata.LdLibraryPath,
+		BinPath:              metadata.BinPath,
 	}, nil
 }
 

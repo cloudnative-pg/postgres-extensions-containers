@@ -8,6 +8,7 @@ metadata = {
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = ["system"]
+  bin_path                 = []
   auto_update_os_libs      = true
   required_extensions      = []
   create_extension         = true

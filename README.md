@@ -5,10 +5,16 @@
 This repository provides **maintenance scripts** for building **immutable
 container images** containing PostgreSQL extensions supported by
 [CloudNativePG](https://cloudnative-pg.io/). These images are designed to
-integrate seamlessly with the [`image volume extensions` feature](https://cloudnative-pg.io/documentation/current/imagevolume_extensions/)
-in CloudNativePG.
+integrate seamlessly with the image volume extensions feature in CloudNativePG.
 
-For detailed instructions on building the images, see the [`BUILD.md` file](BUILD.md).
+## Documentation
+
+- [Adding a New Extension](./CONTRIBUTING_NEW_EXTENSION.md): A step-by-step
+  guide for contributors.
+- [Building Locally](./BUILD.md): Technical instructions for the build system
+  (Dagger/Task).
+- [CloudNativePG Documentation](https://cloudnative-pg.io/documentation/current/imagevolume_extensions/):
+  How to use these images in your cluster.
 
 ---
 
@@ -28,11 +34,11 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 
 | Extension | Description | Project URL |
 | :--- | :--- | :--- |
-| **[pgAudit](pgaudit)** | PostgreSQL audit extension | [https://github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
-| **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [https://github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
+| **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
+| **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) |
+| **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
 | **[VectorChord](vchord)** | Scalable and disk-efficient vector search for PostgreSQL | [https://github.com/tensorchord/VectorChord](https://github.com/tensorchord/VectorChord) |
-| **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [https://postgis.net/](https://postgis.net/) |
-
+| **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) |
 
 Extensions are provided only for the OS versions already built by the
 [`cloudnative-pg/postgres-containers`](https://github.com/cloudnative-pg/postgres-containers) project,
@@ -57,17 +63,20 @@ The project adheres to the following frameworks:
 
 When proposing a new extension, the following criteria must be met:
 
-- **Licensing and IP ownership:** the extension's licensing must be compatible
-  with the project's goals. We approve all licences that are on the CNCF
-  Allowed Third-Party Licence Policy list (see
-  [CNCF Allowed Licence Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md#cncf-allowlist-license-policy)).
+- **Licensing and IP ownership:** We redistribute unmodified third-party
+  software as container images. We prioritize licenses explicitly allowed by the
+  [CNCF License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md),
+  which includes the PostgreSQL License (relevant to this project). Other
+  open-source licenses, such as FSF-approved licenses (e.g., GNU GPL), will be
+  considered on a case-by-case basis to ensure compliance with redistribution
+  requirements.
 - **Structure:** only one extension can be included within an extension folder.
 - **Debian Packages:** Extension images must be built using a Debian package
   provided by a trusted source like the
   [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt).
   This ensures compatibility with the base images and standard package
   management procedures.
-- **Licence inclusion:** all necessary licence agreements for the extension and
+- **License inclusion:** all necessary license agreements for the extension and
   its dependencies must be included within the extension folder (refer to the
   examples in the `pgvector` and `postgis` folders).
 
@@ -168,6 +177,11 @@ list of compatible extension images for PostgreSQL 18+ versions.
 
 - **Frequency:** Built once a week.
 - **Location:** Published in the [`artifacts`
-  project](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs).
+  project](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs-extensions).
 - **Naming Convention:** These are based on the `minimal` catalog and use the
+<<<<<<< HEAD
   `catalog-extensions` prefix (e.g., `catalog-extensions-trixie.yaml`).
+=======
+  `catalog-minimal` prefix (e.g., `catalog-minimal-trixie.yaml`).
+
+>>>>>>> origin/main

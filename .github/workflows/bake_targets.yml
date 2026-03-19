@@ -32,22 +32,22 @@ jobs:
           persist-credentials: false
 
       - name: Log in to the GitHub Container registry
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4
         with:
           platforms: 'linux/arm64'
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4
 
       - name: Build and push
-        uses: docker/bake-action@5be5f02ff8819ecd3092ea6b2e6261c31774f2b4 # v6
+        uses: docker/bake-action@82490499d2e5613fcead7e128237ef0b0ea210f7 # v7
         id: build
         env:
           BUILDX_METADATA_PROVENANCE: disabled
@@ -127,12 +127,12 @@ jobs:
           persist-credentials: false
 
       - name: Install Task
-        uses: go-task/setup-task@0ab1b2a65bc55236a3bc64cde78f80e20e8885c2 # v1.0.0
+        uses: go-task/setup-task@70f2430ad412f838533de8c0515c749ffb2b8bd3 # v1.1.0
 
       - name: Install Dagger
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.19.11
+          DAGGER_VERSION: 0.20.1
         run: |
           curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
 
@@ -141,15 +141,20 @@ jobs:
           task e2e:setup-env
 
       - name: Generate Chainsaw testing values
+        env:
+          MATRIX_IMAGE: ${{ matrix.image }}
+          EXTENSION_NAME: ${{ inputs.extension_name }}
         run: |
-          task e2e:generate-values EXTENSION_IMAGE="${{ matrix.image }}" TARGET="${{ inputs.extension_name }}"
+          task e2e:generate-values EXTENSION_IMAGE="${MATRIX_IMAGE}" TARGET="${EXTENSION_NAME}"
 
       - name: Run e2e tests
+        env:
+          EXTENSION_NAME: ${{ inputs.extension_name }}
         run: |
           # Get Kind cluster internal kubeconfig
           task e2e:export-kubeconfig KUBECONFIG_PATH=./kubeconfig INTERNAL=true
 
-          task e2e:test TARGET="${{ inputs.extension_name }}" KUBECONFIG_PATH="./kubeconfig"
+          task e2e:test TARGET="${EXTENSION_NAME}" KUBECONFIG_PATH="./kubeconfig"
 
   copytoproduction:
     name: Copy images to production
