@@ -5,6 +5,7 @@ metadata = {
   licenses                 = [ "GPL-2.0-or-later", "MIT", "LGPL-2.1-or-later",
                                "GPL-3.0-or-later", "Apache-2.0", "PostgreSQL", "Zlib" ]
   shared_preload_libraries = []
+  postgresql_parameters    = {}
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = ["system"]

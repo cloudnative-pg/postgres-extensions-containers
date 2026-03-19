@@ -204,6 +204,7 @@ func (m *Maintenance) GenerateTestingValues(
 		Name:                   metadata.Name,
 		SQLName:                metadata.SQLName,
 		SharedPreloadLibraries: metadata.SharedPreloadLibraries,
+		PostgresqlParameters:   metadata.PostgresqlParameters,
 		PgImage:                pgImage,
 		Version:                version,
 		CreateExtension:        metadata.CreateExtension,

@@ -25,19 +25,20 @@ type extensionVersion struct {
 type versionMap map[string]map[string]extensionVersion
 
 type extensionMetadata struct {
-	Name                   string     `hcl:"name" cty:"name"`
-	SQLName                string     `hcl:"sql_name" cty:"sql_name"`
-	ImageName              string     `hcl:"image_name" cty:"image_name"`
-	SharedPreloadLibraries []string   `hcl:"shared_preload_libraries" cty:"shared_preload_libraries"`
-	ExtensionControlPath   []string   `hcl:"extension_control_path" cty:"extension_control_path"`
-	DynamicLibraryPath     []string   `hcl:"dynamic_library_path" cty:"dynamic_library_path"`
-	LdLibraryPath          []string   `hcl:"ld_library_path" cty:"ld_library_path"`
-	BinPath                []string   `hcl:"bin_path" cty:"bin_path"`
-	AutoUpdateOsLibs       bool       `hcl:"auto_update_os_libs" cty:"auto_update_os_libs"`
-	RequiredExtensions     []string   `hcl:"required_extensions" cty:"required_extensions"`
-	CreateExtension        bool       `hcl:"create_extension" cty:"create_extension"`
-	Versions               versionMap `hcl:"versions" cty:"versions"`
-	Remain                 hcl.Body   `hcl:",remain"`
+	Name                   string            `hcl:"name" cty:"name"`
+	SQLName                string            `hcl:"sql_name" cty:"sql_name"`
+	ImageName              string            `hcl:"image_name" cty:"image_name"`
+	SharedPreloadLibraries []string          `hcl:"shared_preload_libraries" cty:"shared_preload_libraries"`
+	PostgresqlParameters   map[string]string `hcl:"postgresql_parameters" cty:"postgresql_parameters"`
+	ExtensionControlPath   []string          `hcl:"extension_control_path" cty:"extension_control_path"`
+	DynamicLibraryPath     []string          `hcl:"dynamic_library_path" cty:"dynamic_library_path"`
+	LdLibraryPath          []string          `hcl:"ld_library_path" cty:"ld_library_path"`
+	BinPath                []string          `hcl:"bin_path" cty:"bin_path"`
+	AutoUpdateOsLibs       bool              `hcl:"auto_update_os_libs" cty:"auto_update_os_libs"`
+	RequiredExtensions     []string          `hcl:"required_extensions" cty:"required_extensions"`
+	CreateExtension        bool              `hcl:"create_extension" cty:"create_extension"`
+	Versions               versionMap        `hcl:"versions" cty:"versions"`
+	Remain                 hcl.Body          `hcl:",remain"`
 }
 
 const (

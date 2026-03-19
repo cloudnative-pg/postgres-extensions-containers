@@ -6,6 +6,7 @@ metadata = {
   image_name               = "pg-crash"
   licenses                 = ["BSD-3-Clause"]
   shared_preload_libraries = ["pg_crash"]
+  postgresql_parameters    = {}
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = []
