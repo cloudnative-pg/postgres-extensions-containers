@@ -37,7 +37,7 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
 | **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
-| **[VectorChord](vchord)** | Scalable and disk-efficient vector search for PostgreSQL | [https://github.com/tensorchord/VectorChord](https://github.com/tensorchord/VectorChord) |
+| **[VectorChord](vchord)** | Scalable and disk-efficient vector search for PostgreSQL | [https://github.com/tensorchord/VectorChord](https://vectorchord.ai) |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) |
 
 Extensions are provided only for the OS versions already built by the
@@ -179,9 +179,5 @@ list of compatible extension images for PostgreSQL 18+ versions.
 - **Location:** Published in the [`artifacts`
   project](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs-extensions).
 - **Naming Convention:** These are based on the `minimal` catalog and use the
-<<<<<<< HEAD
-  `catalog-extensions` prefix (e.g., `catalog-extensions-trixie.yaml`).
-=======
   `catalog-minimal` prefix (e.g., `catalog-minimal-trixie.yaml`).
 
->>>>>>> origin/main
