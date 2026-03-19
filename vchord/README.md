@@ -1,18 +1,14 @@
 # VectorChord
 
-[VectorChord](https://github.com/tensorchord/VectorChord) is an open-source
-extension for high-performance and disk-efficient vector similarity search in
-PostgreSQL.
+[VectorChord](https://github.com/tensorchord/VectorChord) is an open-source extension for high-performance and disk-efficient vector similarity search in PostgreSQL.
 
-This image provides a convenient way to deploy and manage `vchord` with
-[CloudNativePG](https://cloudnative-pg.io/).
+This image provides a convenient way to deploy and manage `vchord` with [CloudNativePG](https://cloudnative-pg.io/).
 
 ## Usage
 
 ### 1. Add pgvector and VectorChord extension images to your Cluster
 
-`vchord` depends on `pgvector`, so both extensions must be configured in your
-`Cluster` resource:
+`vchord` depends on `pgvector`, so both extensions must be configured in your `Cluster` resource:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -41,8 +37,7 @@ spec:
 
 ### 2. Enable the extensions in a database
 
-Create or update a `Database` resource and ensure `vector` is available before
-`vchord`:
+Create or update a `Database` resource and ensure `vector` is available before `vchord`:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
