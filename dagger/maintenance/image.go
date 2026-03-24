@@ -22,6 +22,11 @@ const (
 	DefaultDistribution = "trixie"
 )
 
+const (
+	AnnotationImageSQLVersion = "io.cloudnativepg.image.sql.version"
+	AnnotationImageBaseName   = "io.cloudnativepg.image.base.name"
+)
+
 var SupportedDistributions = []string{
 	"bookworm",
 	"trixie",

@@ -72,11 +72,11 @@ func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directo
 		if err != nil {
 			return nil, err
 		}
-		depVersion := depAnnotations["org.opencontainers.image.version"]
+		depVersion := depAnnotations[AnnotationImageSQLVersion]
 		if depVersion == "" {
 			return nil, fmt.Errorf(
-				"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
-				depConfiguration.ImageVolumeSource.Reference)
+				"extension image %s doesn't have an %q annotation or its value is empty",
+				depConfiguration.ImageVolumeSource.Reference, AnnotationImageSQLVersion)
 		}
 
 		out = append(out, &testingExtensionInfo{
