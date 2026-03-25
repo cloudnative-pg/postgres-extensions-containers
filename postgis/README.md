@@ -51,7 +51,7 @@ spec:
     name: cluster-postgis
   extensions:
   - name: postgis
-    # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
+    # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
     version: '3.6.2'
   - name: postgis_raster
   - name: postgis_sfcgal

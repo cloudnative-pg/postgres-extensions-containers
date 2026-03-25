@@ -55,7 +55,7 @@ spec:
     name: cluster-pgaudit
   extensions:
   - name: pgaudit
-    # renovate: suite=trixie-pgdg depName=postgresql-18-pgaudit
+    # renovate: suite=trixie-pgdg depName=postgresql-18-pgaudit extractVersion=^(?<version>\d+\.\d+)
     version: '18.0'
 ```
 
