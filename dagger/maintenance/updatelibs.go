@@ -10,8 +10,8 @@ import (
 )
 
 // libsRegex matches library dependencies from apt-get output
-// Format: library-name MD5Sum:checksum
-var libsRegex = regexp.MustCompile(`(?m)^.*\s(lib\S*).*(MD5Sum:.*)$`)
+// Format: 'url' library-name size [MD5Sum:checksum]
+var libsRegex = regexp.MustCompile(`(?m)^.*\s(lib\S+\.deb)\s+\d+\s*(MD5Sum:\S+)?`)
 
 func updateOSLibsOnTarget(
 	ctx context.Context,
@@ -43,8 +43,12 @@ func updateOSLibsOnTarget(
 
 	var result string
 	for _, m := range matches {
-		if len(m) >= 3 {
-			result += m[1] + " " + m[2] + "\n"
+		if len(m) >= 2 {
+			line := m[1]
+			if len(m) >= 3 && m[2] != "" {
+				line += " " + m[2]
+			}
+			result += line + "\n"
 		}
 	}
 
