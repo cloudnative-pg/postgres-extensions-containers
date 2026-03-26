@@ -14,12 +14,20 @@ metadata = {
 
   versions = {
     bookworm = {
-      // renovate: suite=bookworm-pgdg depName=postgresql-18-pgaudit
-      "18" = "18.0-2.pgdg12+1"
+      "18" = {
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-pgaudit
+        package = "18.0-2.pgdg12+1"
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-pgaudit extractVersion=^(?<version>\d+\.\d+)
+        sql     = "18.0"
+      }
     }
     trixie = {
-      // renovate: suite=trixie-pgdg depName=postgresql-18-pgaudit
-      "18" = "18.0-2.pgdg13+1"
+      "18" = {
+        // renovate: suite=trixie-pgdg depName=postgresql-18-pgaudit
+        package = "18.0-2.pgdg13+1"
+        // renovate: suite=trixie-pgdg depName=postgresql-18-pgaudit extractVersion=^(?<version>\d+\.\d+)
+        sql     = "18.0"
+      }
     }
   }
 }

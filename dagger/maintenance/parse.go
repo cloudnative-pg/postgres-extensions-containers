@@ -18,7 +18,11 @@ type buildMatrix struct {
 	MajorVersions []string
 }
 
-type versionMap map[string]map[string]string
+type extensionVersion struct {
+	Package string `hcl:"package" cty:"package"`
+}
+
+type versionMap map[string]map[string]extensionVersion
 
 type extensionMetadata struct {
 	Name                   string     `hcl:"name" cty:"name"`

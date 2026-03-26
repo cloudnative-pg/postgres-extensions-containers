@@ -62,9 +62,14 @@ spec:
     name: cluster-{{ .Name }}
   extensions:
   - name: {{ .Name }}
-    # renovate: suite={{ .DefaultDistro }}-pgdg depName={{ replaceAll .Package "%version%" (printf "%d" .DefaultVersion) }}
+    # renovate: suite={{ .DefaultDistro }}-pgdg depName={{ replaceAll .Package "%version%" (printf "%d" .DefaultVersion) }} extractVersion=^(?<version>\d+\.\d+\.\d+)
     version: '1.0'
 ```
+
+<!--
+TODO: Adjust the extractVersion regex pattern above based on your extension's versioning scheme
+Examples: \d+\.\d+ for major.minor (e.g., "18.0"), \d+\.\d+\.\d+ for major.minor.patch (e.g., "0.8.2")
+-->
 
 ### 3. Verify installation
 

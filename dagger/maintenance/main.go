@@ -172,18 +172,18 @@ func (m *Maintenance) GenerateTestingValues(
 		return nil, err
 	}
 
-	pgImage := annotations["io.cloudnativepg.image.base.name"]
+	pgImage := annotations[AnnotationImageBaseName]
 	if pgImage == "" {
 		return nil, fmt.Errorf(
-			"extension image %s doesn't have an 'io.cloudnativepg.image.base.name' annotation",
-			targetExtensionImage)
+			"extension image %s doesn't have an %q annotation or its value is empty",
+			targetExtensionImage, AnnotationImageBaseName)
 	}
 
-	version := annotations["org.opencontainers.image.version"]
-	if version == "" {
+	version := annotations[AnnotationImageSQLVersion]
+	if version == "" && metadata.CreateExtension {
 		return nil, fmt.Errorf(
-			"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
-			targetExtensionImage)
+			"extension image %s doesn't have an %q annotation or its value is empty",
+			targetExtensionImage, AnnotationImageSQLVersion)
 	}
 
 	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version, registryUsername, registryPassword)

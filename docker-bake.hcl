@@ -79,6 +79,7 @@ target "default" {
     "index,manifest:io.cloudnativepg.image.base.name=${getBaseImage(distro, pgVersion)}",
     "index,manifest:io.cloudnativepg.image.base.pgmajor=${pgVersion}",
     "index,manifest:io.cloudnativepg.image.base.os=${distro}",
+    "index,manifest:io.cloudnativepg.image.sql.version=${getExtensionSqlVersion(distro, pgVersion)}",
   ]
   labels = {
     "org.opencontainers.image.created" = "${now}",
@@ -96,6 +97,7 @@ target "default" {
     "io.cloudnativepg.image.base.name" = "${getBaseImage(distro, pgVersion)}",
     "io.cloudnativepg.image.base.pgmajor" = "${pgVersion}",
     "io.cloudnativepg.image.base.os" = "${distro}",
+    "io.cloudnativepg.image.sql.version" = "${getExtensionSqlVersion(distro, pgVersion)}",
   }
 }
 
@@ -106,7 +108,12 @@ function getImageName {
 
 function getExtensionPackage {
   params = [ distro, pgVersion ]
-  result = metadata.versions[distro][pgVersion]
+  result = metadata.versions[distro][pgVersion]["package"]
+}
+
+function getExtensionSqlVersion {
+  params = [ distro, pgVersion ]
+  result = lookup(metadata.versions[distro][pgVersion], "sql", "")
 }
 
 // Parse the packageVersion to extract the MM.mm.pp extension version.

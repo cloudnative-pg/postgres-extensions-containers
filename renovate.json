@@ -17,7 +17,7 @@
         "**/*.hcl"
       ],
       "matchStrings": [
-        "\\/\\/\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*\"[A-Za-z0-9_-]+\"\\s*=\\s*\"(?<currentValue>.*)\""
+        "\\/\\/\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s*(sql|package)\\s*=\\s*\"(?<currentValue>.*)\""
       ],
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
       "datasourceTemplate": "deb"
@@ -29,12 +29,23 @@
         "**/README.md"
       ],
       "matchStrings": [
-        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*reference: ghcr.io\\/cloudnative-pg\\/[A-Za-z0-9_-]+:(?<currentValue>([0-9]\\.?)+)",
-        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*version: '(?<currentValue>([0-9]\\.?)+)'"
+        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*reference: ghcr.io\\/cloudnative-pg\\/[A-Za-z0-9_-]+:(?<currentValue>([0-9]\\.?)+)"
       ],
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
       "datasourceTemplate": "deb",
       "extractVersionTemplate": "^(?<version>[^-+]+)"
+    },
+    {
+      "description": "updates the container image SQL version in the README.md files",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "**/README.md"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s*version: '(?<currentValue>([0-9]\\.?)+)'"
+      ],
+      "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
+      "datasourceTemplate": "deb"
     },
     {
       "description": "updates the Taskfile dependencies",

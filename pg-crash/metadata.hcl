@@ -16,12 +16,16 @@ metadata = {
 
   versions = {
     bookworm = {
-      // renovate: suite=bookworm-pgdg depName=postgresql-18-pg-crash
-      "18" = "0.3-2.pgdg12+1"
+      "18" = {
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-pg-crash
+        package = "0.3-2.pgdg12+1"
+      }
     }
     trixie = {
-      // renovate: suite=trixie-pgdg depName=postgresql-18-pg-crash
-      "18" = "0.3-2.pgdg13+1"
+      "18" = {
+        // renovate: suite=trixie-pgdg depName=postgresql-18-pg-crash
+        package = "0.3-2.pgdg13+1"
+      }
     }
   }
 }

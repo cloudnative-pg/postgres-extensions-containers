@@ -138,26 +138,27 @@ other tools to identify the base PostgreSQL version and OS distribution.
 
 ### CloudNativePG-Specific Labels
 
-| Label | Description | Example |
-| :--- | :--- | :--- |
-| `io.cloudnativepg.image.base.name` | Base PostgreSQL container image | `ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm` |
-| `io.cloudnativepg.image.base.pgmajor` | PostgreSQL major version | `18` |
-| `io.cloudnativepg.image.base.os` | Operating system distribution | `bookworm` |
+| Label                                 | Description                      | Example                                                 |
+|:--------------------------------------|:---------------------------------|:--------------------------------------------------------|
+| `io.cloudnativepg.image.base.name`    | Base PostgreSQL container image  | `ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm` |
+| `io.cloudnativepg.image.base.pgmajor` | PostgreSQL major version         | `18`                                                    |
+| `io.cloudnativepg.image.base.os`      | Operating system distribution    | `bookworm`                                              |
+| `io.cloudnativepg.image.sql.version`  | PostgreSQL extension SQL version | `0.8.2`                                                 |
 
 ### Standard OCI Labels
 
 In addition to CloudNativePG-specific labels, all images include standard OCI
 annotations as defined by the [OCI Image Format Specification](https://github.com/opencontainers/image-spec/blob/main/annotations.md):
 
-| Label | Description |
-| :--- | :--- |
-| `org.opencontainers.image.created` | Image creation timestamp |
-| `org.opencontainers.image.version` | Extension version |
-| `org.opencontainers.image.revision` | Git commit SHA |
-| `org.opencontainers.image.title` | Human-readable image title |
-| `org.opencontainers.image.description` | Image description |
-| `org.opencontainers.image.source` | Source repository URL |
-| `org.opencontainers.image.licenses` | License identifier |
+| Label                                  | Description                 |
+|:---------------------------------------|:----------------------------|
+| `org.opencontainers.image.created`     | Image creation timestamp    |
+| `org.opencontainers.image.version`     | Extension's package version |
+| `org.opencontainers.image.revision`    | Git commit SHA              |
+| `org.opencontainers.image.title`       | Human-readable image title  |
+| `org.opencontainers.image.description` | Image description           |
+| `org.opencontainers.image.source`      | Source repository URL       |
+| `org.opencontainers.image.licenses`    | License identifier          |
 
 You can inspect these labels using container tools:
 
