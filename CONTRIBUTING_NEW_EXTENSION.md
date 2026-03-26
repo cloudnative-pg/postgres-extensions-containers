@@ -76,21 +76,6 @@ remains constant, the versioning reflects the underlying Debian release:
 > upstream repositories and trigger update Pull Requests once your extension is
 > merged.
 
-#### Package Version vs. SQL Version
-
-Your `metadata.hcl` file requires two version fields:
-
-- **`package`**: The full Debian package version (e.g., `0.8.2-1.pgdg13+1`).
-  This includes packaging metadata and is used to install the correct package.
-
-- **`sql`**: The PostgreSQL extension version as it appears in the catalog
-  (e.g., `0.8.2`). This is the version of the extension that will be verified
-  as part of the automatic testing of the resulting containers. It should
-  match what is defined by the `default_version` field in the control file.
-
-The **SQL version** is optional and only needed if your extension uses
-`CREATE EXTENSION` (when `create_extension = true` in metadata).
-
 #### Inspecting the Package Content
 
 If you want to get a list of the files contained in the package, you need to
@@ -167,9 +152,26 @@ The scaffolding generates `metadata.hcl`, `Dockerfile`, and `README.md`.
 Follow the specific instructions and "TODO" comments found within each
 generated file to finalize your extension.
 
+#### Package Version vs. SQL Version
+
+Your `metadata.hcl` file requires two version fields:
+
+- **`package`**: The full Debian package version (e.g., `0.8.2-1.pgdg13+1`).
+  This includes packaging metadata and is used to install the correct package.
+
+- **`sql`**: The PostgreSQL extension version as it appears in the catalog
+  (e.g., `0.8.2`). This is the version of the extension that will be verified
+  as part of the automatic testing of the resulting containers. It should
+  match what is defined by the `default_version` field in the control file.
+
+
+> [!WARNING]
+> The `sql` version is optional and only needed if your extension uses
+> `CREATE EXTENSION` (when `create_extension = true` in metadata).
+
 > [!TIP]
-> Pay close attention to the `// renovate:` comments in the metadata; these are
-> required for automated version tracking.
+> Pay close attention to the `// renovate:` comments in the metadata and
+> `README.md` files; these are required for automated version tracking.
 
 ---
 
