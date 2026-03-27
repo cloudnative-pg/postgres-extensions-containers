@@ -59,6 +59,20 @@ metadata = {
   bin_path                 = []
 
   # TODO: Remove this comment block after customizing the file.
+  # `env`: this SHOULD be defined when your extension needs specific environment
+  # variables to be set within the PostgreSQL process to function correctly.
+  # This is a map of key-value pairs.
+  # Usually empty. Used in tests and to generate image catalogs.
+  # Examples:
+  # { "FOO" = "foo" }
+  # HCL uses `${}` for interpolation, so `$` must be escaped.
+  # To use a CNPG placeholder (expanded later by the operator):
+  # { "BAR" = "$${image_root}/bar" }
+  # To produce a literal `${...}` that the operator should NOT expand:
+  # { "BAZ" = "$$${not_expanded}/baz" }
+  env                      = {}
+
+  # TODO: Remove this comment block after customizing the file.
   # `auto_update_os_libs`: set to true to allow the maintenance tooling
   # to update OS libraries automatically; look at the `postgis` example.
   auto_update_os_libs      = false
