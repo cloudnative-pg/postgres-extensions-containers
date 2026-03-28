@@ -59,18 +59,24 @@ metadata = {
   bin_path                 = []
 
   # TODO: Remove this comment block after customizing the file.
-  # `env`: this SHOULD be defined when your extension needs specific environment
-  # variables to be set within the PostgreSQL process to function correctly.
-  # This is a map of key-value pairs.
-  # Usually empty. Used in tests and to generate image catalogs.
-  # Examples:
-  # { "FOO" = "foo" }
-  # HCL uses `${}` for interpolation, so `$` must be escaped.
-  # To use a CNPG placeholder (expanded later by the operator):
-  # { "BAR" = "$${image_root}/bar" }
-  # To produce a literal `${...}` that the operator should NOT expand:
-  # { "BAZ" = "$$${not_expanded}/baz" }
-  env                      = {}
+  # `env`: Optional map of environment variables to be injected into the
+  # PostgreSQL process for this extension.
+  #
+  # NOTE: Because HCL uses `${}` for its own interpolation, you must escape the
+  # '$' sign for any value intended for the CNPG operator.
+  #
+  # 1. CNPG Placeholders: Use `$${}` to pass a placeholder to the operator.
+  #    Example: { "LIB_PATH" = "$${image_root}/lib" }
+  #    -> Result in Postgres: LIB_PATH=/extensions/my-extension/lib
+  #
+  # 2. Literal Values: Use `$$${}` if you need a literal `${}` to appear in
+  #    the final environment variable without being expanded by the operator.
+  #    Example: { "TOKEN_FORMAT" = "$$${value}" }
+  #    -> Result in Postgres: TOKEN_FORMAT=${value}
+  #
+  # 3. Static Values: No special escaping needed.
+  #    Example: { "DEBUG" = "true" }
+  env = {}
 
   # TODO: Remove this comment block after customizing the file.
   # `auto_update_os_libs`: set to true to allow the maintenance tooling
