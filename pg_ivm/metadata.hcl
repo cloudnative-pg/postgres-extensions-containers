@@ -1,13 +1,13 @@
-# SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
-# SPDX-License-Identifier: Apache-2.0
 metadata = {
   name                     = "pg_ivm"
   sql_name                 = "pg_ivm"
   image_name               = "pg_ivm"
+  licenses                 = ["PostgreSQL"]
   shared_preload_libraries = []
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = []
+  bin_path                 = []
   auto_update_os_libs      = false
   required_extensions      = []
   create_extension         = true
