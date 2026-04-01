@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"regexp"
+	"strings"
 
 	"dagger/maintenance/internal/dagger"
 )
@@ -43,13 +44,8 @@ func updateOSLibsOnTarget(
 
 	var result string
 	for _, m := range matches {
-		if len(m) >= 2 {
-			line := m[1]
-			if len(m) >= 3 && m[2] != "" {
-				line += " " + m[2]
-			}
-			result += line + "\n"
-		}
+		line := strings.Join(m[1:], " ")
+		result += strings.TrimSuffix(line, " ") + "\n"
 	}
 
 	if result == "" {
