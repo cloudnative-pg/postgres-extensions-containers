@@ -62,17 +62,20 @@ metadata = {
   # `env`: Optional map of environment variables to be injected into the
   # PostgreSQL process for this extension.
   #
-  # NOTE: Because HCL uses `${}` for its own interpolation, you must escape the
-  # '$' sign for any value intended for the CNPG operator.
+  # NOTE: Both HCL and the CNPG operator use `${...}` for placeholder
+  # expansion. In both systems, `$${...}` is the escape that produces a
+  # literal `${...}` in the output (`$$` without a following `{` is kept
+  # as-is).
   #
-  # 1. CNPG Placeholders: Use `$${}` to pass a placeholder to the operator.
+  # 1. CNPG Placeholders: Use `$${...}` to pass a placeholder through HCL
+  #    to the operator, which then expands it.
   #    Example: { "LIB_PATH" = "$${image_root}/lib" }
-  #    -> Result in Postgres: LIB_PATH=/extensions/my-extension/lib
+  #    HCL output: ${image_root}/lib -> Operator expands to the mount path
   #
-  # 2. Literal Values: Use `$$${}` if you need a literal `${}` to appear in
-  #    the final environment variable without being expanded by the operator.
+  # 2. Literal `${...}`: Use `$$${...}` so that HCL produces `$${...}`,
+  #    which the operator then treats as a literal `${...}`.
   #    Example: { "TOKEN_FORMAT" = "$$${value}" }
-  #    -> Result in Postgres: TOKEN_FORMAT=${value}
+  #    HCL output: $${value} -> Operator produces literal: ${value}
   #
   # 3. Static Values: No special escaping needed.
   #    Example: { "DEBUG" = "true" }
