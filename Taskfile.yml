@@ -229,10 +229,21 @@ tasks:
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
     cmds:
-      - >
-        dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} --socket {{ .DOCKER_SOCKET }}
-        container with-env-variable --name=KIND_EXPERIMENTAL_DOCKER_NETWORK --value={{ .E2E_NETWORK }} with-env-variable --name=CACHE_BUSTER --value="$(date)"
-        with-file --source=kind-config.yaml --path=/root/kind-config.yaml
+      - |
+        KIND_CONFIG=$(cat <<'EOF'
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha4
+        featureGates:
+          ImageVolume: true
+        containerdConfigPatches:
+          - |-
+            [plugins."io.containerd.cri.v1.images".registry]
+              config_path = "/etc/containerd/certs.d"
+        EOF
+        )
+        dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} --socket {{ .DOCKER_SOCKET }} \
+        container with-env-variable --name=KIND_EXPERIMENTAL_DOCKER_NETWORK --value={{ .E2E_NETWORK }} with-env-variable --name=CACHE_BUSTER --value="$(date)" \
+        with-new-file --contents="${KIND_CONFIG}" --path=/root/kind-config.yaml \
         with-exec --args="kind","create","cluster","--name","{{ .KIND_CLUSTER_NAME }}","--image","kindest/node:{{ .KIND_NODE_VERSION }}","--config","/root/kind-config.yaml" sync
       - docker exec "{{ .KIND_CLUSTER_NAME }}-control-plane" mkdir -p "{{ .REGISTRY_DIR }}"
       - |
