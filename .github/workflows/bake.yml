@@ -55,6 +55,9 @@ jobs:
             pg-crash:
               - 'pg-crash/**'
               - *shared
+            pgrepack:
+              - 'pgrepack/**'
+              - *shared
 
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix
