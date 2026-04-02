@@ -204,6 +204,7 @@ func (m *Maintenance) GenerateTestingValues(
 		Name:                   metadata.Name,
 		SQLName:                metadata.SQLName,
 		SharedPreloadLibraries: metadata.SharedPreloadLibraries,
+		PostgresqlParameters:   metadata.PostgresqlParameters,
 		PgImage:                pgImage,
 		Version:                version,
 		CreateExtension:        metadata.CreateExtension,
@@ -515,6 +516,7 @@ func (m *Maintenance) GenerateCatalogs(
 					DynamicLibraryPath:   metadata.DynamicLibraryPath,
 					LdLibraryPath:        metadata.LdLibraryPath,
 					BinPath:              metadata.BinPath,
+					Env:                  envMapToSlice(metadata.Env),
 				}
 
 				img.Extensions = append(img.Extensions, extensionsConfig)

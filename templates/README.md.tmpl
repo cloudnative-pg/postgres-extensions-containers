@@ -62,7 +62,7 @@ spec:
     name: cluster-{{ .Name }}
   extensions:
   - name: {{ .Name }}
-    # renovate: suite={{ .DefaultDistro }}-pgdg depName={{ replaceAll .Package "%version%" (printf "%d" .DefaultVersion) }} extractVersion=^(?<version>\d+\.\d+\.\d+)
+    # renovate: suite={{ .DefaultDistro }}-pgdg depName={{ replaceAll .Package "%version%" (printf "%d" .DefaultVersion) }} extractVersion=^(?<version>\d+\.\d+)
     version: '1.0'
 ```
 

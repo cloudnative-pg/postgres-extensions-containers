@@ -21,6 +21,7 @@ type TestingValues struct {
 	Name                   string                    `yaml:"name"`
 	SQLName                string                    `yaml:"sql_name"`
 	SharedPreloadLibraries []string                  `yaml:"shared_preload_libraries"`
+	PostgresqlParameters   map[string]string         `yaml:"postgresql_parameters"`
 	PgImage                string                    `yaml:"pg_image"`
 	Version                string                    `yaml:"version"`
 	CreateExtension        bool                      `yaml:"create_extension"`
@@ -109,6 +110,7 @@ func generateExtensionConfiguration(metadata *extensionMetadata, extensionImage 
 		DynamicLibraryPath:   metadata.DynamicLibraryPath,
 		LdLibraryPath:        metadata.LdLibraryPath,
 		BinPath:              metadata.BinPath,
+		Env:                  envMapToSlice(metadata.Env),
 	}, nil
 }
 

@@ -32,6 +32,12 @@ spec:
         reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.2-18-trixie
       ld_library_path:
       - system
+      # Requires CloudNativePG 1.29 (or higher)
+      env:
+      - name: GDAL_DATA
+        value: ${image_root}/share/gdal
+      - name: PROJ_DATA
+        value: ${image_root}/share/proj
 ```
 
 ### 2. Enable the extension in a database

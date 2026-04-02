@@ -41,7 +41,6 @@ jobs:
             _shared: &shared
               - 'docker-bake.hcl'
               - 'Taskfile.yml'
-              - 'kind-config.yaml'
               - 'test/**'
               - '.github/workflows/bake*.yml'
             pgvector:

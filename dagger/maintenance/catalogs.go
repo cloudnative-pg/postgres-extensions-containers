@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"slices"
+	"sort"
 
 	"go.yaml.in/yaml/v3"
 
@@ -22,6 +23,11 @@ type ImageVolumeSource struct {
 	PullPolicy string `yaml:"pullPolicy,omitempty"`
 }
 
+type ExtensionEnvVar struct {
+	Name  string `yaml:"name"`
+	Value string `yaml:"value"`
+}
+
 type ExtensionConfiguration struct {
 	Name                 string            `yaml:"name"`
 	ImageVolumeSource    ImageVolumeSource `yaml:"image"`
@@ -29,6 +35,7 @@ type ExtensionConfiguration struct {
 	DynamicLibraryPath   []string          `yaml:"dynamic_library_path,omitempty"`
 	LdLibraryPath        []string          `yaml:"ld_library_path,omitempty"`
 	BinPath              []string          `yaml:"bin_path,omitempty"`
+	Env                  []ExtensionEnvVar `yaml:"env,omitempty"`
 }
 
 type ImageCatalog struct {
@@ -110,4 +117,15 @@ func writeCatalogToDir(catalog *ImageCatalog, outDir *dagger.Directory) (*dagger
 	outName := fmt.Sprintf("catalog-minimal-%s.yaml", catalog.Metadata.Labels[LabelImageOS])
 
 	return outDir.WithNewFile(outName, buf.String()), nil
+}
+
+func envMapToSlice(env map[string]string) []ExtensionEnvVar {
+	result := make([]ExtensionEnvVar, 0, len(env))
+	for name, value := range env {
+		result = append(result, ExtensionEnvVar{Name: name, Value: value})
+	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Name < result[j].Name
+	})
+	return result
 }

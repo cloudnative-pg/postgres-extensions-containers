@@ -28,6 +28,17 @@ metadata = {
   shared_preload_libraries = []
 
   # TODO: Remove this comment block after customizing the file.
+  # `postgresql_parameters`: custom PostgreSQL configuration parameters to be set
+  # for this extension. This is a map of key-value pairs.
+  # This option should be reserved for parameters that are strictly necessary
+  # for the extension to function properly. Avoid setting parameters that just
+  # customize the behavior of the extension.
+  # Usually empty.
+  # Used in tests.
+  # Example: { "pgaudit.log_client" = "on" }.
+  postgresql_parameters    = {}
+
+  # TODO: Remove this comment block after customizing the file.
   # `extension_control_path`: if EMPTY (`[]`), the operator follows the CNPG
   # convention and will add the image's `share` directory to
   # `extension_control_path`. Usually empty.
@@ -57,6 +68,29 @@ metadata = {
   # Each path provided is appended to the `PATH` environment variable for the
   # Postgres process. Used in tests and to generate image catalogs.
   bin_path                 = []
+
+  # TODO: Remove this comment block after customizing the file.
+  # `env`: Optional map of environment variables to be injected into the
+  # PostgreSQL process for this extension.
+  #
+  # NOTE: Both HCL and the CNPG operator use `${...}` for placeholder
+  # expansion. In both systems, `$${...}` is the escape that produces a
+  # literal `${...}` in the output (`$$` without a following `{` is kept
+  # as-is).
+  #
+  # 1. CNPG Placeholders: Use `$${...}` to pass a placeholder through HCL
+  #    to the operator, which then expands it.
+  #    Example: { "LIB_PATH" = "$${image_root}/lib" }
+  #    HCL output: ${image_root}/lib -> Operator expands to the mount path
+  #
+  # 2. Literal `${...}`: Use `$$${...}` so that HCL produces `$${...}`,
+  #    which the operator then treats as a literal `${...}`.
+  #    Example: { "TOKEN_FORMAT" = "$$${value}" }
+  #    HCL output: $${value} -> Operator produces literal: ${value}
+  #
+  # 3. Static Values: No special escaping needed.
+  #    Example: { "DEBUG" = "true" }
+  env = {}
 
   # TODO: Remove this comment block after customizing the file.
   # `auto_update_os_libs`: set to true to allow the maintenance tooling

@@ -21,6 +21,8 @@ vars:
   KIND_NODE_VERSION: v1.35.1@sha256:05d7bcdefbda08b4e038f644c4df690cdac3fba8b06f8289f30e10026720a1ab
   K8S_VERSION: '{{ regexReplaceAll "^v([0-9.]+).*" .KIND_NODE_VERSION "$1" }}'
   KIND_CLUSTER_NAME: pg-extensions-{{ .K8S_VERSION }}
+  # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver extractVersion=^v(?<version>\d+\.\d+)\.\d+$
+  CNPG_RELEASE_DEFAULT: 1.29
 
 tasks:
   default:
@@ -229,10 +231,21 @@ tasks:
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}
     cmds:
-      - >
-        dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} --socket {{ .DOCKER_SOCKET }}
-        container with-env-variable --name=KIND_EXPERIMENTAL_DOCKER_NETWORK --value={{ .E2E_NETWORK }} with-env-variable --name=CACHE_BUSTER --value="$(date)"
-        with-file --source=kind-config.yaml --path=/root/kind-config.yaml
+      - |
+        KIND_CONFIG=$(cat <<'EOF'
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha4
+        featureGates:
+          ImageVolume: true
+        containerdConfigPatches:
+          - |-
+            [plugins."io.containerd.cri.v1.images".registry]
+              config_path = "/etc/containerd/certs.d"
+        EOF
+        )
+        dagger call -m github.com/aweris/daggerverse/kind@{{ .DAGGER_KIND_SHA }} --socket {{ .DOCKER_SOCKET }} \
+        container with-env-variable --name=KIND_EXPERIMENTAL_DOCKER_NETWORK --value={{ .E2E_NETWORK }} with-env-variable --name=CACHE_BUSTER --value="$(date)" \
+        with-new-file --contents="${KIND_CONFIG}" --path=/root/kind-config.yaml \
         with-exec --args="kind","create","cluster","--name","{{ .KIND_CLUSTER_NAME }}","--image","kindest/node:{{ .KIND_NODE_VERSION }}","--config","/root/kind-config.yaml" sync
       - docker exec "{{ .KIND_CLUSTER_NAME }}-control-plane" mkdir -p "{{ .REGISTRY_DIR }}"
       - |
@@ -267,8 +280,7 @@ tasks:
           REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
     internal: true
     vars:
-      # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver extractVersion=^v(?<version>\d+\.\d+)\.\d+$
-      CNPG_RELEASE: 1.28
+      CNPG_RELEASE: '{{ .CNPG_RELEASE | default .CNPG_RELEASE_DEFAULT }}'
       # renovate: datasource=docker depName=alpine/kubectl versioning=docker
       KUBECTL_VERSION: 1.35.3@sha256:ebf9d81d06441b3183fdc6e2dbc9f5d0db4d0464808b5bcd3c9021f54f6e65db
       DOCKER_SOCKET:
@@ -336,6 +348,7 @@ tasks:
     vars:
       REGISTRY_HOST: '{{ .REGISTRY_HOST | default "" }}'
       REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME | default "" }}'
+      CNPG_RELEASE: '{{ .CNPG_RELEASE | default .CNPG_RELEASE_DEFAULT }}'
     deps:
       - e2e:start-container-registry
       - e2e:start-dagger-engine
@@ -343,6 +356,7 @@ tasks:
         vars:
           REGISTRY_HOST: '{{ .REGISTRY_HOST }}'
           REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
+          CNPG_RELEASE: '{{ .CNPG_RELEASE }}'
     cmds:
       - echo -e "{{.GREEN}}--- E2E environment setup complete ---{{.NC}}"
 
@@ -410,11 +424,13 @@ tasks:
       DISTRO: '{{ .DISTRO | default "trixie" }}'
       REGISTRY_HOST: '{{ .REGISTRY_HOST | default "" }}'
       REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME | default "" }}'
+      CNPG_RELEASE: '{{ .CNPG_RELEASE | default .CNPG_RELEASE_DEFAULT }}'
     cmds:
       - task: e2e:setup-env
         vars:
           REGISTRY_HOST: '{{ .REGISTRY_HOST }}'
           REGISTRY_USERNAME: '{{ .REGISTRY_USERNAME }}'
+          CNPG_RELEASE: '{{ .CNPG_RELEASE }}'
       - task: bake
         vars:
           PUSH: "true"

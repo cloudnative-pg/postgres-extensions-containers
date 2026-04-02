@@ -61,7 +61,7 @@ COPY --from=builder \
 	/usr/lib/postgresql/${PG_MAJOR}/lib/postgis* \
 	/lib/
 
-COPY --from=builder /usr/lib/postgresql/18/lib/bitcode/ /lib/bitcode/
+COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
 
 # Share
 COPY --from=builder \
@@ -70,6 +70,8 @@ COPY --from=builder \
 	/share/extension/
 
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/contrib/postgis* /share/contrib/
+COPY --from=builder /usr/share/gdal/ /share/gdal/
+COPY --from=builder /usr/share/proj/ /share/proj/
 
 # System libs
 COPY --from=builder /system /system/
