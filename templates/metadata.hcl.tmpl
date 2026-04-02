@@ -28,6 +28,17 @@ metadata = {
   shared_preload_libraries = []
 
   # TODO: Remove this comment block after customizing the file.
+  # `postgresql_parameters`: custom PostgreSQL configuration parameters to be set
+  # for this extension. This is a map of key-value pairs.
+  # This option should be reserved for parameters that are strictly necessary
+  # for the extension to function properly. Avoid setting parameters that just
+  # customize the behavior of the extension.
+  # Usually empty.
+  # Used in tests.
+  # Example: { "pgaudit.log_client" = "on" }.
+  postgresql_parameters    = {}
+
+  # TODO: Remove this comment block after customizing the file.
   # `extension_control_path`: if EMPTY (`[]`), the operator follows the CNPG
   # convention and will add the image's `share` directory to
   # `extension_control_path`. Usually empty.
