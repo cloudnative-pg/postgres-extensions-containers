@@ -18,33 +18,19 @@ USER 0
 #    copied to /lib.
 
 # Install extension via `apt-get`
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#       "postgresql-${PG_MAJOR}-pg_repack=${EXT_VERSION}"
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      "postgresql-${PG_MAJOR}-repack=${EXT_VERSION}"
 
 FROM scratch
 ARG PG_MAJOR
 
 # Licenses
-# TODO: Uncomment and customize the COPY command below
-# Including license files is essential for legal compliance and transparency.
-# It ensures proper attribution to original authors, fulfills open source license
-# requirements, and enables automated compliance scanning tools to verify licensing.
-# COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pg_repack/copyright /licenses/postgresql-${PG_MAJOR}-pg_repack/
+COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-repack/copyright  /licenses/postgresql-${PG_MAJOR}-repack/
 
 # Libraries
-# TODO: Uncomment and customize the COPY command below
-# Include the extension's shared objects and related dependencies under the /lib directory.
-# CNPG will configure PostgreSQL to locate these libraries at runtime by configuring
-# the "dynamic_library_path" GUC to include this path.
-# For more details, see: https://cloudnative-pg.io/docs/current/imagevolume_extensions#how-it-works
-# COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/pg_repack* /lib/
+COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/pg_repack* /lib/
 
 # Share
-# TODO: Uncomment and customize the COPY command below
-# Include the extension's SQL scripts and control files under the /share/extension directory.
-# CNPG will configure PostgreSQL to include this path via the "extension_control_path" GUC to
-# seamlessly find and manage the current extension.
-# For more details, see: https://cloudnative-pg.io/docs/current/imagevolume_extensions#how-it-works
-# COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/pg_repack* /share/extension/
+COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/pg_repack* /share/extension/
 
 USER 65532:65532
