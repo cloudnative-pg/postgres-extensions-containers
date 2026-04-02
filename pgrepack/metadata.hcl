@@ -3,77 +3,20 @@
 metadata = {
   name                     = "pgrepack"
   sql_name                 = "pg_repack"
-
-  # TODO: Remove this comment block after customizing the file.
-  # `image_name`: MUST be unique across the container registry because
-  # it identifies the image (e.g. ghcr.io/cloudnative-pg/<image_name>)
   image_name               = "pgrepack"
-
-  # TODO: Remove this comment block after customizing the file.
-  # `licenses`: A list of SPDX identifiers representing the main software's licenses.
-  # Formatting Rules:
-  # - Must be a list of strings: ["MIT", "Apache-2.0"]
-  # - Use SPDX IDs exactly as they appear at https://spdx.org/licenses/
-  # - These are automatically joined with " AND " to populate the OCI label
-  #   org.opencontainers.image.licenses
-  # Warning: the ghcr.io registry requires labels < 256 characters
-  # Examples: "Apache-2.0", "PostgreSQL", "MIT".
   licenses                 = ["BSD-3-Clause"]
-
-  # TODO: Remove this comment block after customizing the file.
-  # `shared_preload_libraries`: list libraries to be added to
-  # `shared_preload_libraries` in Postgres. Usually empty.
-  # Used in tests.
-  # Example: ["pgaudit"].
   shared_preload_libraries = ["pg_repack"]
-
-  # TODO: Remove this comment block after customizing the file.
-  # `extension_control_path`: if EMPTY (`[]`), the operator follows the CNPG
-  # convention and will add the image's `share` directory to
-  # `extension_control_path`. Usually empty.
-  # Used in tests and to generate image catalogs.
-  # See: https://cloudnative-pg.io/docs/current/imagevolume_extensions#image-specifications
   extension_control_path   = []
-
-  # TODO: Remove this comment block after customizing the file.
-  # `dynamic_library_path`: if EMPTY (`[]`) the operator will add the image's
-  # `lib` directory to `dynamic_library_path`. Usually empty.
-  # Used in tests and to generate image catalogs.
   dynamic_library_path     = []
-
-  # TODO: Remove this comment block after customizing the file.
-  # `ld_library_path`: this SHOULD be defined when your extension needs
-  # additional (usually system) libraries loaded into Postgres before startup.
-  # If left EMPTY (`[]`) the operator will NOT alter `ld_library_path`. See the
-  # `postgis` extension metadata for an example usage. Usually empty.
-  # Used in tests and to generate image catalogs.
   ld_library_path          = []
-
-  # TODO: Remove this comment block after customizing the file.
-  # `bin_path`: this SHOULD be defined when your extension needs executables
-  # to be present in the PATH of the PostgreSQL process to function properly.
-  # For most extensions, the default empty list (`[]`) is correct and the
-  # operator will NOT alter `PATH`.
-  # Each path provided is appended to the `PATH` environment variable for the
-  # Postgres process. Used in tests and to generate image catalogs.
   bin_path                 = []
-
-  # TODO: Remove this comment block after customizing the file.
-  # `auto_update_os_libs`: set to true to allow the maintenance tooling
-  # to update OS libraries automatically; look at the `postgis` example.
   auto_update_os_libs      = false
-
-  # TODO: Remove this comment block after customizing the file.
-  # `required_extensions`: must contain the name(s) of the sibling
-  # folders in this repository that contain a required extension.
   required_extensions      = []
-
-  # TODO: Remove this comment block after customizing the file.
-  # `create_extension`: if set to `true` (default), the test suite will
-  # automatically run `CREATE EXTENSION` for this project during E2E tests.
-  # Set to `false` if the image only provides libraries or tools without
-  # a formal Postgres extension object.
   create_extension         = true
+
+  # TODO: Add these missing variables in the template
+  env                   = {}
+  postgresql_parameters = {}
 
   versions = {
     trixie = {
