@@ -34,6 +34,7 @@ type extensionMetadata struct {
 	DynamicLibraryPath     []string          `hcl:"dynamic_library_path" cty:"dynamic_library_path"`
 	LdLibraryPath          []string          `hcl:"ld_library_path" cty:"ld_library_path"`
 	BinPath                []string          `hcl:"bin_path" cty:"bin_path"`
+	Env                    map[string]string `hcl:"env" cty:"env"`
 	AutoUpdateOsLibs       bool              `hcl:"auto_update_os_libs" cty:"auto_update_os_libs"`
 	RequiredExtensions     []string          `hcl:"required_extensions" cty:"required_extensions"`
 	CreateExtension        bool              `hcl:"create_extension" cty:"create_extension"`
