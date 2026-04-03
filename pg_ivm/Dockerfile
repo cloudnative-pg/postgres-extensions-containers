@@ -9,20 +9,18 @@ ARG EXT_VERSION
 
 USER 0
 
-RUN set -eux; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        postgresql-${PG_MAJOR}-pg-ivm=${EXT_VERSION}*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends "postgresql-${PG_MAJOR}-pg-ivm=${EXT_VERSION}"
 
 FROM scratch
 ARG PG_MAJOR
 
 # Licenses
-COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pg-ivm/copyright /licenses/pg_ivm/
+COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pg-ivm/copyright /licenses/postgresql-${PG_MAJOR}-pg-ivm/
 
 # Libraries
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/pg_ivm* /lib/
-COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/pg_ivm* /lib/bitcode/
+COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
 
 # Share
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/pg_ivm* /share/extension/

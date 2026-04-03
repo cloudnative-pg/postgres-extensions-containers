@@ -6,11 +6,6 @@ materialized views to be updated incrementally when base tables change.
 
 ## Usage
 
-<!--
-Usage: add instructions on how to use the extension with CloudNativePG.
-Include code snippets for Cluster and Database resources as needed.
--->
-
 ### 1. Add the pg_ivm extension image to your Cluster
 
 Define the `pg_ivm` extension under the `postgresql.extensions` section of
@@ -32,7 +27,8 @@ spec:
     extensions:
     - name: pg_ivm
       image:
-        reference: ghcr.io/cloudnative-pg/pg_ivm:1.0-18-trixie
+        # renovate: suite=trixie-pgdg depName=postgresql-18-pg-ivm
+        reference: ghcr.io/cloudnative-pg/pg_ivm:1.13-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -52,6 +48,7 @@ spec:
     name: cluster-pg_ivm
   extensions:
   - name: pg_ivm
+    # renovate: suite=trixie-pgdg depName=postgresql-18-pg-ivm extractVersion=^(?<version>\d+\.\d+)
     version: '1.13'
 ```
 
