@@ -1,4 +1,4 @@
-# pg_ivm
+# `pg_ivm`
 
 [pg_ivm](https://github.com/sraoss/pg_ivm) is an open-source extension
 that provides **Incremental View Maintenance (IVM)** for PostgreSQL, allowing
@@ -15,7 +15,7 @@ your `Cluster` resource. For example:
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: cluster-pg_ivm
+  name: cluster-pg-ivm
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18-minimal-trixie
   instances: 1
@@ -28,7 +28,7 @@ spec:
     - name: pg_ivm
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pg-ivm
-        reference: ghcr.io/cloudnative-pg/pg_ivm:1.13-18-trixie
+        reference: ghcr.io/cloudnative-pg/pg-ivm:1.13-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -40,12 +40,12 @@ You can install `pg_ivm` in a specific database by creating or updating a
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: cluster-pg_ivm-app
+  name: cluster-pg-ivm-app
 spec:
   name: app
   owner: app
   cluster:
-    name: cluster-pg_ivm
+    name: cluster-pg-ivm
   extensions:
   - name: pg_ivm
     # renovate: suite=trixie-pgdg depName=postgresql-18-pg-ivm extractVersion=^(?<version>\d+\.\d+)
