@@ -6,9 +6,12 @@ metadata = {
   image_name               = "timescaledb-oss"
   licenses                 = ["Apache-2.0"]
   shared_preload_libraries = ["timescaledb"]
+  postgresql_parameters    = {}
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = []
+  bin_path                 = []
+  env                      = {}
   auto_update_os_libs      = false
   required_extensions      = []
   create_extension         = true
@@ -17,10 +20,14 @@ metadata = {
     trixie = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb
         "18" = "2.25.1+dfsg-1.pgdg13+1"
+        // renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb-oss extractVersion=^(?<version>\d+\.\d+\.\d+)
+        sql = "2.25.1"
     }
     bookworm = {
         // renovate: suite=bookworm-pgdg depName=postgresql-18-timescaledb
         "18" = "2.25.1+dfsg-1.pgdg12+1"
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-timescaledb-oss extractVersion=^(?<version>\d+\.\d+\.\d+)
+        sql = "2.25.1"
     }
   }
 }
