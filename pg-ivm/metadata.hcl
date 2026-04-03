@@ -1,7 +1,7 @@
 metadata = {
-  name                     = "pg_ivm"
+  name                     = "pg-ivm"
   sql_name                 = "pg_ivm"
-  image_name               = "pg_ivm"
+  image_name               = "pg-ivm"
   licenses                 = ["PostgreSQL"]
   shared_preload_libraries = []
   postgresql_parameters    = {}

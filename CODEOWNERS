@@ -10,5 +10,5 @@
 # wal2json
 /wal2json/ @cloudnative-pg/maintainers @NiccoloFei @solidDoWant
 
-# pg_ivm
-/pg_ivm/ @shusaan @cloudnative-pg/maintainers @NiccoloFei
+# pg-ivm
+/pg-ivm/ @shusaan @cloudnative-pg/maintainers @NiccoloFei
