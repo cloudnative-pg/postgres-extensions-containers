@@ -8,9 +8,9 @@ ARG PG_MAJOR
 ARG EXT_VERSION
 
 USER 0
+
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        "postgresql-${PG_MAJOR}-timescaledb=${EXT_VERSION}"
+    apt-get install -y --no-install-recommends "postgresql-${PG_MAJOR}-timescaledb=${EXT_VERSION}"
 
 FROM scratch
 ARG PG_MAJOR
