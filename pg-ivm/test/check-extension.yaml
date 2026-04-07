@@ -23,9 +23,11 @@ spec:
            set -e
            DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'pg_ivm' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           psql "$DB_URI" -c "DROP TABLE IF EXISTS test_ivm CASCADE;"
+           psql "$DB_URI" -c "DROP TABLE IF EXISTS base_table CASCADE;"
            psql "$DB_URI" -c "CREATE TABLE base_table (id INT PRIMARY KEY, value TEXT);"
            psql "$DB_URI" -c "INSERT INTO base_table VALUES (1, 'test');"
-           psql "$DB_URI" -c "CREATE INCREMENTAL MATERIALIZED VIEW test_ivm AS SELECT * FROM base_table;"
+           psql "$DB_URI" -c "SELECT pgivm.create_immv('test_ivm', 'SELECT * FROM base_table');"
            test "$(psql "$DB_URI" -tAc "SELECT COUNT(*) FROM test_ivm" -q)" = "1"
            psql "$DB_URI" -c "INSERT INTO base_table VALUES (2, 'test2');"
            test "$(psql "$DB_URI" -tAc "SELECT COUNT(*) FROM test_ivm" -q)" = "2"
