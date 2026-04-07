@@ -23,6 +23,7 @@ spec:
            set -e
            DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'timescaledb' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           psql "$DB_URI" -c "DROP TABLE IF EXISTS test_hypertable CASCADE;"
            psql "$DB_URI" -c "CREATE TABLE test_hypertable (time TIMESTAMPTZ NOT NULL, value DOUBLE PRECISION);"
            psql "$DB_URI" -c "SELECT create_hypertable('test_hypertable', 'time');"
            psql "$DB_URI" -c "INSERT INTO test_hypertable VALUES (NOW(), 1.0);"
