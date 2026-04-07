@@ -46,6 +46,7 @@ spec:
     extensions:
     - name: timescaledb
       image:
+        # renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb
         reference: ghcr.io/cloudnative-pg/timescaledb-oss:2.25.1-18-trixie
 ```
 
@@ -66,6 +67,7 @@ spec:
     name: cluster-timescaledb
   extensions:
   - name: timescaledb
+    # renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb extractVersion=^(?<version>\d+\.\d+\.\d+)
     version: '2.25.1'
 ```
 

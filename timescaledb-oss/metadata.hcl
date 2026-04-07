@@ -18,16 +18,20 @@ metadata = {
 
   versions = {
     trixie = {
+      "18" = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb
-        "18" = "2.25.1+dfsg-1.pgdg13+1"
-        // renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb-oss extractVersion=^(?<version>\d+\.\d+\.\d+)
+        package = "2.25.1+dfsg-1.pgdg13+1"
+        // renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb extractVersion=^(?<version>\d+\.\d+\.\d+)
         sql = "2.25.1"
+      }
     }
     bookworm = {
+      "18" = {
         // renovate: suite=bookworm-pgdg depName=postgresql-18-timescaledb
-        "18" = "2.25.1+dfsg-1.pgdg12+1"
-        // renovate: suite=bookworm-pgdg depName=postgresql-18-timescaledb-oss extractVersion=^(?<version>\d+\.\d+\.\d+)
+        package = "2.25.1+dfsg-1.pgdg12+1"
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-timescaledb extractVersion=^(?<version>\d+\.\d+\.\d+)
         sql = "2.25.1"
+      }
     }
   }
 }
