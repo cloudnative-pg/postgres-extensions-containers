@@ -15,17 +15,17 @@ Before proposing a change, ensure your local machine is compatible with the
 
 1. **Fork** the [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers) repository.
 2. **Clone** your fork and enter the directory:
-```sh
-git clone https://github.com/<your-username>/postgres-extensions-containers.git
-cd postgres-extensions-containers
-```
+    ```sh
+    git clone https://github.com/<your-username>/postgres-extensions-containers.git
+    cd postgres-extensions-containers
+    ```
 3. **Verify the Environment:** Run the following to ensure you can build the
    existing project ecosystem.
-```sh
-task prereqs      # Check if Go, Task, and Docker are ready
-task checks:all   # Validate current configurations
-task bake:all     # Optional: build all existing extensions to confirm the Dagger engine
-```
+    ```sh
+    task prereqs      # Check if Go, Task, and Docker are ready
+    task checks:all   # Validate current configurations
+    task bake:all     # Optional: build all existing extensions to confirm the Dagger engine
+    ```
 
 ---
 
@@ -263,6 +263,31 @@ task e2e:cleanup
 The `README.md` is typically the last file you complete. A clear, professional
 `README.md` makes an extension successful. Ensure it includes YAML examples for
 `Cluster` and `Database` resources so users can immediately adopt your work.
+
+### Add your extension to `.github/filters.yaml`
+
+The `.github/filters.yaml` file is used by the CI pipeline to detect which
+extensions have been modified and need to be built, scanned, and tested.
+You must add an entry for your new extension so that changes to its directory
+trigger the testing CI pipeline.
+
+Add a new block at the end of the file following the existing pattern:
+
+```
+<extension-name>:
+  - '<extension-name>/**'
+  - *shared
+```
+
+> [!IMPORTANT]
+> <extension-name> is the name of your extension's directory in the
+> root of the repository.
+
+- `<extension-name>/**`: This ensures that the CI pipeline is triggered when any
+  file within your extension directory is modified.
+- `*shared`: This anchor includes common paths (such as `docker-bake.hcl`,
+  `Taskfile.yml`, `test/**`, and the reusable workflow), and ensures that your
+  extension is also re-built and tested when any of these files are modified.
 
 ### Commit and Submit
 
