@@ -10,10 +10,7 @@ metadata = {
   dynamic_library_path     = []
   ld_library_path          = ["system"]
   bin_path                 = []
-  env                      = {
-    "GDAL_DATA" = "$${image_root}/share/gdal",
-    "PROJ_DATA" = "$${image_root}/share/proj",
-  }
+  env                      = {}
   auto_update_os_libs      = true
   required_extensions      = []
   create_extension         = true
