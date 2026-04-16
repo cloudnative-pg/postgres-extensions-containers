@@ -191,7 +191,7 @@ tasks:
     run: once
     vars:
       # renovate: datasource=docker depName=registry versioning=docker
-      REGISTRY_VERSION: 3.0.0@sha256:6c5666b861f3505b116bb9aa9b25175e71210414bd010d92035ff64018f9457e
+      REGISTRY_VERSION: 3.1.0@sha256:afcd13fd045b8859ac4f60fef26fc2d2f9b7b9d9e604c3c4f7c2fb1b94f95a64
     cmds:
       - >
         docker run -d --name {{ .REGISTRY_NAME }} --rm -p {{ .REGISTRY_HOST_PORT }}:{{ .REGISTRY_INTERNAL_PORT }}
@@ -282,7 +282,7 @@ tasks:
     vars:
       CNPG_RELEASE: '{{ .CNPG_RELEASE | default .CNPG_RELEASE_DEFAULT }}'
       # renovate: datasource=docker depName=alpine/kubectl versioning=docker
-      KUBECTL_VERSION: 1.35.3@sha256:3d188424ebfa78b521fffc2ceb785c99a098b53155bafb127c8302ea3f493cf7
+      KUBECTL_VERSION: 1.35.3@sha256:c4a11ae9a1cbac1f203bfe7efa481ae9c33b1bfdf1f73bc84f62cb973f039e4b
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
       CNPG_MANIFEST:

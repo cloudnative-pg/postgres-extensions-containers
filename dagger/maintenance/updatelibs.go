@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"path"
 	"regexp"
+	"strings"
 
 	"dagger/maintenance/internal/dagger"
 )
 
 // libsRegex matches library dependencies from apt-get output
-// Format: library-name MD5Sum:checksum
-var libsRegex = regexp.MustCompile(`(?m)^.*\s(lib\S*).*(MD5Sum:.*)$`)
+// Format: 'url' library-name size [MD5Sum:checksum]
+var libsRegex = regexp.MustCompile(`(?m)^\S+\s+(lib\S+\.deb)\s+\d+\s*(MD5Sum:\S+)?\s*$`)
 
 func updateOSLibsOnTarget(
 	ctx context.Context,
@@ -43,9 +44,8 @@ func updateOSLibsOnTarget(
 
 	var result string
 	for _, m := range matches {
-		if len(m) >= 3 {
-			result += m[1] + " " + m[2] + "\n"
-		}
+		line := strings.Join(m[1:], " ")
+		result += strings.TrimSpace(line) + "\n"
 	}
 
 	if result == "" {
