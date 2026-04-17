@@ -32,7 +32,7 @@ jobs:
         uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: filter
         with:
-          filters: .github/filters.yaml
+          filters: .github/bake-filters.yaml
 
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix

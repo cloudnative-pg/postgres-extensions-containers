@@ -264,9 +264,9 @@ The `README.md` is typically the last file you complete. A clear, professional
 `README.md` makes an extension successful. Ensure it includes YAML examples for
 `Cluster` and `Database` resources so users can immediately adopt your work.
 
-### Add your extension to `.github/filters.yaml`
+### Add your extension to `.github/bake-filters.yaml`
 
-The `.github/filters.yaml` file is used by the CI pipeline to detect which
+The `.github/bake-filters.yaml` file is used by the CI pipeline to detect which
 extensions have been modified and need to be built, scanned, and tested.
 You must add an entry for your new extension so that changes to its directory
 trigger the testing CI pipeline.
