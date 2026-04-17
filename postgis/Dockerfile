@@ -13,7 +13,8 @@ RUN set -eux && \
 	# Install PostGIS
 	apt-get update && \
 	apt-get install -y --no-install-recommends \
-		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}=${EXT_VERSION}"
+		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}=${EXT_VERSION}" \
+		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}-scripts=${EXT_VERSION}"
 
 # Gather PostGIS system libraries and their licenses
 RUN mkdir -p /system /licenses && \
