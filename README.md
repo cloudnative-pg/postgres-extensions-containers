@@ -36,9 +36,9 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | :--- | :--- | :--- |
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
 | **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) |
+| **[pg_repack](pgrepack)** | re-organize bloated tables and indexes | [github.com/reorg/pg_repack](https://github.com/reorg/pg_repack) |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) |
-
 
 Extensions are provided only for the OS versions already built by the
 [`cloudnative-pg/postgres-containers`](https://github.com/cloudnative-pg/postgres-containers) project,
