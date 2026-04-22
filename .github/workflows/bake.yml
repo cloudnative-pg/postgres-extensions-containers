@@ -27,15 +27,31 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-    - name: Validate extension name
-      if: github.event_name == 'workflow_dispatch'
-      env:
-        INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
-      run: |
-        if [[ ! -d "$INPUT_EXTENSION_NAME" ]]; then
-          echo "Error: '$INPUT_EXTENSION_NAME' is not a valid extension (no such directory)"
-          exit 1
-        fi
+
+      - name: Fetch valid targets
+        if: github.event_name == 'workflow_dispatch'
+        id: get-targets
+        uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
+        env:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.20.6
+        with:
+          version: ${{ env.DAGGER_VERSION }}
+          verb: call
+          module: ./dagger/maintenance/
+          args: get-targets
+
+      - name: Validate extension name
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
+          VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
+        run: |
+          if ! echo "$VALID_TARGETS" | jq -e --arg ext "$INPUT_EXTENSION_NAME" 'index($ext)' > /dev/null; then
+            echo "::error::'$INPUT_EXTENSION_NAME' is not a valid extension target. Valid targets: $VALID_TARGETS"
+            exit 1
+          fi
+
       - name: Check for changes
         uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: filter
