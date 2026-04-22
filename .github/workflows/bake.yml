@@ -27,7 +27,15 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-
+    - name: Validate extension name
+      if: github.event_name == 'workflow_dispatch'
+      env:
+        INPUT_EXTENSION_NAME: ${{ github.event.inputs.extension_name }}
+      run: |
+        if [[ ! -d "$INPUT_EXTENSION_NAME" ]]; then
+          echo "Error: '$INPUT_EXTENSION_NAME' is not a valid extension (no such directory)"
+          exit 1
+        fi
       - name: Check for changes
         uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: filter
