@@ -13,6 +13,7 @@ on:
           - postgis
           - pgaudit
           - pg-crash
+          - tds-fdw
 
 defaults:
   run:
@@ -54,6 +55,9 @@ jobs:
               - *shared
             pg-crash:
               - 'pg-crash/**'
+              - *shared
+            tds-fdw:
+              - 'tds-fdw/**'
               - *shared
 
       # Compute a matrix containing the list of all extensions that have been modified
