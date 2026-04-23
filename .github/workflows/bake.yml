@@ -55,6 +55,10 @@ jobs:
         env:
           VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
         run: |
+          if ! echo "$VALID_TARGETS" | jq -e 'length > 0' > /dev/null; then
+            echo "::error::dagger get-targets returned no extensions: $VALID_TARGETS"
+            exit 1
+          fi
           {
             echo 'EXTENSIONS<<YAML_EOF'
             echo "$VALID_TARGETS" | jq -r '.[] | "\(.):\n  - \"\(.)/**\"\n  - *shared"'
