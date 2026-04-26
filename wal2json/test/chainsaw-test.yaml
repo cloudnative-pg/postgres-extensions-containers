@@ -1,0 +1,36 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: verify-wal2json-output-plugin
+spec:
+  timeouts:
+    apply: 5s
+    assert: 3m
+    delete: 30s
+  description: >-
+    Verify that the wal2json shared library is loadable by PostgreSQL by
+    creating and dropping a logical replication slot using the wal2json output
+    plugin. Slot creation forces PostgreSQL to dlopen wal2json.so, so this is
+    the actual end-to-end install check for an output plugin (which has no
+    CREATE EXTENSION counterpart).
+  steps:
+  - name: Provision PostgreSQL Cluster
+    description: >-
+      Deploy a Cluster resource using the built wal2json image with superuser
+      access enabled so the slot-creation Job can call
+      pg_create_logical_replication_slot.
+    try:
+    - apply:
+        file: cluster.yaml
+    - assert:
+        file: cluster-assert.yaml
+
+  - name: Create logical replication slot using wal2json
+    description: >-
+      Run a Job that creates and drops a logical replication slot with the
+      'wal2json' output plugin, exercising dlopen of wal2json.so.
+    try:
+    - apply:
+        file: check-slot.yaml
+    - assert:
+        file: check-slot-assert.yaml
