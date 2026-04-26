@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wal2json-slot-test
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: slot-test
+        env:
+          - name: SU_URI
+            valueFrom:
+              secretKeyRef:
+                name: (join('-', [$values.name, 'superuser']))
+                key: uri
+        image: alpine/psql:latest
+        command: ['sh', '-c']
+        args:
+         - |
+           set -e
+           SU_URI=$(echo $SU_URI | sed "s|/\*|/|")
+           SLOT="wal2json_chainsaw_test"
+           psql "$SU_URI" -v ON_ERROR_STOP=1 -tAc \
+             "SELECT slot_name FROM pg_create_logical_replication_slot('${SLOT}', 'wal2json')"
+           psql "$SU_URI" -v ON_ERROR_STOP=1 -tAc \
+             "SELECT pg_drop_replication_slot('${SLOT}')"
+           echo "wal2json output plugin loaded successfully"
