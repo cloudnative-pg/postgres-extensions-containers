@@ -3,7 +3,10 @@
   "extends": [
     "config:recommended",
     "docker:pinDigests",
-    "customManagers:githubActionsVersions"
+    "customManagers:githubActionsVersions",
+    ":gitSignOff",
+    ":automergeMinor",
+    ":automergeDigest"
   ],
   "enabledManagers": [
     "github-actions",
