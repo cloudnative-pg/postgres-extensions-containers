@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: (join('-', [$values.name, 'app']))
+status:
+  applied: true
+  extensions:
+  - applied: true
+    name: ($values.sql_name)
+  observedGeneration: 1
