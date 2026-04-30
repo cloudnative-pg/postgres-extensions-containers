@@ -20,8 +20,8 @@ libboost-serialization1.83.0_1.83.0-4.2_amd64.deb MD5Sum:0db3c604d979abcd786c51e
 libbrotli1_1.1.0-2+b7_amd64.deb MD5Sum:e268acc326140ae9f1731f335335fc8d
 libnghttp2-14_1.64.0-1.1_amd64.deb MD5Sum:be477fe14db067cc30059ed0aa9cdabe
 libnghttp3-9_1.8.0-1_amd64.deb MD5Sum:6b1f90e4153530a76878e9fde0244c66
-libngtcp2-16_1.11.0-1_amd64.deb MD5Sum:bb2aa637e4b61495c53f11cf83707649
-libngtcp2-crypto-gnutls8_1.11.0-1_amd64.deb MD5Sum:0dcb7a63254e77fe5fb8808fdba676fa
+libngtcp2-16_1.11.0-1+deb13u1_amd64.deb
+libngtcp2-crypto-gnutls8_1.11.0-1+deb13u1_amd64.deb
 libpsl5t64_0.21.2-1.1+b1_amd64.deb MD5Sum:09aa06d971ce5ff6d02b452c0e1f15f9
 librtmp1_2.4+20151223.gitfa8646d.1-2+b5_amd64.deb MD5Sum:355aeaaf937d70dcc873a458f6244c6e
 libssh2-1t64_1.11.1-1_amd64.deb MD5Sum:d4b36da8909e226c1829bf9c07aca38c
