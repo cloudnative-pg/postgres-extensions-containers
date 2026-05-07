@@ -15,17 +15,17 @@ Before proposing a change, ensure your local machine is compatible with the
 
 1. **Fork** the [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers) repository.
 2. **Clone** your fork and enter the directory:
-```sh
-git clone https://github.com/<your-username>/postgres-extensions-containers.git
-cd postgres-extensions-containers
-```
+    ```sh
+    git clone https://github.com/<your-username>/postgres-extensions-containers.git
+    cd postgres-extensions-containers
+    ```
 3. **Verify the Environment:** Run the following to ensure you can build the
    existing project ecosystem.
-```sh
-task prereqs      # Check if Go, Task, and Docker are ready
-task checks:all   # Validate current configurations
-task bake:all     # Optional: build all existing extensions to confirm the Dagger engine
-```
+    ```sh
+    task prereqs      # Check if Go, Task, and Docker are ready
+    task checks:all   # Validate current configurations
+    task bake:all     # Optional: build all existing extensions to confirm the Dagger engine
+    ```
 
 ---
 

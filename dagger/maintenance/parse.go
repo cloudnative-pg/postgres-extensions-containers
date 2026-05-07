@@ -65,7 +65,7 @@ func parseBuildMatrix(ctx context.Context, source *dagger.Directory, target stri
 			Name: metadataFile,
 			Data: []byte(metadata),
 		},
-	}, nil)
+	}, nil, nil)
 	if err != nil {
 		return nil, err
 	}
