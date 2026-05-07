@@ -74,28 +74,9 @@ jobs:
               - 'docker-bake.hcl'
               - 'Taskfile.yml'
               - 'test/**'
-<<<<<<< HEAD
-              - '.github/workflows/bake*.yml'
-            pgvector:
-              - 'pgvector/**'
-              - *shared
-            postgis:
-              - 'postgis/**'
-              - *shared
-            pgaudit:
-              - 'pgaudit/**'
-              - *shared
-            pg-crash:
-              - 'pg-crash/**'
-              - *shared
-            pgrepack:
-              - 'pgrepack/**'
-              - *shared
-=======
               - 'dagger/maintenance/**'
               - '.github/workflows/bake_targets.yml'
             ${{ env.EXTENSIONS }}
->>>>>>> 8b0ed56 (ci: avoid triggering CI for all extensions on non-impactful shared file changes (#189))
 
       # Compute a matrix containing the list of all extensions that have been modified
       - name: Compute matrix
