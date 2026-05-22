@@ -62,7 +62,8 @@ logical replication slot that uses the `wal2json` output plugin:
 SELECT * FROM pg_create_logical_replication_slot('wal2json_slot', 'wal2json');
 ```
 
-Some applications (for example, Teleport), may do this automatically.
+Some applications (for example, [Teleport](https://goteleport.com/docs/reference/deployment/backends/#postgresql)),
+may do this automatically.
 
 ### 3. Verify installation
 
@@ -87,7 +88,7 @@ SELECT pg_drop_replication_slot('wal2json_slot');
 
 This extension is maintained by:
 
-- FirstName LastName (@GitHub_Handle)
+- Fred Heinecke (@solidDoWant)
 
 The maintainers are responsible for:
 
