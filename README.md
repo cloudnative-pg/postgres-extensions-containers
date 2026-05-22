@@ -36,6 +36,7 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | :--- | :--- | :--- |
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
 | **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) |
+| **[pg_jsonschema](pg-jsonschema)** | JSON Schema validation for PostgreSQL `json` and `jsonb` data | [github.com/supabase/pg_jsonschema](https://github.com/supabase/pg_jsonschema) |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) |
 
@@ -181,4 +182,3 @@ list of compatible extension images for PostgreSQL 18+ versions.
   project](https://github.com/cloudnative-pg/artifacts/tree/main/image-catalogs-extensions).
 - **Naming Convention:** These are based on the `minimal` catalog and use the
   `catalog-minimal` prefix (e.g., `catalog-minimal-trixie.yaml`).
-
