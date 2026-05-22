@@ -39,7 +39,7 @@ jobs:
         uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.20.6
+          DAGGER_VERSION: 0.20.8
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
@@ -47,7 +47,7 @@ jobs:
           args: generate-catalogs --catalogs-dir artifacts/image-catalogs/ export --path artifacts/image-catalogs-extensions/
 
       - name: Install cosign
-        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
       - name: Sign catalogs
         run: |
