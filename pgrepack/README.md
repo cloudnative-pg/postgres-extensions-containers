@@ -4,12 +4,6 @@ SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established 
 SPDX-License-Identifier: Apache-2.0
 -->
 
-<!--
-TODO: Replace this section with a brief introduction of your extension.
-Describe what the extension does and what it is useful for.
-Add a reference to the official documentation if available.
--->
-
 The pg_repack PostgreSQL extension provides a binary tool that can perform online operation that can remove bloat from tables and indexes. For more information, see the [official documentation](https://reorg.github.io/pg_repack/).
 
 ## Usage
