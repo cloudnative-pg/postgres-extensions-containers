@@ -8,10 +8,25 @@ The pg_repack PostgreSQL extension provides a binary tool that can perform onlin
 
 ## Usage
 
-<!--
-Usage: add instructions on how to use the extension with CloudNativePG.
-Include code snippets for Cluster and Database resources as needed.
--->
+A typical usage involves first installing the extension
+
+```sql
+CREATE EXTENSION pg_repack;
+```
+
+and then invoking the command-line tool. For example, to repack a bloated table called orders in the mydb database while keeping it fully accessible, you would run:
+
+```shell
+pg_repack -h localhost -U postgres -d mydb -t orders
+```
+
+To also reorder the table data along a specific index (e.g., orders_created_at_idx) for better read performance, you would use:
+
+```shell
+pg_repack -h localhost -U postgres -d mydb -t orders --order-by created_at
+```
+
+For a full-database repack targeting all eligible tables, simply omit the -t flag: pg_repack -d mydb. It is important to ensure that the target tables have a primary key or a unique, non-null index, as pg_repack requires one to correctly track row-level changes during the copy phase. Overall, pg_repack is an indispensable tool for DBAs managing large, write-heavy PostgreSQL databases where table bloat accumulates over time and downtime is not an option.
 
 ### 1. Add the pg_repack extension image to your Cluster
 
@@ -78,7 +93,7 @@ You should see `pg_repack` listed among the installed extensions.
 
 This extension is maintained by:
 
-- FirstName LastName (@GitHub_Handle)
+- Thomas Boussekey (@thomasboussekey)
 
 The maintainers are responsible for:
 
