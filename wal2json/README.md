@@ -68,8 +68,8 @@ may do this automatically.
 ### 3. Verify installation
 
 Consume changes from the slot to confirm the plugin is loaded correctly. After
-producing some activity (e.g. `CREATE TABLE t (id int); INSERT INTO t VALUES
-(1);`), peek at the slot:
+producing some activity (e.g. `CREATE TABLE t (id int); INSERT INTO t VALUES (1);`),
+peek at the slot:
 
 ```sql
 SELECT data
