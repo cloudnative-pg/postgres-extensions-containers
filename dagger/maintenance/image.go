@@ -23,8 +23,10 @@ const (
 )
 
 const (
-	AnnotationImageSQLVersion = "io.cloudnativepg.image.sql.version"
-	AnnotationImageBaseName   = "io.cloudnativepg.image.base.name"
+	AnnotationImageSQLVersion  = "io.cloudnativepg.image.sql.version"
+	AnnotationImageBaseName    = "io.cloudnativepg.image.base.name"
+	AnnotationImageBasePgMajor = "io.cloudnativepg.image.base.pgmajor"
+	AnnotationImageBaseOS      = "io.cloudnativepg.image.base.os"
 )
 
 var SupportedDistributions = []string{

@@ -38,7 +38,7 @@ type testingExtensionInfo struct {
 }
 
 func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directory, metadata *extensionMetadata,
-	extensionImage string, version string, registryUsername string, registryPassword *dagger.Secret) ([]*testingExtensionInfo, error) {
+	extensionImage string, version string, distribution string, pgMajor int, registryUsername string, registryPassword *dagger.Secret) ([]*testingExtensionInfo, error) {
 	var out []*testingExtensionInfo
 	configuration, err := generateExtensionConfiguration(metadata, extensionImage)
 	if err != nil {
@@ -64,7 +64,11 @@ func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directo
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse dependency metadata %q: %w", dep, err)
 		}
-		depConfiguration, err := generateExtensionConfiguration(depMetadata, "")
+		requiredExtensionImage, err := getExtensionImage(depMetadata, distribution, pgMajor)
+		if err != nil {
+			return nil, err
+		}
+		depConfiguration, err := generateExtensionConfiguration(depMetadata, requiredExtensionImage)
 		if err != nil {
 			return nil, err
 		}

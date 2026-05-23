@@ -186,7 +186,21 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage, AnnotationImageSQLVersion)
 	}
 
-	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version, registryUsername, registryPassword)
+	distribution := annotations[AnnotationImageBaseOS]
+	if distribution == "" {
+		return nil, fmt.Errorf(
+			"extension image %s doesn't have an %q annotation or its value is empty",
+			targetExtensionImage, AnnotationImageBaseOS)
+	}
+
+	pgMajor, err := strconv.Atoi(annotations[AnnotationImageBasePgMajor])
+	if err != nil {
+		return nil, fmt.Errorf(
+			"extension image %s doesn't have an %q annotation or its value is not a number",
+			targetExtensionImage, AnnotationImageBasePgMajor)
+	}
+
+	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version, distribution, pgMajor, registryUsername, registryPassword)
 	if err != nil {
 		return nil, err
 	}
