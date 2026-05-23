@@ -39,6 +39,10 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) | CNPG maintainers |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) | CNPG maintainers |
 
+> [!NOTE]
+> PostGIS is licensed under GPL-2.0, which is not on the CNCF Allowlist. Its
+> inclusion in this project is subject to a formal CNCF license exception request.
+
 Extensions are provided only for the OS versions already built by the
 [`cloudnative-pg/postgres-containers`](https://github.com/cloudnative-pg/postgres-containers) project,
 specifically Debian `stable` and `oldstable`.
@@ -63,18 +67,28 @@ The project adheres to the following frameworks:
 When proposing a new extension, the following criteria must be met:
 
 - **Licensing and IP ownership:** We redistribute unmodified third-party
-  software as container images. We prioritize licenses explicitly allowed by the
-  [CNCF License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md),
-  which includes the PostgreSQL License (relevant to this project). Other
-  open-source licenses, such as FSF-approved licenses (e.g., GNU GPL), will be
-  considered on a case-by-case basis to ensure compliance with redistribution
-  requirements.
+  software as container images. Every component in an extension image must be
+  covered by a license on the
+  [CNCF Allowlist License Policy](https://github.com/cncf/allowed-third-party-license-policy/blob/main/Exceptions.md),
+  which includes Apache-2.0, MIT, and the PostgreSQL License. CNCF policy
+  requires a formal exception for any component not covered by the Allowlist;
+  as project maintainers we have decided not to pursue exceptions, so only
+  Allowlisted components will be accepted for distribution through this project.
+  This is a governance decision, not a legal limitation — contributors whose
+  extension cannot meet this requirement are welcome to adopt the same build
+  tooling and distribute images independently.
 - **Structure:** only one extension can be included within an extension folder.
-- **Debian Packages:** Extension images must be built using a Debian package
-  provided by a trusted source like the
-  [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt).
-  This ensures compatibility with the base images and standard package
-  management procedures.
+- **Debian Packages:** Extension images must be built **exclusively** from
+  [DFSG](https://www.debian.org/social_contract#guidelines)-compliant Debian packages sourced from a trusted, auditable repository.
+  The [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt)
+  is the recommended source, but other Debian repositories are acceptable
+  provided they meet the same standards. This is a hard requirement for two
+  reasons: (a) Debian DEP-5 machine-readable copyright files are the mechanism
+  used to satisfy attribution obligations — they are copied into
+  `/licenses/<pkg>/` in the final `FROM scratch` image at build time; (b)
+  [DFSG](https://www.debian.org/social_contract#guidelines) compliance
+  guarantees that non-free components have been removed by the package
+  maintainers, ensuring licence hygiene.
 - **License inclusion:** all necessary license agreements for the extension and
   its dependencies must be included within the extension folder (refer to the
   examples in the `pgvector` and `postgis` folders).
