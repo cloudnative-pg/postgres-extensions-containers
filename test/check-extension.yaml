@@ -22,7 +22,8 @@ spec:
                 key: uri
           - name: PGSSLROOTCERT
             value: ""
-        image: alpine/psql:latest
+        # renovate: datasource=docker depName=alpine/psql versioning=docker
+        image: alpine/psql:18.4@sha256:51ef105226058360688250fedeac342f020b21d8d3e59dcf9c1fee04f638831c
         command: ['sh', '-c']
         args:
          - |
