@@ -20,6 +20,8 @@ spec:
               secretKeyRef:
                 name: (join('-', [$values.name, 'app']))
                 key: uri
+          - name: PGSSLROOTCERT
+            value: ""
         image: alpine/psql:latest
         command: ['sh', '-c']
         args:
