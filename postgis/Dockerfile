@@ -13,7 +13,8 @@ RUN set -eux && \
 	# Install PostGIS
 	apt-get update && \
 	apt-get install -y --no-install-recommends \
-		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}=${EXT_VERSION}"
+		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}=${EXT_VERSION}" \
+		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}-scripts=${EXT_VERSION}"
 
 # Gather PostGIS system libraries and their licenses
 RUN mkdir -p /system /licenses && \
@@ -61,7 +62,7 @@ COPY --from=builder \
 	/usr/lib/postgresql/${PG_MAJOR}/lib/postgis* \
 	/lib/
 
-COPY --from=builder /usr/lib/postgresql/18/lib/bitcode/ /lib/bitcode/
+COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
 
 # Share
 COPY --from=builder \
@@ -70,6 +71,8 @@ COPY --from=builder \
 	/share/extension/
 
 COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/contrib/postgis* /share/contrib/
+COPY --from=builder /usr/share/gdal/ /share/gdal/
+COPY --from=builder /usr/share/proj/ /share/proj/
 
 # System libs
 COPY --from=builder /system /system/

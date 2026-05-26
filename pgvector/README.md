@@ -50,7 +50,7 @@ spec:
     name: cluster-pgvector
   extensions:
   - name: vector
-    # renovate: suite=trixie-pgdg depName=postgresql-18-pgvector
+    # renovate: suite=trixie-pgdg depName=postgresql-18-pgvector extractVersion=^(?<version>\d+\.\d+\.\d+)
     version: '0.8.2'
 ```
 

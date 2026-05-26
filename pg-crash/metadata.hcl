@@ -6,22 +6,28 @@ metadata = {
   image_name               = "pg-crash"
   licenses                 = ["BSD-3-Clause"]
   shared_preload_libraries = ["pg_crash"]
+  postgresql_parameters    = {}
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = []
   bin_path                 = []
+  env                      = {}
   auto_update_os_libs      = false
   required_extensions      = []
   create_extension         = false
 
   versions = {
     bookworm = {
-      // renovate: suite=bookworm-pgdg depName=postgresql-18-pg-crash
-      "18" = "0.3-2.pgdg12+1"
+      "18" = {
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-pg-crash
+        package = "0.3-2.pgdg12+1"
+      }
     }
     trixie = {
-      // renovate: suite=trixie-pgdg depName=postgresql-18-pg-crash
-      "18" = "0.3-2.pgdg13+1"
+      "18" = {
+        // renovate: suite=trixie-pgdg depName=postgresql-18-pg-crash
+        package = "0.3-2.pgdg13+1"
+      }
     }
   }
 }

@@ -32,13 +32,12 @@ CloudNativePG actively maintains the following third-party extensions, provided
 they are maintained by their respective authors, and PostgreSQL Debian Group
 (PGDG) packages are available.
 
-| Extension | Description | Project URL |
-| :--- | :--- | :--- |
-| **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
-| **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) |
-| **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
-| **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) |
-
+| Extension | Description | Project URL | Maintained by |
+| :--- | :--- | :--- | :--- |
+| **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) | CNPG maintainers |
+| **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) | CNPG maintainers |
+| **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) | CNPG maintainers |
+| **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) | CNPG maintainers |
 
 Extensions are provided only for the OS versions already built by the
 [`cloudnative-pg/postgres-containers`](https://github.com/cloudnative-pg/postgres-containers) project,
@@ -138,26 +137,27 @@ other tools to identify the base PostgreSQL version and OS distribution.
 
 ### CloudNativePG-Specific Labels
 
-| Label | Description | Example |
-| :--- | :--- | :--- |
-| `io.cloudnativepg.image.base.name` | Base PostgreSQL container image | `ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm` |
-| `io.cloudnativepg.image.base.pgmajor` | PostgreSQL major version | `18` |
-| `io.cloudnativepg.image.base.os` | Operating system distribution | `bookworm` |
+| Label                                 | Description                      | Example                                                 |
+|:--------------------------------------|:---------------------------------|:--------------------------------------------------------|
+| `io.cloudnativepg.image.base.name`    | Base PostgreSQL container image  | `ghcr.io/cloudnative-pg/postgresql:18-minimal-bookworm` |
+| `io.cloudnativepg.image.base.pgmajor` | PostgreSQL major version         | `18`                                                    |
+| `io.cloudnativepg.image.base.os`      | Operating system distribution    | `bookworm`                                              |
+| `io.cloudnativepg.image.sql.version`  | PostgreSQL extension SQL version | `0.8.2`                                                 |
 
 ### Standard OCI Labels
 
 In addition to CloudNativePG-specific labels, all images include standard OCI
 annotations as defined by the [OCI Image Format Specification](https://github.com/opencontainers/image-spec/blob/main/annotations.md):
 
-| Label | Description |
-| :--- | :--- |
-| `org.opencontainers.image.created` | Image creation timestamp |
-| `org.opencontainers.image.version` | Extension version |
-| `org.opencontainers.image.revision` | Git commit SHA |
-| `org.opencontainers.image.title` | Human-readable image title |
-| `org.opencontainers.image.description` | Image description |
-| `org.opencontainers.image.source` | Source repository URL |
-| `org.opencontainers.image.licenses` | License identifier |
+| Label                                  | Description                 |
+|:---------------------------------------|:----------------------------|
+| `org.opencontainers.image.created`     | Image creation timestamp    |
+| `org.opencontainers.image.version`     | Extension's package version |
+| `org.opencontainers.image.revision`    | Git commit SHA              |
+| `org.opencontainers.image.title`       | Human-readable image title  |
+| `org.opencontainers.image.description` | Image description           |
+| `org.opencontainers.image.source`      | Source repository URL       |
+| `org.opencontainers.image.licenses`    | License identifier          |
 
 You can inspect these labels using container tools:
 

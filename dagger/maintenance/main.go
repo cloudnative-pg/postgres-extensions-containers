@@ -172,18 +172,18 @@ func (m *Maintenance) GenerateTestingValues(
 		return nil, err
 	}
 
-	pgImage := annotations["io.cloudnativepg.image.base.name"]
+	pgImage := annotations[AnnotationImageBaseName]
 	if pgImage == "" {
 		return nil, fmt.Errorf(
-			"extension image %s doesn't have an 'io.cloudnativepg.image.base.name' annotation",
-			targetExtensionImage)
+			"extension image %s doesn't have an %q annotation or its value is empty",
+			targetExtensionImage, AnnotationImageBaseName)
 	}
 
-	version := annotations["org.opencontainers.image.version"]
-	if version == "" {
+	version := annotations[AnnotationImageSQLVersion]
+	if version == "" && metadata.CreateExtension {
 		return nil, fmt.Errorf(
-			"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
-			targetExtensionImage)
+			"extension image %s doesn't have an %q annotation or its value is empty",
+			targetExtensionImage, AnnotationImageSQLVersion)
 	}
 
 	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version, registryUsername, registryPassword)
@@ -204,6 +204,7 @@ func (m *Maintenance) GenerateTestingValues(
 		Name:                   metadata.Name,
 		SQLName:                metadata.SQLName,
 		SharedPreloadLibraries: metadata.SharedPreloadLibraries,
+		PostgresqlParameters:   metadata.PostgresqlParameters,
 		PgImage:                pgImage,
 		Version:                version,
 		CreateExtension:        metadata.CreateExtension,
@@ -352,7 +353,7 @@ func (m *Maintenance) Test(
 	target string,
 	// Container image to use to run chainsaw
 	// renovate: datasource=docker depName=kyverno/chainsaw packageName=ghcr.io/kyverno/chainsaw versioning=docker
-	// +default="ghcr.io/kyverno/chainsaw:v0.2.14@sha256:c703e4d4ce7b89c5121fe957ab89b6e2d33f91fd15f8274a9f79ca1b2ba8ecef"
+	// +default="ghcr.io/kyverno/chainsaw:v0.2.15@sha256:527f3be2b9ec0580cb0bc84540a0fee99406b011c24ae3a30953e525af60809d"
 	chainsawImage string,
 	// Additional arguments to pass to Chainsaw test command
 	// +optional
@@ -515,6 +516,7 @@ func (m *Maintenance) GenerateCatalogs(
 					DynamicLibraryPath:   metadata.DynamicLibraryPath,
 					LdLibraryPath:        metadata.LdLibraryPath,
 					BinPath:              metadata.BinPath,
+					Env:                  envMapToSlice(metadata.Env),
 				}
 
 				img.Extensions = append(img.Extensions, extensionsConfig)

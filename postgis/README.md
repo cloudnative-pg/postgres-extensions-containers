@@ -29,9 +29,15 @@ spec:
     - name: postgis
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
-        reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.2-18-trixie
+        reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.3-18-trixie
       ld_library_path:
       - system
+      # Requires CloudNativePG 1.29 (or higher)
+      env:
+      - name: GDAL_DATA
+        value: ${image_root}/share/gdal
+      - name: PROJ_DATA
+        value: ${image_root}/share/proj
 ```
 
 ### 2. Enable the extension in a database
@@ -51,8 +57,8 @@ spec:
     name: cluster-postgis
   extensions:
   - name: postgis
-    # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
-    version: '3.6.2'
+    # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
+    version: '3.6.3'
   - name: postgis_raster
   - name: postgis_sfcgal
   - name: fuzzystrmatch

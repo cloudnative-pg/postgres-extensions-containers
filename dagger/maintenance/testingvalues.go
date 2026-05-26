@@ -21,6 +21,7 @@ type TestingValues struct {
 	Name                   string                    `yaml:"name"`
 	SQLName                string                    `yaml:"sql_name"`
 	SharedPreloadLibraries []string                  `yaml:"shared_preload_libraries"`
+	PostgresqlParameters   map[string]string         `yaml:"postgresql_parameters"`
 	PgImage                string                    `yaml:"pg_image"`
 	Version                string                    `yaml:"version"`
 	CreateExtension        bool                      `yaml:"create_extension"`
@@ -72,11 +73,11 @@ func generateTestingValuesExtensions(ctx context.Context, source *dagger.Directo
 		if err != nil {
 			return nil, err
 		}
-		depVersion := depAnnotations["org.opencontainers.image.version"]
+		depVersion := depAnnotations[AnnotationImageSQLVersion]
 		if depVersion == "" {
 			return nil, fmt.Errorf(
-				"extension image %s doesn't have an 'org.opencontainers.image.version' annotation",
-				depConfiguration.ImageVolumeSource.Reference)
+				"extension image %s doesn't have an %q annotation or its value is empty",
+				depConfiguration.ImageVolumeSource.Reference, AnnotationImageSQLVersion)
 		}
 
 		out = append(out, &testingExtensionInfo{
@@ -109,6 +110,7 @@ func generateExtensionConfiguration(metadata *extensionMetadata, extensionImage 
 		DynamicLibraryPath:   metadata.DynamicLibraryPath,
 		LdLibraryPath:        metadata.LdLibraryPath,
 		BinPath:              metadata.BinPath,
+		Env:                  envMapToSlice(metadata.Env),
 	}, nil
 }
 

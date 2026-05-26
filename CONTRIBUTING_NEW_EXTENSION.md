@@ -15,17 +15,17 @@ Before proposing a change, ensure your local machine is compatible with the
 
 1. **Fork** the [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers) repository.
 2. **Clone** your fork and enter the directory:
-```sh
-git clone https://github.com/<your-username>/postgres-extensions-containers.git
-cd postgres-extensions-containers
-```
+    ```sh
+    git clone https://github.com/<your-username>/postgres-extensions-containers.git
+    cd postgres-extensions-containers
+    ```
 3. **Verify the Environment:** Run the following to ensure you can build the
    existing project ecosystem.
-```sh
-task prereqs      # Check if Go, Task, and Docker are ready
-task checks:all   # Validate current configurations
-task bake:all     # Optional: build all existing extensions to confirm the Dagger engine
-```
+    ```sh
+    task prereqs      # Check if Go, Task, and Docker are ready
+    task checks:all   # Validate current configurations
+    task bake:all     # Optional: build all existing extensions to confirm the Dagger engine
+    ```
 
 ---
 
@@ -152,9 +152,26 @@ The scaffolding generates `metadata.hcl`, `Dockerfile`, and `README.md`.
 Follow the specific instructions and "TODO" comments found within each
 generated file to finalize your extension.
 
+#### Package Version vs. SQL Version
+
+Your `metadata.hcl` file requires two version fields:
+
+- **`package`**: The full Debian package version (e.g., `0.8.2-1.pgdg13+1`).
+  This includes packaging metadata and is used to install the correct package.
+
+- **`sql`**: The PostgreSQL extension version as it appears in the catalog
+  (e.g., `0.8.2`). This is the version of the extension that will be verified
+  as part of the automatic testing of the resulting containers. It should
+  match what is defined by the `default_version` field in the control file.
+
+
+> [!WARNING]
+> The `sql` version is optional and only needed if your extension uses
+> `CREATE EXTENSION` (when `create_extension = true` in metadata).
+
 > [!TIP]
-> Pay close attention to the `// renovate:` comments in the metadata; these are
-> required for automated version tracking.
+> Pay close attention to the `// renovate:` comments in the metadata and
+> `README.md` files; these are required for automated version tracking.
 
 ---
 

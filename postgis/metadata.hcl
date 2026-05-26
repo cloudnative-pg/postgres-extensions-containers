@@ -5,22 +5,35 @@ metadata = {
   licenses                 = [ "GPL-2.0-or-later", "MIT", "LGPL-2.1-or-later",
                                "GPL-3.0-or-later", "Apache-2.0", "PostgreSQL", "Zlib" ]
   shared_preload_libraries = []
+  postgresql_parameters    = {}
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = ["system"]
   bin_path                 = []
+  env                      = {
+    "GDAL_DATA" = "$${image_root}/share/gdal",
+    "PROJ_DATA" = "$${image_root}/share/proj",
+  }
   auto_update_os_libs      = true
   required_extensions      = []
   create_extension         = true
 
   versions = {
     bookworm = {
-      // renovate: suite=bookworm-pgdg depName=postgresql-18-postgis-3
-      "18" = "3.6.2+dfsg-1.pgdg12+1"
+      "18" = {
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-postgis-3
+        package = "3.6.3+dfsg-1.pgdg12+1"
+        // renovate: suite=bookworm-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
+        sql     = "3.6.3"
+      }
     }
     trixie = {
-      // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
-      "18" = "3.6.2+dfsg-1.pgdg13+1"
+      "18" = {
+        // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
+        package = "3.6.3+dfsg-1.pgdg13+1"
+        // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
+        sql     = "3.6.3"
+      }
     }
   }
 }
