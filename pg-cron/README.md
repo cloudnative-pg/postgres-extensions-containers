@@ -59,6 +59,8 @@ spec:
     name: cluster-pg-cron
   extensions:
   - name: pg_cron
+    # renovate: suite=trixie-pgdg depName=postgresql-18-cron extractVersion=^(?<version>\d+\.\d+)
+    version: '1.6'
 ```
 
 ### 3. Verify installation
