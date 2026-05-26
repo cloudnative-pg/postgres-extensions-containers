@@ -56,11 +56,12 @@
       "customType": "regex",
       "managerFilePatterns": [
         "Taskfile.yml",
-        ".github/workflows/*.yml"
+        ".github/workflows/*.yml",
+        "**/test/*.yaml"
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?(?: currentValue=(?<currentValue>[^\\s]+?))?\\s+[A-Za-z0-9_]+?_SHA\\s*:\\s*[\"']?(?<currentDigest>[a-f0-9]+?)[\"']?\\s",
-        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s+[^:]+\\s*:\\s*[\"']?(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s+[^:]+\\s*:\\s*[\"']?(?:[a-zA-Z0-9._/-]+:)?(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
       ]
     },
     {
@@ -71,17 +72,6 @@
       ],
       "matchStrings": [
         "\\/\\/\\s+renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))\\s+\\/\\/\\s+\\+default=[\\\"']?[^:]+?:(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
-      ]
-    },
-    {
-      "description": "updates the test files dependencies",
-      "customType": "regex",
-      "managerFilePatterns": [
-        "test/*.yaml",
-        "**/test/*.yaml"
-      ],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>[^\\s]+?))?\\s+[^:]+\\s*:\\s*[\"']?[a-z\\/]+:(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
       ]
     }
   ],
