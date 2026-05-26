@@ -9,6 +9,9 @@ spec:
       containers:
       - name: data-test
         env:
+          # Clear the image-baked PGSSLROOTCERT=system so libpq doesn't
+          # try to verify the CNPG self-signed CA against the OS trust store.
+          - name: PGSSLROOTCERT
           - name: EXT_SQL_NAME
             value: ($values.sql_name)
           - name: EXT_VERSION
@@ -20,7 +23,6 @@ spec:
               secretKeyRef:
                 name: (join('-', [$values.name, 'app']))
                 key: uri
-          - name: PGSSLROOTCERT
         # renovate: datasource=docker depName=alpine/psql versioning=docker
         image: alpine/psql:18.4@sha256:51ef105226058360688250fedeac342f020b21d8d3e59dcf9c1fee04f638831c
         command: ['sh', '-c']
