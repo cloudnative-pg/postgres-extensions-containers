@@ -5,7 +5,12 @@ metadata:
 spec:
   imageName: ($values.pg_image)
   instances: 1
-  enableSuperuserAccess: true
+  managed:
+    roles:
+      - name: app
+        ensure: present
+        login: true
+        replication: true
 
   storage:
     size: 1Gi

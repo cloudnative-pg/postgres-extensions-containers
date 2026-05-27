@@ -12,7 +12,7 @@ spec:
           - name: SU_URI
             valueFrom:
               secretKeyRef:
-                name: (join('-', [$values.name, 'superuser']))
+                name: (join('-', [$values.name, 'app']))
                 key: uri
         image: alpine/psql:latest
         command: ['sh', '-c']

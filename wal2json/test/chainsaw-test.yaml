@@ -16,7 +16,7 @@ spec:
   steps:
   - name: Provision PostgreSQL Cluster
     description: >-
-      Deploy a Cluster resource using the built wal2json image with superuser
+      Deploy a Cluster resource using the built wal2json image with replication
       access enabled so the slot-creation Job can call
       pg_create_logical_replication_slot.
     try:
