@@ -24,7 +24,7 @@ spec:
                 name: (join('-', [$values.name, 'app']))
                 key: uri
         # renovate: datasource=docker depName=alpine/psql versioning=docker
-        image: alpine/psql:18.4@sha256:51ef105226058360688250fedeac342f020b21d8d3e59dcf9c1fee04f638831c
+        image: alpine/psql:18.4@sha256:9b9a2345742e4d74953070a5c58e6a4cb23f64986c574477c31d66d6d4e14202
         command: ['sh', '-c']
         args:
          - |
