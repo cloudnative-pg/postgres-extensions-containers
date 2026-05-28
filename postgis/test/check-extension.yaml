@@ -9,9 +9,6 @@ spec:
       containers:
       - name: data-test
         env:
-          # Clear the image-baked PGSSLROOTCERT=system so libpq doesn't
-          # try to verify the CNPG self-signed CA against the OS trust store.
-          - name: PGSSLROOTCERT
           - name: EXT_VERSION
             value: ($values.version)
           - name: DB_URI
