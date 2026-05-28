@@ -13,7 +13,8 @@ setting up your environment to submitting a Pull Request.
 Before proposing a change, ensure your local machine is compatible with the
 [build stack](BUILD.md).
 
-1. **Fork** the [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers) repository.
+1. **Fork** the [cloudnative-pg/postgres-extensions-containers](https://github.com/cloudnative-pg/postgres-extensions-containers)
+   repository.
 2. **Clone** your fork and enter the directory:
     ```sh
     git clone https://github.com/<your-username>/postgres-extensions-containers.git
@@ -33,9 +34,12 @@ Before proposing a change, ensure your local machine is compatible with the
 
 To maintain high standards and avoid duplicated effort or architectural
 conflicts, every new extension begins with a formal proposal.
-During this phase, you must verify that the extension is available in the PGDG
-(PostgreSQL Global Development Group) repositories and identify its versioning
-logic.
+During this phase, you must verify that the extension is available as a
+Debian package in the `main` component (which by definition complies with
+the [Debian Free Software Guidelines (DFSG)](https://www.debian.org/social_contract#guidelines)),
+from a trusted, auditable repository, and identify its versioning logic. The PGDG (PostgreSQL Global Development Group) repository is the
+recommended source; other Debian repositories are acceptable provided they meet
+the same standards.
 
 ### Identifying the Package & Version
 
@@ -111,18 +115,23 @@ submit your proposal:
 
 1. Point your browser to ["New Extension Proposal"](https://github.com/cloudnative-pg/postgres-extensions-containers/issues/new/choose).
 2. Provide the package name, versioning info, and a link to the upstream source.
-3. State the license clearly:
-    - CNCF-Allowed: licenses on the [CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md) (e.g., Apache-2.0, MIT, or PostgreSQL) are generally pre-approved.
-    - Other Open Source: licenses like FSF-approved (GNU GPL) will be evaluated on a case-by-case basis.
-    - Redistribution: since we redistribute unmodified software, ensure you
-      identify where the upstream source code can be found (required for GNU
-      GPL compliance).
+3. State the license clearly. Every component in the extension image must be
+   covered by a license on the
+   [CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md)
+   (e.g., Apache-2.0, MIT, PostgreSQL License). CNCF policy requires a formal
+   exception for any component not covered by the Allowlist; the maintainers
+   do not intend to file exception requests for new extensions, so only
+   Allowlisted components will be accepted. This is a governance decision,
+   not a legal limitation; contributors whose extension cannot meet this
+   requirement are welcome to adopt the same build tooling and distribute
+   images independently.
 
 > [!NOTE]
-> You do not need to wait for maintainer approval to begin development or
-> submit your PR. You are encouraged to proceed immediately; however, please be
-> aware that if a fundamental issue (e.g., licensing) is discovered during the
-> proposal review, you may need to modify or discard your work.
+> In most cases you may begin development before receiving maintainer
+> approval. However, if a fundamental problem (e.g., a non-Allowlisted
+> license) is discovered during the proposal review, your work will not be
+> mergeable. Verify license compliance before investing significant
+> development effort.
 
 ---
 
@@ -289,6 +298,9 @@ Submission Requirements:
   that you have the right to submit the code under the project's license.
 - **Upstream Target**: Ensure your Pull Request is targeting the `main` branch of
   the upstream repository.
+- **CODEOWNERS**: The PR must add an entry to the [`CODEOWNERS`](./CODEOWNERS)
+  file listing the GitHub handles of the component owner(s) for the new
+  extension folder.
 
 By submitting, you confirm your commitment to maintain this extension on behalf
 of the CloudNativePG Community.

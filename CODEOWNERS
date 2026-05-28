@@ -3,4 +3,10 @@
 # https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners
 
 * @cloudnative-pg/maintainers @NiccoloFei
+<<<<<<< feat/wal2json
 /wal2json/ @cloudnative-pg/maintainers @NiccoloFei @solidDoWant
+=======
+
+# TimescaleDB (OSS version)
+/timescaledb-oss/ @shusaan @cloudnative-pg/maintainers @NiccoloFei
+>>>>>>> main
