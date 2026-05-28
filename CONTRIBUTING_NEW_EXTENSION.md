@@ -298,6 +298,9 @@ Submission Requirements:
   that you have the right to submit the code under the project's license.
 - **Upstream Target**: Ensure your Pull Request is targeting the `main` branch of
   the upstream repository.
+- **CODEOWNERS**: The PR must add an entry to the [`CODEOWNERS`](./CODEOWNERS)
+  file listing the GitHub handles of the component owner(s) for the new
+  extension folder.
 
 By submitting, you confirm your commitment to maintain this extension on behalf
 of the CloudNativePG Community.

@@ -108,10 +108,12 @@ workflow on proposing and submitting a new extension.
 1. **Request and commitment:** Open a new issue requesting the extension.
    The contributor(s) must agree to become "component owners" and maintainers
    for that extension.
-2. **Approval:** Once approved by maintainers, the component owner(s) will be
-   added to the `CODEOWNERS` file for the specific folder.
-3. **Submission:** Component owner(s) open a Pull Request (PR) to introduce the
-   new extension. The PR is reviewed, approved, and merged.
+2. **Approval:** Maintainers review the proposal and either approve it or
+   request changes.
+3. **Submission:** Component owner(s) open a Pull Request (PR) to introduce
+   the new extension. The PR must include an entry in the `CODEOWNERS` file
+   adding the component owner(s) for the new extension folder. The PR is
+   reviewed, approved, and merged.
 4. **Naming:** The name of the extension is the registry name.
 
 ### Removal Policy
