@@ -9,7 +9,7 @@ spec:
       containers:
       - name: slot-test
         env:
-          - name: SU_URI
+          - name: DB_URI
             valueFrom:
               secretKeyRef:
                 name: (join('-', [$values.name, 'app']))
@@ -20,10 +20,14 @@ spec:
         args:
          - |
            set -e
-           SU_URI=$(echo $SU_URI | sed "s|/\*|/|")
+           DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
            SLOT="wal2json_chainsaw_test"
-           psql "$SU_URI" -v ON_ERROR_STOP=1 -tAc \
+           psql "$DB_URI" -v ON_ERROR_STOP=1 -tAc \
+             "SELECT pg_drop_replication_slot('${SLOT}') WHERE EXISTS (SELECT 1 FROM pg_catalog.pg_replication_slots WHERE slot_name = '${SLOT}')"
+           psql "$DB_URI" -v ON_ERROR_STOP=1 -tAc \
              "SELECT slot_name FROM pg_create_logical_replication_slot('${SLOT}', 'wal2json')"
-           psql "$SU_URI" -v ON_ERROR_STOP=1 -tAc \
+           test "$(psql "$DB_URI" -v ON_ERROR_STOP=1 -tAc \
+             "SELECT EXISTS (SELECT FROM pg_catalog.pg_replication_slots WHERE slot_name = '${SLOT}' AND plugin = 'wal2json')" -q)" = "t"
+           psql "$DB_URI" -v ON_ERROR_STOP=1 -tAc \
              "SELECT pg_drop_replication_slot('${SLOT}')"
            echo "wal2json output plugin loaded successfully"
