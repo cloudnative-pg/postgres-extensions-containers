@@ -35,9 +35,9 @@ Before proposing a change, ensure your local machine is compatible with the
 To maintain high standards and avoid duplicated effort or architectural
 conflicts, every new extension begins with a formal proposal.
 During this phase, you must verify that the extension is available as a
-[DFSG](https://www.debian.org/social_contract#guidelines)-compliant Debian
-package from a trusted, auditable repository, and identify its versioning
-logic. The PGDG (PostgreSQL Global Development Group) repository is the
+Debian package in the `main` component (which by definition complies with
+the [Debian Free Software Guidelines (DFSG)](https://www.debian.org/social_contract#guidelines)),
+from a trusted, auditable repository, and identify its versioning logic. The PGDG (PostgreSQL Global Development Group) repository is the
 recommended source; other Debian repositories are acceptable provided they meet
 the same standards.
 
@@ -119,18 +119,18 @@ submit your proposal:
    covered by a license on the
    [CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md)
    (e.g., Apache-2.0, MIT, PostgreSQL License). CNCF policy requires a formal
-   exception for any component not covered by the Allowlist; as project
-   maintainers we have decided not to pursue exceptions. Only Allowlisted
-   components will be accepted for distribution through this project. This is a
-   governance decision, not a legal limitation — contributors whose extension
-   cannot meet this requirement are welcome to adopt the same build tooling and
-   distribute images independently.
+   exception for any component not covered by the Allowlist; the maintainers
+   do not intend to file exception requests for new extensions, so only
+   Allowlisted components will be accepted. This is a governance decision,
+   not a legal limitation; contributors whose extension cannot meet this
+   requirement are welcome to adopt the same build tooling and distribute
+   images independently.
 
 > [!NOTE]
-> You may begin development before receiving maintainer approval on most
-> issues. However, please be aware that if a fundamental issue (e.g., a
-> non-Allowlisted license) is discovered during the proposal review, your work
-> will not be mergeable. Verify license compliance before investing significant
+> In most cases you may begin development before receiving maintainer
+> approval. However, if a fundamental problem (e.g., a non-Allowlisted
+> license) is discovered during the proposal review, your work will not be
+> mergeable. Verify license compliance before investing significant
 > development effort.
 
 ---

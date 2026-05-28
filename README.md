@@ -29,8 +29,10 @@ integrate seamlessly with the image volume extensions feature in CloudNativePG.
 ## Supported Extensions
 
 CloudNativePG actively maintains the following third-party extensions, provided
-they are maintained by their respective authors, and PostgreSQL Debian Group
-(PGDG) packages are available.
+they are maintained by their respective authors and distributed as
+Debian packages that comply with the Debian Free Software Guidelines (DFSG),
+from a trusted, auditable repository
+(see [Extension Requirements](#extension-requirements)).
 
 | Extension | Description | Project URL | Maintained by |
 | :--- | :--- | :--- | :--- |
@@ -40,8 +42,10 @@ they are maintained by their respective authors, and PostgreSQL Debian Group
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) | CNPG maintainers |
 
 > [!NOTE]
-> PostGIS is licensed under GPL-2.0, which is not on the CNCF Allowlist. Its
-> inclusion in this project is subject to a formal CNCF license exception request.
+> PostGIS is licensed under GPL-2.0, which is not on the CNCF Allowlist. It
+> predates this policy; the maintainers are filing a CNCF license exception
+> for it. PostGIS is not a precedent for accepting further non-Allowlisted
+> extensions.
 
 Extensions are provided only for the OS versions already built by the
 [`cloudnative-pg/postgres-containers`](https://github.com/cloudnative-pg/postgres-containers) project,
@@ -71,27 +75,33 @@ When proposing a new extension, the following criteria must be met:
   covered by a license on the
   [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md),
   which includes Apache-2.0, MIT, and the PostgreSQL License. CNCF policy
-  requires a formal exception for any component not covered by the Allowlist;
-  as project maintainers we have decided not to pursue exceptions, so only
-  Allowlisted components will be accepted for distribution through this project.
-  This is a governance decision, not a legal limitation — contributors whose
+  requires a formal exception for any component not covered by the Allowlist.
+  Beyond the grandfathered PostGIS case, the maintainers do not intend to file
+  further exception requests, so only Allowlisted components will be accepted
+  for new extensions in this project.
+  This is a governance decision, not a legal limitation; contributors whose
   extension cannot meet this requirement are welcome to adopt the same build
   tooling and distribute images independently.
 - **Structure:** only one extension can be included within an extension folder.
 - **Debian Packages:** Extension images must be built **exclusively** from
-  [DFSG](https://www.debian.org/social_contract#guidelines)-compliant Debian packages sourced from a trusted, auditable repository.
+  Debian packages in the `main` component (which by definition complies with
+  the [DFSG](https://www.debian.org/social_contract#guidelines)), sourced from
+  a trusted, auditable repository.
   The [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt)
   is the recommended source, but other Debian repositories are acceptable
   provided they meet the same standards. This is a hard requirement for two
   reasons: (a) Debian DEP-5 machine-readable copyright files are the mechanism
-  used to satisfy attribution obligations — they are copied into
+  used to satisfy attribution obligations: they are copied into
   `/licenses/<pkg>/` in the final `FROM scratch` image at build time; (b)
   [DFSG](https://www.debian.org/social_contract#guidelines) compliance
   guarantees that non-free components have been removed by the package
-  maintainers, ensuring licence hygiene.
+  maintainers, ensuring license hygiene.
 - **License inclusion:** all necessary license agreements for the extension and
   its dependencies must be included within the extension folder (refer to the
   examples in the `pgvector` and `postgis` folders).
+
+See [Adding a New Extension](./CONTRIBUTING_NEW_EXTENSION.md) for the full
+workflow on proposing and submitting a new extension.
 
 ### Submission Process
 
