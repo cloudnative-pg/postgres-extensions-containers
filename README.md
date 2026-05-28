@@ -29,16 +29,26 @@ integrate seamlessly with the image volume extensions feature in CloudNativePG.
 ## Supported Extensions
 
 CloudNativePG actively maintains the following third-party extensions, provided
-they are maintained by their respective authors, and PostgreSQL Debian Group
-(PGDG) packages are available.
+they are maintained by their respective authors and distributed as
+Debian packages that comply with the Debian Free Software Guidelines (DFSG),
+from a trusted, auditable repository
+(see [Extension Requirements](#extension-requirements)).
 
-| Extension | Description | Project URL |
-| :--- | :--- | :--- |
-| **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) |
-| **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) |
+| Extension | Description | Project URL | Maintained by |
+| :--- | :--- | :--- | :--- |
+| **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) | CNPG maintainers |
+| **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) | CNPG maintainers |
 | **[pg_repack](pgrepack)** | re-organize bloated tables and indexes | [github.com/reorg/pg_repack](https://github.com/reorg/pg_repack) |
-| **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) |
-| **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) |
+| **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) | CNPG maintainers |
+| **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) | CNPG maintainers |
+| **[TimescaleDB Apache-2 Edition](timescaledb-oss)** | Time-series database for PostgreSQL (open source version) | [github.com/timescale/timescaledb/](https://github.com/timescale/timescaledb/) | @shusaan |
+| **[wal2json](wal2json)** | Logical decoding output plugin for PostgreSQL | [github.com/eulerto/wal2json](https://github.com/eulerto/wal2json) | @solidDoWant |
+
+> [!NOTE]
+> PostGIS is licensed under GPL-2.0, which is not on the CNCF Allowlist. It
+> predates this policy; the maintainers are filing a CNCF license exception
+> for it. PostGIS is not a precedent for accepting further non-Allowlisted
+> extensions.
 
 Extensions are provided only for the OS versions already built by the
 [`cloudnative-pg/postgres-containers`](https://github.com/cloudnative-pg/postgres-containers) project,
@@ -64,31 +74,49 @@ The project adheres to the following frameworks:
 When proposing a new extension, the following criteria must be met:
 
 - **Licensing and IP ownership:** We redistribute unmodified third-party
-  software as container images. We prioritize licenses explicitly allowed by the
-  [CNCF License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md),
-  which includes the PostgreSQL License (relevant to this project). Other
-  open-source licenses, such as FSF-approved licenses (e.g., GNU GPL), will be
-  considered on a case-by-case basis to ensure compliance with redistribution
-  requirements.
+  software as container images. Every component in an extension image must be
+  covered by a license on the
+  [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md),
+  which includes Apache-2.0, MIT, and the PostgreSQL License. CNCF policy
+  requires a formal exception for any component not covered by the Allowlist.
+  Beyond the grandfathered PostGIS case, the maintainers do not intend to file
+  further exception requests, so only Allowlisted components will be accepted
+  for new extensions in this project.
+  This is a governance decision, not a legal limitation; contributors whose
+  extension cannot meet this requirement are welcome to adopt the same build
+  tooling and distribute images independently.
 - **Structure:** only one extension can be included within an extension folder.
-- **Debian Packages:** Extension images must be built using a Debian package
-  provided by a trusted source like the
-  [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt).
-  This ensures compatibility with the base images and standard package
-  management procedures.
+- **Debian Packages:** Extension images must be built **exclusively** from
+  Debian packages in the `main` component (which by definition complies with
+  the [DFSG](https://www.debian.org/social_contract#guidelines)), sourced from
+  a trusted, auditable repository.
+  The [PostgreSQL Global Development Group (PGDG)](https://wiki.postgresql.org/wiki/Apt)
+  is the recommended source, but other Debian repositories are acceptable
+  provided they meet the same standards. This is a hard requirement for two
+  reasons: (a) Debian DEP-5 machine-readable copyright files are the mechanism
+  used to satisfy attribution obligations: they are copied into
+  `/licenses/<pkg>/` in the final `FROM scratch` image at build time; (b)
+  [DFSG](https://www.debian.org/social_contract#guidelines) compliance
+  guarantees that non-free components have been removed by the package
+  maintainers, ensuring license hygiene.
 - **License inclusion:** all necessary license agreements for the extension and
   its dependencies must be included within the extension folder (refer to the
   examples in the `pgvector` and `postgis` folders).
+
+See [Adding a New Extension](./CONTRIBUTING_NEW_EXTENSION.md) for the full
+workflow on proposing and submitting a new extension.
 
 ### Submission Process
 
 1. **Request and commitment:** Open a new issue requesting the extension.
    The contributor(s) must agree to become "component owners" and maintainers
    for that extension.
-2. **Approval:** Once approved by maintainers, the component owner(s) will be
-   added to the `CODEOWNERS` file for the specific folder.
-3. **Submission:** Component owner(s) open a Pull Request (PR) to introduce the
-   new extension. The PR is reviewed, approved, and merged.
+2. **Approval:** Maintainers review the proposal and either approve it or
+   request changes.
+3. **Submission:** Component owner(s) open a Pull Request (PR) to introduce
+   the new extension. The PR must include an entry in the `CODEOWNERS` file
+   adding the component owner(s) for the new extension folder. The PR is
+   reviewed, approved, and merged.
 4. **Naming:** The name of the extension is the registry name.
 
 ### Removal Policy

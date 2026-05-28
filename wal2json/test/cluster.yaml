@@ -1,0 +1,21 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.name)
+spec:
+  imageName: ($values.pg_image)
+  instances: 1
+  managed:
+    roles:
+      - name: app
+        ensure: present
+        login: true
+        replication: true
+
+  storage:
+    size: 1Gi
+
+  postgresql:
+    parameters: ($values.postgresql_parameters)
+    shared_preload_libraries: ($values.shared_preload_libraries)
+    extensions: ($values.extensions)

@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wal2json-slot-test
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: slot-test
+        env:
+          - name: DB_URI
+            valueFrom:
+              secretKeyRef:
+                name: (join('-', [$values.name, 'app']))
+                key: uri
+        # renovate: datasource=docker depName=alpine/psql versioning=docker
+        image: alpine/psql:18.4@sha256:9b9a2345742e4d74953070a5c58e6a4cb23f64986c574477c31d66d6d4e14202
+        command: ['sh', '-c']
+        args:
+         - |
+           set -e
+           DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
+           SLOT="wal2json_chainsaw_test"
+           psql "$DB_URI" -v ON_ERROR_STOP=1 -tAc \
+             "SELECT pg_drop_replication_slot('${SLOT}') WHERE EXISTS (SELECT 1 FROM pg_catalog.pg_replication_slots WHERE slot_name = '${SLOT}')"
+           psql "$DB_URI" -v ON_ERROR_STOP=1 -tAc \
+             "SELECT slot_name FROM pg_create_logical_replication_slot('${SLOT}', 'wal2json')"
+           test "$(psql "$DB_URI" -v ON_ERROR_STOP=1 -tAc \
+             "SELECT EXISTS (SELECT FROM pg_catalog.pg_replication_slots WHERE slot_name = '${SLOT}' AND plugin = 'wal2json')" -q)" = "t"
+           psql "$DB_URI" -v ON_ERROR_STOP=1 -tAc \
+             "SELECT pg_drop_replication_slot('${SLOT}')"
+           echo "wal2json output plugin loaded successfully"

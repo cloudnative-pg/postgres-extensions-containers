@@ -39,6 +39,22 @@ body:
       required: true
 
   - type: input
+    id: debian-package-name
+    attributes:
+      label: Debian Package Name
+      description: |
+        The name of the Debian package in the `main` component (which by
+        definition complies with the [Debian Free Software Guidelines (DFSG)](https://www.debian.org/social_contract#guidelines)).
+        The PGDG (PostgreSQL Global Development Group) repository is the recommended
+        source, but other trusted, auditable Debian repositories are acceptable. Verify availability by running
+        `apt search <name>` inside a
+        `ghcr.io/cloudnative-pg/postgresql:<pg_version>-minimal-<distro>` container,
+        and provide the repository URL if not PGDG.
+      placeholder: ex. postgresql-<pg-major>-pgvector
+    validations:
+      required: true
+
+  - type: input
     id: website-url
     attributes:
       label: Extension Website URL (Optional)
@@ -65,20 +81,50 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: license-spdx
+    attributes:
+      label: Extension License (SPDX identifier)
+      description: |
+        Select the SPDX license identifier for the extension. Only licenses on the
+        [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md)
+        are accepted for distribution through this project. If your extension is
+        licensed under something not listed here, select "Other": Allowlisted
+        licenses not in this dropdown will be accepted after manual triage;
+        non-Allowlisted licenses will not be accepted.
+      options:
+        - PostgreSQL
+        - MIT
+        - Apache-2.0
+        - BSD-2-Clause
+        - BSD-3-Clause
+        - ISC
+        - Other (verify against the CNCF Allowlist)
+    validations:
+      required: true
+
   - type: checkboxes
     id: license-check
     attributes:
       label: License Compliance
-      description: Please confirm the license of the extension complies with the **allowed licenses** for this project.
+      description: |
+        All components in the extension image (the extension itself and any
+        transitive dependencies) must be covered by a license on the
+        [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md).
+        Extensions that include any non-Allowlisted components will not be accepted.
       options:
-        - label: The extension's license (linked above) complies with the list of allowed licenses.
+        - label: To the best of my knowledge, the extension and its declared dependencies meet the CNCF Allowlist policy stated above.
           required: true
 
   - type: textarea
     id: dependent-extensions
     attributes:
       label: Known Dependent Extensions
-      description: List any other PostgreSQL extensions that MUST be installed before or alongside this extension (e.g., if this extension requires 'plpgsql' or 'postgis' to be present). If none, please state "None".
+      description: |
+        List any other PostgreSQL extensions that must be present for this extension to
+        function (i.e. extensions that must be created via `CREATE EXTENSION` before this
+        one). This covers PostgreSQL-level dependencies only; OS-level system library
+        dependencies are handled separately by the build system. If none, state "None".
       placeholder: ex. postgis
     validations:
       required: true
