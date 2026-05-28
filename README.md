@@ -69,7 +69,7 @@ When proposing a new extension, the following criteria must be met:
 - **Licensing and IP ownership:** We redistribute unmodified third-party
   software as container images. Every component in an extension image must be
   covered by a license on the
-  [CNCF Allowlist License Policy](https://github.com/cncf/allowed-third-party-license-policy/blob/main/Exceptions.md),
+  [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md),
   which includes Apache-2.0, MIT, and the PostgreSQL License. CNCF policy
   requires a formal exception for any component not covered by the Allowlist;
   as project maintainers we have decided not to pursue exceptions, so only

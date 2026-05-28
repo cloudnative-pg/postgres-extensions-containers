@@ -86,7 +86,7 @@ body:
       label: Extension License (SPDX identifier)
       description: |
         Select the SPDX license identifier for the extension. Only licenses on the
-        [CNCF Allowlist License Policy](https://github.com/cncf/allowed-third-party-license-policy/blob/main/Exceptions.md)
+        [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md)
         are accepted for distribution through this project. If your extension is
         licensed under something not listed here, select "Other" and verify it against
         the Allowlist before submitting — unlisted licenses will not be accepted.
@@ -107,7 +107,7 @@ body:
       description: |
         All components distributed in this extension image (including the extension itself
         and any transitive dependencies) must be covered by a license on the
-        [CNCF Allowlist License Policy](https://github.com/cncf/allowed-third-party-license-policy/blob/main/Exceptions.md).
+        [CNCF Allowlist License Policy](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md).
         Extensions that include components under any other license will not be accepted.
       options:
         - label: I confirm that all components distributed in this extension image are covered by a license on the CNCF Allowlist.

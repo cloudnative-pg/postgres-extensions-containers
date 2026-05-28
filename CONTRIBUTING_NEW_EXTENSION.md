@@ -1,4 +1,4 @@
-
+# Contributing: Adding a New PostgreSQL Extension
 
 This guide walks you through the lifecycle of adding a new extension, from
 setting up your environment to submitting a Pull Request.
@@ -117,7 +117,7 @@ submit your proposal:
 2. Provide the package name, versioning info, and a link to the upstream source.
 3. State the license clearly. Every component in the extension image must be
    covered by a license on the
-   [CNCF Allowlist](https://github.com/cncf/allowed-third-party-license-policy/blob/main/Exceptions.md)
+   [CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md)
    (e.g., Apache-2.0, MIT, PostgreSQL License). CNCF policy requires a formal
    exception for any component not covered by the Allowlist; as project
    maintainers we have decided not to pursue exceptions. Only Allowlisted
