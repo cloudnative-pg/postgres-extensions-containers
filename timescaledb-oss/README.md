@@ -21,8 +21,8 @@ of TimescaleDB with [CloudNativePG](https://cloudnative-pg.io/).
 
 ### 1. Add the TimescaleDB extension image to your Cluster
 
-Define the `timescaledb` extension under the `postgresql.extensions` section of
-your `Cluster` resource. For example:
+Define the `timescaledb-oss` extension under the `postgresql.extensions` section
+of your `Cluster` resource. For example:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -44,7 +44,7 @@ spec:
       max_locks_per_transaction: '128'
 
     extensions:
-    - name: timescaledb
+    - name: timescaledb-oss
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb
         reference: ghcr.io/cloudnative-pg/timescaledb-oss:2.27.1-18-trixie
