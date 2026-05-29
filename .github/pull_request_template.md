@@ -26,8 +26,8 @@ https://github.com/cloudnative-pg/governance/blob/main/CONTRIBUTING.md
 - [ ] Documentation only
 - [ ] Other (please describe above)
 
-<!-- If this fixes an open issue, reference it below. -->
-Closes #
+<!-- If this fixes an open issue, reference it here, for example: Closes #123 -->
+
 
 ---
 
