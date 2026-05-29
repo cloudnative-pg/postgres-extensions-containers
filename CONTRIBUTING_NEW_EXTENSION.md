@@ -302,5 +302,15 @@ Submission Requirements:
   file listing the GitHub handles of the component owner(s) for the new
   extension folder.
 
+> [!IMPORTANT]
+> When opening the Pull Request, use the **new extension** template, which
+> includes the full contributor checklist for this lifecycle. GitHub does not
+> show a chooser for PR templates, so open the PR with this link to preselect
+> it:
+> [Open a new-extension PR](https://github.com/cloudnative-pg/postgres-extensions-containers/compare?expand=1&template=new_extension.md).
+> For any other change (version bumps, fixes, tooling, docs), the
+> [default template](https://github.com/cloudnative-pg/postgres-extensions-containers/compare?expand=1&template=default.md)
+> is applied automatically.
+
 By submitting, you confirm your commitment to maintain this extension on behalf
 of the CloudNativePG Community.
