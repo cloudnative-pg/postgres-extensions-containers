@@ -282,7 +282,7 @@ tasks:
     vars:
       CNPG_RELEASE: '{{ .CNPG_RELEASE | default .CNPG_RELEASE_DEFAULT }}'
       # renovate: datasource=docker depName=alpine/kubectl versioning=docker
-      KUBECTL_VERSION: 1.36.1@sha256:3a93d1df6d837839b5f26b38af263b4cfd60ffaa3e0084a06bb517b0a85737ef
+      KUBECTL_VERSION: 1.36.1@sha256:96744389db9cb3b5588e1015a5a0effc31cb7f24c0bb2de13a2e10dec3a1ce6b
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
       CNPG_MANIFEST:
