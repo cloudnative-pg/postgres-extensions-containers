@@ -200,7 +200,14 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage, AnnotationImageBasePgMajor)
 	}
 
-	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, targetExtensionImage, version, distribution, pgMajor, registryUsername, registryPassword)
+	imageLocator := ImageLocator{
+		ExtensionImage: targetExtensionImage,
+		PgMajor:        pgMajor,
+		SQLVersion:     version,
+		Distribution:   distribution,
+	}
+	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, imageLocator,
+		registryUsername, registryPassword)
 	if err != nil {
 		return nil, err
 	}
