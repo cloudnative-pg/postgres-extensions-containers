@@ -24,7 +24,7 @@ jobs:
       matrix: ${{ steps.get-matrix.outputs.matrix}}
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           persist-credentials: false
 
@@ -33,7 +33,7 @@ jobs:
         uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.21.3
+          DAGGER_VERSION: 0.21.4
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: call
