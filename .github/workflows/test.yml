@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'dagger/maintenance/**'
   pull_request:
+    paths:
+      - 'dagger/maintenance/**'
   workflow_dispatch:
 
 defaults:
