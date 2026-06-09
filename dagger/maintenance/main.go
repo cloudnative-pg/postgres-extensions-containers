@@ -186,27 +186,19 @@ func (m *Maintenance) GenerateTestingValues(
 			targetExtensionImage, AnnotationImageSQLVersion)
 	}
 
-	distribution := annotations[AnnotationImageBaseOS]
-	if distribution == "" {
-		return nil, fmt.Errorf(
-			"extension image %s doesn't have an %q annotation or its value is empty",
-			targetExtensionImage, AnnotationImageBaseOS)
-	}
-
-	pgMajor, err := strconv.Atoi(annotations[AnnotationImageBasePgMajor])
+	distribution, pgMajor, err := parseImageCoordinates(annotations)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"extension image %s doesn't have an %q annotation or its value is not a number",
-			targetExtensionImage, AnnotationImageBasePgMajor)
+		return nil, fmt.Errorf("extension image %s: %w", targetExtensionImage, err)
 	}
 
-	imageLocator := ImageLocator{
+	locator := imageLocator{
 		ExtensionImage: targetExtensionImage,
-		PgMajor:        pgMajor,
 		SQLVersion:     version,
 		Distribution:   distribution,
+		PgMajor:        pgMajor,
 	}
-	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, imageLocator,
+
+	extensionInfos, err := generateTestingValuesExtensions(ctx, source, metadata, locator,
 		registryUsername, registryPassword)
 	if err != nil {
 		return nil, err

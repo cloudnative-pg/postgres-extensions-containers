@@ -82,6 +82,26 @@ func getImageAnnotations(ctx context.Context, imageRef string, username string, 
 	return nil, fmt.Errorf("unsupported media type: %s", head.MediaType)
 }
 
+// parseImageCoordinates extracts the distribution and PostgreSQL major version
+// from the extension image annotations. Every image carries them, and they are
+// used to resolve the images of any required extensions for the same
+// distribution and major.
+func parseImageCoordinates(annotations map[string]string) (string, int, error) {
+	distribution := annotations[AnnotationImageBaseOS]
+	if distribution == "" {
+		return "", 0, fmt.Errorf("missing or empty %q annotation", AnnotationImageBaseOS)
+	}
+
+	rawPgMajor := annotations[AnnotationImageBasePgMajor]
+	pgMajor, err := strconv.Atoi(rawPgMajor)
+	if err != nil {
+		return "", 0, fmt.Errorf("invalid %q annotation %q: %w",
+			AnnotationImageBasePgMajor, rawPgMajor, err)
+	}
+
+	return distribution, pgMajor, nil
+}
+
 // getDefaultExtensionImage returns the default extension image for a given extension,
 // resolved from the metadata.
 func getDefaultExtensionImage(metadata *extensionMetadata) (string, error) {
