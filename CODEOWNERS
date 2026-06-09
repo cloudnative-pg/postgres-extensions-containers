@@ -4,5 +4,11 @@
 
 * @cloudnative-pg/maintainers @NiccoloFei
 
+# TimescaleDB (OSS version)
+/timescaledb-oss/ @shusaan @cloudnative-pg/maintainers @NiccoloFei
+
+# wal2json
+/wal2json/ @cloudnative-pg/maintainers @NiccoloFei @solidDoWant
+
 # pg-ivm
 /pg-ivm/ @shusaan @cloudnative-pg/maintainers @NiccoloFei

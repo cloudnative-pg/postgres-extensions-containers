@@ -18,7 +18,7 @@ vars:
   # renovate: datasource=git-refs depName=kind lookupName=https://github.com/aweris/daggerverse currentValue=main
   DAGGER_KIND_SHA: dadbc09a1e0790ccbf1d88f796308b26a12f0488
   # renovate: datasource=docker depName=kindest/node versioning=docker
-  KIND_NODE_VERSION: v1.35.1@sha256:05d7bcdefbda08b4e038f644c4df690cdac3fba8b06f8289f30e10026720a1ab
+  KIND_NODE_VERSION: v1.36.1@sha256:3489c7674813ba5d8b1a9977baea8a6e553784dab7b84759d1014dbd78f7ebd5
   K8S_VERSION: '{{ regexReplaceAll "^v([0-9.]+).*" .KIND_NODE_VERSION "$1" }}'
   KIND_CLUSTER_NAME: pg-extensions-{{ .K8S_VERSION }}
   # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver extractVersion=^v(?<version>\d+\.\d+)\.\d+$
@@ -207,7 +207,7 @@ tasks:
     run: once
     vars:
       # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-      DAGGER_ENGINE_VERSION: v0.20.8
+      DAGGER_ENGINE_VERSION: v0.21.4
     cmds:
       - >
         docker run -d -v /var/lib/dagger --name {{ .DAGGER_ENGINE_NAME }} --restart always --network {{ .E2E_NETWORK }}
@@ -282,7 +282,7 @@ tasks:
     vars:
       CNPG_RELEASE: '{{ .CNPG_RELEASE | default .CNPG_RELEASE_DEFAULT }}'
       # renovate: datasource=docker depName=alpine/kubectl versioning=docker
-      KUBECTL_VERSION: 1.36.1@sha256:405e7130cb2cd07f85feafd11333f2f46e921f2f8937c375e396791f4776c948
+      KUBECTL_VERSION: 1.36.1@sha256:c5b35e51aadf9eacc43cd301f519ae862a7f480a5b46d1b36b423d93c3b20abe
       DOCKER_SOCKET:
         sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
       CNPG_MANIFEST:
