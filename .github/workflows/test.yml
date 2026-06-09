@@ -1,0 +1,50 @@
+name: Unit tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: 'bash -Eeuo pipefail -x {0}'
+
+permissions: {}
+
+jobs:
+  unit-test:
+    name: Go unit tests
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
+        with:
+          go-version-file: dagger/maintenance/go.mod
+          cache-dependency-path: dagger/maintenance/go.sum
+
+      - name: Generate the Dagger client
+        uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
+        env:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.21.4
+        with:
+          version: ${{ env.DAGGER_VERSION }}
+          verb: develop
+          module: ./dagger/maintenance/
+
+      - name: Run unit tests
+        working-directory: dagger/maintenance
+        env:
+          # The generated Dagger client reads these at package init time. The
+          # unit tests never open a session, so dummy values are enough to get
+          # past the init check without contacting an engine.
+          DAGGER_SESSION_PORT: "1"
+          DAGGER_SESSION_TOKEN: "test"
+        run: go test ./...
