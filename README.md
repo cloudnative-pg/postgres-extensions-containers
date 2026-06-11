@@ -67,7 +67,7 @@ for them.
 
 | Extension | Description | Project URL | Image | Maintained by |
 | :--- | :--- | :--- | :--- | :--- |
-| **pg_search** | Elastic-quality full-text search for PostgreSQL (AGPL-3.0) | [github.com/paradedb/paradedb](https://github.com/paradedb/paradedb) | [`paradedb/paradedb-extension`](https://hub.docker.com/r/paradedb/paradedb-extension) | [ParadeDB](https://paradedb.com) (@isaacvando, @philippemnoel, @rebasedming) |
+| **pg_search** | Elastic-quality full-text search for PostgreSQL | [github.com/paradedb/paradedb](https://github.com/paradedb/paradedb) | [`paradedb/paradedb-extension`](https://hub.docker.com/r/paradedb/paradedb-extension) | [ParadeDB](https://paradedb.com) (@philippemnoel, @rebasedming, @isaacvando) |
 
 ---
 
