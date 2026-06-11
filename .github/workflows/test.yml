@@ -1,4 +1,4 @@
-name: Unit tests
+name: Dagger Module Unit tests
 
 on:
   push:
