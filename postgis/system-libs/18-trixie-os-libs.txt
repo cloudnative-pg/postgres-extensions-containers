@@ -72,7 +72,7 @@ libgpgmepp6t64_1.24.2-3_amd64.deb MD5Sum:9b6067de043f9224848364739828216b
 liblcms2-2_2.16-2+deb13u2_amd64.deb MD5Sum:263113687b91aafa4e934fa16d91291b
 libnspr4_2%3a4.36-1_amd64.deb MD5Sum:dc825d7a7868119890f38608de1b5e21
 libnss3_2%3a3.110-1+deb13u2_amd64.deb
-libpoppler147_25.03.0-5+deb13u2_amd64.deb MD5Sum:b2bbe0f83c7f67176ab9b6800b86fac5
+libpoppler147_25.03.0-5+deb13u3_amd64.deb
 libqhull-r8.0_2020.2-6+b2_amd64.deb MD5Sum:3b0b21663513226a208f039abea3ad47
 librttopo1_1.1.0-4_amd64.deb MD5Sum:b522568252b7ba63b0c4f87300400be9
 libspatialite8t64_5.1.0-3+b2_amd64.deb MD5Sum:631307d38ff2755f5955023345b0b05d
