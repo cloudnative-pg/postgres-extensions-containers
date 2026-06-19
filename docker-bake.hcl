@@ -15,19 +15,6 @@ variable "revision" {
   default = ""
 }
 
-variable "distributions" {
-  default = [
-    "bookworm",
-    "trixie"
-  ]
-}
-
-variable "pgVersions" {
-  default = [
-    "18"
-  ]
-}
-
 fullname = ( environment == "testing") ? "${registry}/${metadata.image_name}-testing" : "${registry}/${metadata.image_name}"
 now = timestamp()
 authors = "The CloudNativePG Contributors"
@@ -35,8 +22,7 @@ url = "https://github.com/cloudnative-pg/postgres-extensions-containers"
 
 target "default" {
   matrix = {
-    pgVersion = pgVersions
-    distro = distributions
+    build = getBuildMatrix()
   }
 
   platforms = [
@@ -46,17 +32,17 @@ target "default" {
 
   dockerfile = "Dockerfile"
   context = "${metadata.name}/"
-  name = "${metadata.name}-${sanitize(getExtensionVersion(distro, pgVersion))}-${pgVersion}-${distro}"
+  name = getBuildName(metadata.name, build.distro, build.pgVersion)
 
   tags = [
-    "${getImageName(fullname)}:${getExtensionVersion(distro, pgVersion)}-${pgVersion}-${distro}",
-    "${getImageName(fullname)}:${getExtensionVersion(distro, pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${pgVersion}-${distro}",
+    "${getImageName(fullname)}:${getExtensionVersion(build.distro, build.pgVersion)}-${build.pgVersion}-${build.distro}",
+    "${getImageName(fullname)}:${getExtensionVersion(build.distro, build.pgVersion)}-${formatdate("YYYYMMDDhhmm", now)}-${build.pgVersion}-${build.distro}",
   ]
 
   args = {
-    PG_MAJOR = "${pgVersion}"
-    EXT_VERSION = "${getExtensionPackage(distro, pgVersion)}"
-    BASE = "${getBaseImage(distro, pgVersion)}"
+    PG_MAJOR = "${build.pgVersion}"
+    EXT_VERSION = "${getExtensionPackage(build.distro, build.pgVersion)}"
+    BASE = "${getBaseImage(build.distro, build.pgVersion)}"
   }
 
   output = [
@@ -70,43 +56,64 @@ target "default" {
     "index,manifest:org.opencontainers.image.created=${now}",
     "index,manifest:org.opencontainers.image.url=${url}",
     "index,manifest:org.opencontainers.image.source=${url}",
-    "index,manifest:org.opencontainers.image.version=${getExtensionVersion(distro, pgVersion)}",
+    "index,manifest:org.opencontainers.image.version=${getExtensionVersion(build.distro, build.pgVersion)}",
     "index,manifest:org.opencontainers.image.revision=${revision}",
     "index,manifest:org.opencontainers.image.vendor=${authors}",
-    "index,manifest:org.opencontainers.image.title=${metadata.name} ${getExtensionVersion(distro, pgVersion)} ${pgVersion} ${distro}",
-    "index,manifest:org.opencontainers.image.description=A ${metadata.name} ${getExtensionVersion(distro, pgVersion)} container image for PostgreSQL ${pgVersion} on ${distro}",
+    "index,manifest:org.opencontainers.image.title=${metadata.name} ${getExtensionVersion(build.distro, build.pgVersion)} ${build.pgVersion} ${build.distro}",
+    "index,manifest:org.opencontainers.image.description=A ${metadata.name} ${getExtensionVersion(build.distro, build.pgVersion)} container image for PostgreSQL ${build.pgVersion} on ${build.distro}",
     "index,manifest:org.opencontainers.image.documentation=${url}",
     "index,manifest:org.opencontainers.image.authors=${authors}",
     "index,manifest:org.opencontainers.image.licenses=${join(" AND ", metadata.licenses)}",
     "index,manifest:org.opencontainers.image.base.name=scratch",
-    "index,manifest:io.cloudnativepg.image.base.name=${getBaseImage(distro, pgVersion)}",
-    "index,manifest:io.cloudnativepg.image.base.pgmajor=${pgVersion}",
-    "index,manifest:io.cloudnativepg.image.base.os=${distro}",
-    "index,manifest:io.cloudnativepg.image.sql.version=${getExtensionSqlVersion(distro, pgVersion)}",
+    "index,manifest:io.cloudnativepg.image.base.name=${getBaseImage(build.distro, build.pgVersion)}",
+    "index,manifest:io.cloudnativepg.image.base.pgmajor=${build.pgVersion}",
+    "index,manifest:io.cloudnativepg.image.base.os=${build.distro}",
+    "index,manifest:io.cloudnativepg.image.sql.version=${getExtensionSqlVersion(build.distro, build.pgVersion)}",
   ]
   labels = {
     "org.opencontainers.image.created" = "${now}",
     "org.opencontainers.image.url" = "${url}",
     "org.opencontainers.image.source" = "${url}",
-    "org.opencontainers.image.version" = "${getExtensionVersion(distro, pgVersion)}",
+    "org.opencontainers.image.version" = "${getExtensionVersion(build.distro, build.pgVersion)}",
     "org.opencontainers.image.revision" = "${revision}",
     "org.opencontainers.image.vendor" = "${authors}",
-    "org.opencontainers.image.title" = "${metadata.name} ${getExtensionVersion(distro, pgVersion)} ${pgVersion} ${distro}",
-    "org.opencontainers.image.description" = "A ${metadata.name} ${getExtensionVersion(distro, pgVersion)} container image for PostgreSQL ${pgVersion} on ${distro}",
+    "org.opencontainers.image.title" = "${metadata.name} ${getExtensionVersion(build.distro, build.pgVersion)} ${build.pgVersion} ${build.distro}",
+    "org.opencontainers.image.description" = "A ${metadata.name} ${getExtensionVersion(build.distro, build.pgVersion)} container image for PostgreSQL ${build.pgVersion} on ${build.distro}",
     "org.opencontainers.image.documentation" = "${url}",
     "org.opencontainers.image.authors" = "${authors}",
     "org.opencontainers.image.licenses" = "${join(" AND ", metadata.licenses)}",
     "org.opencontainers.image.base.name" = "scratch",
-    "io.cloudnativepg.image.base.name" = "${getBaseImage(distro, pgVersion)}",
-    "io.cloudnativepg.image.base.pgmajor" = "${pgVersion}",
-    "io.cloudnativepg.image.base.os" = "${distro}",
-    "io.cloudnativepg.image.sql.version" = "${getExtensionSqlVersion(distro, pgVersion)}",
+    "io.cloudnativepg.image.base.name" = "${getBaseImage(build.distro, build.pgVersion)}",
+    "io.cloudnativepg.image.base.pgmajor" = "${build.pgVersion}",
+    "io.cloudnativepg.image.base.os" = "${build.distro}",
+    "io.cloudnativepg.image.sql.version" = "${getExtensionSqlVersion(build.distro, build.pgVersion)}",
   }
 }
 
 function getImageName {
   params = [ name ]
   result = lower(name)
+}
+
+function getBuildName {
+  params = [ extName, distro, pgVersion ]
+  result = format("%s-%s-%s-%s", extName, sanitize(getExtensionVersion(distro, pgVersion)), pgVersion, distro)
+}
+
+// The build matrix is the explicit set of (distro, pgVersion) pairs declared
+// in metadata.versions. Using a single flattened dimension (instead of a
+// cross-product of two lists) lets each distribution declare its own set of
+// PG majors without producing combinations that don't exist.
+function getBuildMatrix {
+  params = []
+  result = flatten([
+    for distro in keys(metadata.versions) : [
+      for pgVersion in keys(metadata.versions[distro]) : {
+        distro    = distro
+        pgVersion = pgVersion
+      }
+    ]
+  ])
 }
 
 function getExtensionPackage {
