@@ -9,3 +9,6 @@
 
 # wal2json
 /wal2json/ @cloudnative-pg/maintainers @NiccoloFei @solidDoWant
+
+# h3
+/h3/ @cloudnative-pg/maintainers @NiccoloFei @jmealo
