@@ -47,7 +47,7 @@ spec:
     - name: timescaledb-oss
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb
-        reference: ghcr.io/cloudnative-pg/timescaledb-oss:2.28.0-18-trixie
+        reference: ghcr.io/cloudnative-pg/timescaledb-oss:2.28.1-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -68,7 +68,7 @@ spec:
   extensions:
   - name: timescaledb
     # renovate: suite=trixie-pgdg depName=postgresql-18-timescaledb extractVersion=^(?<version>\d+\.\d+\.\d+)
-    version: '2.28.0'
+    version: '2.28.1'
 ```
 
 ### 3. Verify installation
