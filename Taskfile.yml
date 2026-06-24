@@ -211,7 +211,7 @@ tasks:
     cmds:
       - >
         docker run -d -v /var/lib/dagger --name {{ .DAGGER_ENGINE_NAME }} --restart always --network {{ .E2E_NETWORK }}
-        --privileged registry.dagger.io/engine:{{ .DAGGER_ENGINE_VERSION }}
+        --privileged ghcr.io/dagger/engine:{{ .DAGGER_ENGINE_VERSION }}
     status:
       - test "$(docker inspect -f {{`'{{json .State.Running}}'`}} {{ .DAGGER_ENGINE_NAME }})" == "true"
 
