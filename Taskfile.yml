@@ -150,7 +150,6 @@ tasks:
     requires:
       vars:
         - name: NAME
-          desc: The name of the extension to create (lowercase alphanumeric, hyphens, and underscores only)
 
   generate-values:
     desc: Generate Chainsaw testing values for the specified target
