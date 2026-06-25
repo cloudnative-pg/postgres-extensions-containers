@@ -59,7 +59,7 @@ tasks:
       # --check builds a single platform, which conflicts with the index-level
       # OCI annotations in docker-bake.hcl. Override the output to cacheonly so
       # the check only lints the build without exporting an image.
-      - docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --check --set "*.output=type=cacheonly"
+      - docker buildx bake -f docker-bake.hcl -f {{.TARGET}}/metadata.hcl --check --set "*.output=type=cacheonly"
     requires:
       vars:
         - name: TARGET
@@ -95,9 +95,9 @@ tasks:
       - echo -e "{{.BLUE}}Baking target {{.TARGET}} (push={{.PUSH}})...{{.NC}}"
       - |
         if [ "{{.DRY_RUN}}" = "true" ]; then
-          echo -e "{{.GREEN}}[DRY RUN] docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --metadata-file="{{.METADATA_FILE}}" --push={{.PUSH}}{{.NC}}"
+          echo -e "{{.GREEN}}[DRY RUN] docker buildx bake -f docker-bake.hcl -f {{.TARGET}}/metadata.hcl --metadata-file="{{.METADATA_FILE}}" --push={{.PUSH}}{{.NC}}"
         else
-          docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --metadata-file="{{.METADATA_FILE}}" --push={{.PUSH}}
+          docker buildx bake -f docker-bake.hcl -f {{.TARGET}}/metadata.hcl --metadata-file="{{.METADATA_FILE}}" --push={{.PUSH}}
         fi
       - echo -e "{{.GREEN}}--- Successfully baked {{.TARGET}} ---{{.NC}}"
     requires:
