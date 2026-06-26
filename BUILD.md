@@ -60,16 +60,17 @@ For more complex setups, you can use the `dagger` command directly to customize
 distributions or package names:
 
 ```bash
-dagger call -sm ./dagger/maintenance/ create --name="<name>" [ARGUMENTS]
+dagger call -sm ./dagger/maintenance/ create --name="<name>" [ARGUMENTS] \
+  export --path ./<name>
 ```
 
 **Common Arguments:**
 
 | Argument | Description | Default |
 | --- | --- | --- |
-| `--distros` | Debian distributions the extension supports. | `[trixie, bookworm]` |
+| `--distros` | Debian distributions the extension supports (comma separated list). | `[trixie, bookworm]` |
 | `--package-name` | The Debian package name (uses `%version%` placeholder). | `postgresql-%version%-<name>` |
-| `--versions` | Supported Postgres major versions. | `[18]` |
+| `--versions` | Supported Postgres major versions (comma separated list). | `[18]` |
 | `--templates-dir` | Source directory containing custom template files. | Internal template dir |
 
 ---

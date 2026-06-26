@@ -56,7 +56,7 @@ tasks:
         msg: 'Not a valid target, metadata.hcl file is missing. Target: {{.TARGET}}'
     cmds:
       - echo -e "{{.BLUE}}Checking target {{.TARGET}}...{{.NC}}"
-      - docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --check
+      - docker buildx bake -f docker-bake.hcl -f {{.TARGET}}/metadata.hcl --check
     requires:
       vars:
         - name: TARGET
@@ -92,9 +92,9 @@ tasks:
       - echo -e "{{.BLUE}}Baking target {{.TARGET}} (push={{.PUSH}})...{{.NC}}"
       - |
         if [ "{{.DRY_RUN}}" = "true" ]; then
-          echo -e "{{.GREEN}}[DRY RUN] docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --metadata-file="{{.METADATA_FILE}}" --push={{.PUSH}}{{.NC}}"
+          echo -e "{{.GREEN}}[DRY RUN] docker buildx bake -f docker-bake.hcl -f {{.TARGET}}/metadata.hcl --metadata-file="{{.METADATA_FILE}}" --push={{.PUSH}}{{.NC}}"
         else
-          docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --metadata-file="{{.METADATA_FILE}}" --push={{.PUSH}}
+          docker buildx bake -f docker-bake.hcl -f {{.TARGET}}/metadata.hcl --metadata-file="{{.METADATA_FILE}}" --push={{.PUSH}}
         fi
       - echo -e "{{.GREEN}}--- Successfully baked {{.TARGET}} ---{{.NC}}"
     requires:
@@ -150,7 +150,6 @@ tasks:
     requires:
       vars:
         - name: NAME
-          desc: The name of the extension to create (lowercase alphanumeric, hyphens, and underscores only)
 
   generate-values:
     desc: Generate Chainsaw testing values for the specified target

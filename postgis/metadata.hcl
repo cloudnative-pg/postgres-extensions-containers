@@ -38,11 +38,12 @@ metadata = {
   }
 }
 
+// Re-declare name + matrix (matching docker-bake.hcl) so the matrix-expanded
+// targets merge by name and pick up the extra POSTGIS_MAJOR build arg.
 target "default" {
-  name = "${metadata.name}-${sanitize(getExtensionVersion(distro, pgVersion))}-${pgVersion}-${distro}"
+  name = getBuildName(metadata.name, build.distro, build.pgVersion)
   matrix = {
-    pgVersion = pgVersions
-    distro = distributions
+    build = getBuildMatrix()
   }
 
   args = {
