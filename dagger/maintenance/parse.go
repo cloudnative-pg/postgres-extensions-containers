@@ -12,12 +12,6 @@ import (
 	"dagger/maintenance/internal/dagger"
 )
 
-// buildCombo is a single distribution + PG major combination to build.
-type buildCombo struct {
-	Distribution string
-	MajorVersion string
-}
-
 // buildMatrix is the set of distribution/PG-major combinations to build.
 // It holds explicit pairs (rather than two independent lists), so each distribution
 // can declare its own set of PG majors.
@@ -25,24 +19,24 @@ type buildMatrix struct {
 	Combinations []buildCombo
 }
 
+// buildCombo is a single distribution + PG major combination to build.
+type buildCombo struct {
+	Distribution string
+	MajorVersion string
+}
+
 // hasDistribution reports if given a distribution is present in a buildMatrix.
 func (m *buildMatrix) hasDistribution(distribution string) bool {
-	for _, combo := range m.Combinations {
-		if combo.Distribution == distribution {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(m.Combinations, func(combo buildCombo) bool {
+		return combo.Distribution == distribution
+	})
 }
 
 // contains reports if a given distribution/major pair is present in a buildMatrix.
 func (m *buildMatrix) contains(distribution, majorVersion string) bool {
-	for _, combo := range m.Combinations {
-		if combo.Distribution == distribution && combo.MajorVersion == majorVersion {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(m.Combinations, func(combo buildCombo) bool {
+		return combo.Distribution == distribution && combo.MajorVersion == majorVersion
+	})
 }
 
 type extensionVersion struct {
