@@ -72,20 +72,18 @@ func (m *Maintenance) UpdateOSLibs(
 			return nil, err
 		}
 
-		files := make([]*dagger.File, 0, len(matrix.Distributions)*len(matrix.MajorVersions))
-		for _, distribution := range matrix.Distributions {
-			for _, majorVersion := range matrix.MajorVersions {
-				file, err := updateOSLibsOnTarget(
-					ctx,
-					extension,
-					distribution,
-					majorVersion,
-				)
-				if err != nil {
-					return source, err
-				}
-				files = append(files, file)
+		files := make([]*dagger.File, 0, len(matrix.Combinations))
+		for _, combo := range matrix.Combinations {
+			file, err := updateOSLibsOnTarget(
+				ctx,
+				extension,
+				combo.Distribution,
+				combo.MajorVersion,
+			)
+			if err != nil {
+				return source, err
 			}
+			files = append(files, file)
 		}
 		source = source.WithFiles(targetDir, files)
 	}
@@ -500,7 +498,7 @@ func (m *Maintenance) GenerateCatalogs(
 			if err != nil {
 				return nil, fmt.Errorf("while parsing build Matrix for extension %s: %w", extension, err)
 			}
-			if !slices.Contains(matrix.Distributions, catalogOS) {
+			if !matrix.hasDistribution(catalogOS) {
 				continue
 			}
 
@@ -511,7 +509,7 @@ func (m *Maintenance) GenerateCatalogs(
 
 			for i := range catalog.Spec.Images {
 				img := &catalog.Spec.Images[i]
-				if !slices.Contains(matrix.MajorVersions, strconv.Itoa(img.Major)) {
+				if !matrix.contains(catalogOS, strconv.Itoa(img.Major)) {
 					continue
 				}
 

@@ -55,7 +55,7 @@ jobs:
           registry: ghcr.io/${{ github.repository_owner }}
           revision: ${{ github.sha }}
         with:
-          files: ./${{ inputs.extension_name }}/metadata.hcl,./docker-bake.hcl
+          files: ./docker-bake.hcl,./${{ inputs.extension_name }}/metadata.hcl
           push: true
 
       # From bake's metadata, extract each unique tag (e.g. the ones with the timestamp)
