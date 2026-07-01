@@ -53,6 +53,22 @@ Extensions are provided only for the OS versions already built by the
 [`cloudnative-pg/postgres-containers`](https://github.com/cloudnative-pg/postgres-containers) project,
 specifically Debian `stable` and `oldstable`.
 
+### Externally Maintained Extensions
+
+The following extensions are **built with this project's tooling and naming
+conventions but distributed independently** by their respective maintainers —
+typically because their license is not on the
+[CNCF Allowlist](https://github.com/cncf/foundation/blob/main/policies-guidance/allowed-third-party-license-policy.md)
+and therefore cannot be hosted in this repository
+(see [Extension Requirements](#extension-requirements)). They are listed here
+purely for **discoverability**: the CloudNativePG project does **not** build,
+host, audit, or maintain these images, and their owners are solely responsible
+for them.
+
+| Extension | Description | Project URL | Image | Maintained by |
+| :--- | :--- | :--- | :--- | :--- |
+| **pg_search** | Elastic-quality full-text search for PostgreSQL | [github.com/paradedb/paradedb](https://github.com/paradedb/paradedb) | [`paradedb/paradedb-extension`](https://hub.docker.com/r/paradedb/paradedb-extension) | [ParadeDB](https://paradedb.com) (@philippemnoel, @rebasedming, @isaacvando) |
+
 ---
 
 ## Contribution and Maintenance Policy
