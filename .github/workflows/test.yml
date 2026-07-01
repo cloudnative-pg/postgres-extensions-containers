@@ -21,6 +21,11 @@ jobs:
   unit-test:
     name: Go unit tests
     runs-on: ubuntu-24.04
+    permissions:
+      packages: read
+    env:
+      # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+      DAGGER_VERSION: 0.21.7
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -33,11 +38,19 @@ jobs:
           go-version-file: dagger/maintenance/go.mod
           cache-dependency-path: dagger/maintenance/go.sum
 
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Generate the Dagger client
         uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
         env:
-          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.21.7
+          # Provision the engine from GHCR instead of registry.dagger.io, whose
+          # Fly.io-hosted front intermittently times out from GitHub runners.
+          _EXPERIMENTAL_DAGGER_RUNNER_HOST: docker-image://ghcr.io/dagger/engine:v${{ env.DAGGER_VERSION }}
         with:
           version: ${{ env.DAGGER_VERSION }}
           verb: develop
