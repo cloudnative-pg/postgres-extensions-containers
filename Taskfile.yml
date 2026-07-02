@@ -56,7 +56,10 @@ tasks:
         msg: 'Not a valid target, metadata.hcl file is missing. Target: {{.TARGET}}'
     cmds:
       - echo -e "{{.BLUE}}Checking target {{.TARGET}}...{{.NC}}"
-      - docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --check
+      # --check builds a single platform, which conflicts with the index-level
+      # OCI annotations in docker-bake.hcl. Override the output to cacheonly so
+      # the check only lints the build without exporting an image.
+      - docker buildx bake -f {{.TARGET}}/metadata.hcl -f docker-bake.hcl --check --set "*.output=type=cacheonly"
     requires:
       vars:
         - name: TARGET
