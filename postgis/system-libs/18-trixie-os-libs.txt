@@ -24,7 +24,7 @@ libngtcp2-16_1.11.0-1+deb13u1_amd64.deb MD5Sum:73c7dc70b69796219facc3d77a092303
 libngtcp2-crypto-gnutls8_1.11.0-1+deb13u1_amd64.deb MD5Sum:085da7b6511e5afdbbd1b33f59054431
 libpsl5t64_0.21.2-1.1+b1_amd64.deb MD5Sum:09aa06d971ce5ff6d02b452c0e1f15f9
 librtmp1_2.4+20151223.gitfa8646d.1-2+b5_amd64.deb MD5Sum:355aeaaf937d70dcc873a458f6244c6e
-libssh2-1t64_1.11.1-1_amd64.deb MD5Sum:d4b36da8909e226c1829bf9c07aca38c
+libssh2-1t64_1.11.1-1+deb13u1_amd64.deb
 libcurl3t64-gnutls_8.14.1-2+deb13u3_amd64.deb MD5Sum:a38ebe44d140452a152d58bd41abc74f
 libcfitsio10t64_4.6.2-2_amd64.deb MD5Sum:856f7ba809c5e389e30d711356d158d9
 libcurl4t64_8.14.1-2+deb13u3_amd64.deb MD5Sum:36254c982f11fa51348be0c7bdddea3a
