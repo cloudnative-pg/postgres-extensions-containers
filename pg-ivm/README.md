@@ -9,7 +9,8 @@ materialized views to be updated incrementally when base tables change.
 ### 1. Add the pg_ivm extension image to your Cluster
 
 Define the `pg_ivm` extension under the `postgresql.extensions` section of
-your `Cluster` resource. For example:
+your `Cluster` resource. **Note:** `pg_ivm` must be loaded via `shared_preload_libraries`
+for its trigger-based IVM functionality to work correctly. For example:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -24,6 +25,8 @@ spec:
     size: 1Gi
 
   postgresql:
+    shared_preload_libraries:
+      - "pg_ivm"
     extensions:
     - name: pg_ivm
       image:
