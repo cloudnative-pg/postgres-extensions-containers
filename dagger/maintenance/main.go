@@ -485,8 +485,19 @@ func (m *Maintenance) GenerateCatalogs(
 	if len(targetExtensions) == 0 {
 		return nil, fmt.Errorf("no extensions found in source directory")
 	}
+	if len(catalogs) == 0 {
+		return nil, fmt.Errorf("no catalogs matched the selection criteria")
+	}
 
-	catalogWritten := false
+	metadataByDir := make(map[string]*extensionMetadata, len(targetExtensions))
+	for dir, extension := range targetExtensions {
+		metadata, err := parseExtensionMetadata(ctx, source.Directory(dir))
+		if err != nil {
+			return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
+		}
+		metadataByDir[dir] = metadata
+	}
+
 	for _, catalog := range catalogs {
 		catalogOS, ok := catalog.Metadata.Labels[LabelImageOS]
 		if !ok {
@@ -494,10 +505,7 @@ func (m *Maintenance) GenerateCatalogs(
 		}
 
 		for dir, extension := range targetExtensions {
-			metadata, err := parseExtensionMetadata(ctx, source.Directory(dir))
-			if err != nil {
-				return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
-			}
+			metadata := metadataByDir[dir]
 			matrix := buildMatrixFromMetadata(metadata)
 			if !matrix.hasDistribution(catalogOS) {
 				continue
@@ -539,11 +547,6 @@ func (m *Maintenance) GenerateCatalogs(
 		if err != nil {
 			return nil, fmt.Errorf("while writing catalog %s: %w", catalog.Metadata.Name, err)
 		}
-		catalogWritten = true
-	}
-
-	if !catalogWritten {
-		return nil, fmt.Errorf("no catalogs matched the selection criteria")
 	}
 
 	return outDir, nil
