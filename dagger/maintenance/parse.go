@@ -1,21 +1,42 @@
 package main
 
 import (
+	"cmp"
 	"context"
-	"encoding/json"
 	"fmt"
-	"path"
+	"slices"
 
-	"github.com/docker/buildx/bake"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsimple"
 
 	"dagger/maintenance/internal/dagger"
 )
 
+// buildMatrix is the set of distribution/PG-major combinations to build.
+// It holds explicit pairs (rather than two independent lists), so each distribution
+// can declare its own set of PG majors.
 type buildMatrix struct {
-	Distributions []string
-	MajorVersions []string
+	Combinations []buildCombo
+}
+
+// buildCombo is a single distribution + PG major combination to build.
+type buildCombo struct {
+	Distribution string
+	MajorVersion string
+}
+
+// hasDistribution reports if given a distribution is present in a buildMatrix.
+func (m *buildMatrix) hasDistribution(distribution string) bool {
+	return slices.ContainsFunc(m.Combinations, func(combo buildCombo) bool {
+		return combo.Distribution == distribution
+	})
+}
+
+// contains reports if a given distribution/major pair is present in a buildMatrix.
+func (m *buildMatrix) contains(distribution, majorVersion string) bool {
+	return slices.ContainsFunc(m.Combinations, func(combo buildCombo) bool {
+		return combo.Distribution == distribution && combo.MajorVersion == majorVersion
+	})
 }
 
 type extensionVersion struct {
@@ -43,56 +64,43 @@ type extensionMetadata struct {
 }
 
 const (
-	bakeFileName = "docker-bake.hcl"
 	metadataFile = "metadata.hcl"
 )
 
+// parseBuildMatrix derives the build matrix for a target extension by reading
+// its metadata.hcl from the source directory.
 func parseBuildMatrix(ctx context.Context, source *dagger.Directory, target string) (*buildMatrix, error) {
-	bakeData, err := source.File(bakeFileName).Contents(ctx)
-	if err != nil {
-		return nil, err
-	}
-	metadata, err := source.File(path.Join(target, metadataFile)).Contents(ctx)
-	if err != nil {
-		return nil, err
-	}
-	_, p, err := bake.ParseFiles([]bake.File{
-		{
-			Name: bakeFileName,
-			Data: []byte(bakeData),
-		},
-		{
-			Name: metadataFile,
-			Data: []byte(metadata),
-		},
-	}, nil, nil)
+	metadata, err := parseExtensionMetadata(ctx, source.Directory(target))
 	if err != nil {
 		return nil, err
 	}
 
+	return buildMatrixFromMetadata(metadata), nil
+}
+
+// buildMatrixFromMetadata derives the build matrix (distributions and PG majors)
+// directly from the keys of the metadata.versions map, mirroring how the
+// docker-bake.hcl matrix is computed.
+func buildMatrixFromMetadata(metadata *extensionMetadata) *buildMatrix {
 	var matrix buildMatrix
-	for _, variable := range p.AllVariables {
-		switch variable.Name {
-		case "distributions":
-			if variable.Value != nil {
-				var arr []string
-				if err := json.Unmarshal([]byte(*variable.Value), &arr); err != nil {
-					return nil, err
-				}
-				matrix.Distributions = arr
-			}
-		case "pgVersions":
-			if variable.Value != nil {
-				var arr []string
-				if err := json.Unmarshal([]byte(*variable.Value), &arr); err != nil {
-					return nil, err
-				}
-				matrix.MajorVersions = arr
-			}
+	for distribution, versionsByMajor := range metadata.Versions {
+		for majorVersion := range versionsByMajor {
+			matrix.Combinations = append(matrix.Combinations, buildCombo{
+				Distribution: distribution,
+				MajorVersion: majorVersion,
+			})
 		}
 	}
 
-	return &matrix, nil
+	// Sort for deterministic ordering, since map iteration order is random.
+	slices.SortFunc(matrix.Combinations, func(a, b buildCombo) int {
+		if c := cmp.Compare(a.Distribution, b.Distribution); c != 0 {
+			return c
+		}
+		return cmp.Compare(a.MajorVersion, b.MajorVersion)
+	})
+
+	return &matrix
 }
 
 func parseExtensionMetadata(ctx context.Context, extensionDirectory *dagger.Directory) (*extensionMetadata, error) {

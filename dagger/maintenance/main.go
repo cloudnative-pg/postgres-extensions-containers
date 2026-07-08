@@ -72,20 +72,18 @@ func (m *Maintenance) UpdateOSLibs(
 			return nil, err
 		}
 
-		files := make([]*dagger.File, 0, len(matrix.Distributions)*len(matrix.MajorVersions))
-		for _, distribution := range matrix.Distributions {
-			for _, majorVersion := range matrix.MajorVersions {
-				file, err := updateOSLibsOnTarget(
-					ctx,
-					extension,
-					distribution,
-					majorVersion,
-				)
-				if err != nil {
-					return source, err
-				}
-				files = append(files, file)
+		files := make([]*dagger.File, 0, len(matrix.Combinations))
+		for _, combo := range matrix.Combinations {
+			file, err := updateOSLibsOnTarget(
+				ctx,
+				extension,
+				combo.Distribution,
+				combo.MajorVersion,
+			)
+			if err != nil {
+				return source, err
 			}
+			files = append(files, file)
 		}
 		source = source.WithFiles(targetDir, files)
 	}
@@ -487,8 +485,19 @@ func (m *Maintenance) GenerateCatalogs(
 	if len(targetExtensions) == 0 {
 		return nil, fmt.Errorf("no extensions found in source directory")
 	}
+	if len(catalogs) == 0 {
+		return nil, fmt.Errorf("no catalogs matched the selection criteria")
+	}
 
-	catalogWritten := false
+	metadataByDir := make(map[string]*extensionMetadata, len(targetExtensions))
+	for dir, extension := range targetExtensions {
+		metadata, err := parseExtensionMetadata(ctx, source.Directory(dir))
+		if err != nil {
+			return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
+		}
+		metadataByDir[dir] = metadata
+	}
+
 	for _, catalog := range catalogs {
 		catalogOS, ok := catalog.Metadata.Labels[LabelImageOS]
 		if !ok {
@@ -496,22 +505,15 @@ func (m *Maintenance) GenerateCatalogs(
 		}
 
 		for dir, extension := range targetExtensions {
-			matrix, err := parseBuildMatrix(ctx, source, dir)
-			if err != nil {
-				return nil, fmt.Errorf("while parsing build Matrix for extension %s: %w", extension, err)
-			}
-			if !slices.Contains(matrix.Distributions, catalogOS) {
+			metadata := metadataByDir[dir]
+			matrix := buildMatrixFromMetadata(metadata)
+			if !matrix.hasDistribution(catalogOS) {
 				continue
-			}
-
-			metadata, err := parseExtensionMetadata(ctx, source.Directory(dir))
-			if err != nil {
-				return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
 			}
 
 			for i := range catalog.Spec.Images {
 				img := &catalog.Spec.Images[i]
-				if !slices.Contains(matrix.MajorVersions, strconv.Itoa(img.Major)) {
+				if !matrix.contains(catalogOS, strconv.Itoa(img.Major)) {
 					continue
 				}
 
@@ -545,11 +547,6 @@ func (m *Maintenance) GenerateCatalogs(
 		if err != nil {
 			return nil, fmt.Errorf("while writing catalog %s: %w", catalog.Metadata.Name, err)
 		}
-		catalogWritten = true
-	}
-
-	if !catalogWritten {
-		return nil, fmt.Errorf("no catalogs matched the selection criteria")
 	}
 
 	return outDir, nil
