@@ -494,17 +494,13 @@ func (m *Maintenance) GenerateCatalogs(
 		}
 
 		for dir, extension := range targetExtensions {
-			matrix, err := parseBuildMatrix(ctx, source, dir)
-			if err != nil {
-				return nil, fmt.Errorf("while parsing build Matrix for extension %s: %w", extension, err)
-			}
-			if !matrix.hasDistribution(catalogOS) {
-				continue
-			}
-
 			metadata, err := parseExtensionMetadata(ctx, source.Directory(dir))
 			if err != nil {
 				return nil, fmt.Errorf("while parsing extension %s metadata: %w", extension, err)
+			}
+			matrix := buildMatrixFromMetadata(metadata)
+			if !matrix.hasDistribution(catalogOS) {
+				continue
 			}
 
 			for i := range catalog.Spec.Images {
