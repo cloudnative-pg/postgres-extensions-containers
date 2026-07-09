@@ -107,6 +107,25 @@ jobs:
           snyk_token: ${{ secrets.SNYK_TOKEN }}
           dockerfile: "${{ inputs.extension_name }}/Dockerfile"
 
+  generate-smoke-test-matrix:
+    name: Generate matrix for smoke tests
+    runs-on: ubuntu-24.04
+    permissions: {}
+    outputs:
+      versions: ${{ steps.versions.outputs.versions }}
+    steps:
+      # main plus the latest and previous supported minor release branches.
+      - name: Compute CNPG release matrix
+        id: versions
+        env:
+          # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+)\.\d+$
+          LATEST_RELEASE: "1.29"
+        run: |
+          PREVIOUS_RELEASE=$(awk -F. '{print $1"."$2-1}' <<< "$LATEST_RELEASE")
+          versions=$(jq -cn --arg latest "$LATEST_RELEASE" --arg previous "$PREVIOUS_RELEASE" \
+            '["main", $previous, $latest]')
+          echo "versions=$versions" >> "$GITHUB_OUTPUT"
+
   smoke-test:
     name: Smoke test
     runs-on: ubuntu-24.04
@@ -115,11 +134,12 @@ jobs:
       packages: read
     needs:
       - testbuild
+      - generate-smoke-test-matrix
     strategy:
       fail-fast: false
       matrix:
         image: ${{fromJson(needs.testbuild.outputs.images)}}
-        cnpg: ["main", "1.28", "1.29"]
+        cnpg: ${{fromJson(needs.generate-smoke-test-matrix.outputs.versions)}}
     steps:
       - name: Checkout Code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
