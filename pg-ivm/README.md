@@ -67,7 +67,7 @@ You should see `pg_ivm` listed among the installed extensions.
 
 ## Maintainers
 
-This container image is maintained by @shuusan.
+This container image is maintained by @shusaan.
 
 ---
 
