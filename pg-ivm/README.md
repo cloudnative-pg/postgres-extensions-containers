@@ -1,4 +1,8 @@
 # `pg_ivm`
+<!--
+SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
+SPDX-License-Identifier: Apache-2.0
+-->
 
 [pg_ivm](https://github.com/sraoss/pg_ivm) is an open-source extension
 that provides **Incremental View Maintenance (IVM)** for PostgreSQL, allowing
