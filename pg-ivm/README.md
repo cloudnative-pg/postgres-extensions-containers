@@ -69,9 +69,18 @@ Once the database is ready, connect to it with `psql` and run:
 
 You should see `pg_ivm` listed among the installed extensions.
 
-## Maintainers
+## Contributors
 
-This container image is maintained by @shusaan.
+This extension is maintained by:
+
+- Husn E Rabbi (@shusaan)
+
+The maintainers are responsible for:
+
+- Monitoring upstream releases and security vulnerabilities.
+- Ensuring compatibility with supported PostgreSQL versions.
+- Reviewing and merging contributions specific to this extension's container
+  image and lifecycle.
 
 ---
 
