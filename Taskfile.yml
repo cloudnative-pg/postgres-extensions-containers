@@ -22,7 +22,7 @@ vars:
   K8S_VERSION: '{{ regexReplaceAll "^v([0-9.]+).*" .KIND_NODE_VERSION "$1" }}'
   KIND_CLUSTER_NAME: pg-extensions-{{ .K8S_VERSION }}
   # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+)\.\d+$
-  CNPG_RELEASE_DEFAULT: 1.29
+  CNPG_RELEASE_DEFAULT: 1.30
 
 tasks:
   default:
