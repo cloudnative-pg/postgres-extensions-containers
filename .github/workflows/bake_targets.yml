@@ -119,7 +119,7 @@ jobs:
         id: versions
         env:
           # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+)\.\d+$
-          LATEST_RELEASE: "1.29"
+          LATEST_RELEASE: "1.30"
         run: |
           PREVIOUS_RELEASE=$(awk -F. '{print $1"."$2-1}' <<< "$LATEST_RELEASE")
           versions=$(jq -cn --arg latest "$LATEST_RELEASE" --arg previous "$PREVIOUS_RELEASE" \
