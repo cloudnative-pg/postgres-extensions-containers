@@ -16,6 +16,14 @@ RUN set -eux && \
 		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}=${EXT_VERSION}" \
 		"postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJOR}-scripts=${EXT_VERSION}"
 
+# Strip the "$libdir/" prefix from LOAD statements in the extension upgrade
+# scripts: with imageVolume-mounted extensions there is no $libdir to expand,
+# and PostgreSQL 18+ fails the LOAD during CREATE/ALTER EXTENSION otherwise.
+# dynamic_library_path already resolves the bare module name.
+RUN sed -i "s/\$libdir\///g" \
+	/usr/share/postgresql/${PG_MAJOR}/extension/postgis*.sql \
+	/usr/share/postgresql/${PG_MAJOR}/extension/address_standardizer*.sql
+
 # Gather PostGIS system libraries and their licenses
 RUN mkdir -p /system /licenses && \
 	# Get libraries
