@@ -60,7 +60,7 @@ libogdi4.1_4.1.0+ds-6_amd64.deb MD5Sum:bca573b90eb2ef8e6fa4c7ab66c77927
 libopenjp2-7_2.5.0-2+deb12u3_amd64.deb MD5Sum:bb7b72ae72a38620bed002a063d5dc64
 liblcms2-2_2.14-2+deb12u1_amd64.deb MD5Sum:4a701d009079104e62992b219cee5f6e
 libnspr4_2%3a4.35-1_amd64.deb MD5Sum:1f8e0fda3f2527e0051768abd071c2fe
-libnss3_2%3a3.87.1-1+deb12u2_amd64.deb MD5Sum:1e66101d6c420e5999032e3f187282ed
+libnss3_2%3a3.87.1-1+deb12u3_amd64.deb
 libpoppler126_22.12.0-2+deb12u2_amd64.deb MD5Sum:23886480fe5be6b0c6fe09059318aba8
 libqhull-r8.0_2020.2-5_amd64.deb MD5Sum:781260a36cd4d65a86fc349f26b68338
 librttopo1_1.1.0-3_amd64.deb MD5Sum:901bfdc1a4a806d1c9be972018d65368
