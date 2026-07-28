@@ -1,0 +1,8 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ($values.name)
+status:
+  instances: 1
+  readyInstances: 1
+  phase: Cluster in healthy state

@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: extension-installed
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: data-test
+        env:
+          - name: PGSSLROOTCERT
+          - name: EXT_VERSION
+            value: ($values.version)
+          - name: DB_URI
+            valueFrom:
+              secretKeyRef:
+                name: (join('-', [$values.name, 'app']))
+                key: uri
+        # renovate: datasource=docker depName=alpine/psql versioning=docker
+        image: alpine/psql:18.4@sha256:b3e4fc061da067813ddc5a8844b1992a50d5f1dce72d46be8ee5d0b964a3e894
+        command: ['sh', '-c']
+        args:
+         - |
+           set -e
+           DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis')" -q)" = "t"
+           test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'pgrouting' AND extversion = '${EXT_VERSION}')" -q)" = "t"
