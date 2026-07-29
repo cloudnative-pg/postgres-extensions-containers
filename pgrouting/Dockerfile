@@ -6,76 +6,22 @@ ARG EXT_VERSION
 
 USER 0
 
-RUN set -eux && \
-	# Initial system libraries
-	ldconfig -p | awk '{print $NF}' | grep '^/' | sort | uniq > /tmp/base-image-libs.out && \
-	# Install pgRouting
-	apt-get update && \
+RUN apt-get update && \
 	apt-get install -y --no-install-recommends \
-		"postgresql-${PG_MAJOR}-pgrouting=${EXT_VERSION}" \
-		"postgresql-${PG_MAJOR}-pgrouting-scripts=${EXT_VERSION}"
-
-# Strip the "$libdir/" prefix from LOAD and CREATE FUNCTION ... AS statements
-# in the extension scripts: with imageVolume-mounted extensions
-# there is no $libdir to expand, and PostgreSQL 18+ fails to resolve it during
-# CREATE/ALTER EXTENSION otherwise.
-# dynamic_library_path already resolves the bare module name.
-# Only strip right after an opening quote, so the pattern can't accidentally
-# touch unrelated text.
-RUN sed -i "s/'\$libdir\//'/g" \
-	/usr/share/postgresql/${PG_MAJOR}/extension/pgrouting*.sql
-
-# Gather pgRouting system libraries and their licenses
-RUN mkdir -p /system /licenses && \
-	# Get libraries
-	ldd /usr/lib/postgresql/${PG_MAJOR}/lib/libpgrouting*.so \
-		| awk '{print $3}' | grep '^/' | sort | uniq > /tmp/all-deps.out && \
-	# Extract all the libs that aren't already part of the base image
-	comm -13 /tmp/base-image-libs.out /tmp/all-deps.out > /tmp/libraries.out && \
-	while read -r lib; do \
-		resolved=$(readlink -f "$lib"); \
-		dir=$(dirname "$lib"); \
-		base=$(basename "$lib"); \
-		# Copy the real file
-		cp -a "$resolved" /system/; \
-		# Reconstruct all its symlinks
-		for file in "$dir"/"${base%.so*}.so"*; do \
-			[ -e "$file" ] || continue; \
-			# If it's a symlink and it resolves to the same real file, we reconstruct it
-			if [ -L "$file" ] && [ "$(readlink -f "$file")" = "$resolved" ]; then \
-				ln -sf "$(basename "$resolved")" "/system/$(basename "$file")"; \
-			fi; \
-		done; \
-	done < /tmp/libraries.out && \
-	# Get licenses
-	for lib in $(find /system -maxdepth 1 -type f -name '*.so*'); do \
-		# Get the name of the pkg that installed the library
-		pkg=$(dpkg -S "$(basename "$lib")" | grep -v "diversion by" | awk -F: '/:/{print $1; exit}'); \
-		[ -z "$pkg" ] && continue; \
-		mkdir -p "/licenses/$pkg" && cp -a "/usr/share/doc/$pkg/copyright" "/licenses/$pkg/copyright"; \
-	done
-
+      "postgresql-${PG_MAJOR}-pgrouting=${EXT_VERSION}" \
+      "postgresql-${PG_MAJOR}-pgrouting-scripts=${EXT_VERSION}"
 
 FROM scratch
 ARG PG_MAJOR
 
 # Licenses
-COPY --from=builder /licenses /licenses/
 COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-pgrouting/copyright /licenses/postgresql-${PG_MAJOR}-pgrouting/
 
 # Libraries
-COPY --from=builder \
-	/usr/lib/postgresql/${PG_MAJOR}/lib/libpgrouting* \
-	/lib/
-
+COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/libpgrouting* /lib/
 COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
 
 # Share
-COPY --from=builder \
-	/usr/share/postgresql/${PG_MAJOR}/extension/pgrouting* \
-	/share/extension/
-
-# System libs
-COPY --from=builder /system /system/
+COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/pgrouting* /share/extension/
 
 USER 65532:65532
