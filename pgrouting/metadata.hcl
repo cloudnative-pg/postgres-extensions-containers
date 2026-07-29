@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
+# SPDX-License-Identifier: Apache-2.0
 metadata = {
   name                     = "pgrouting"
   sql_name                 = "pgrouting"
