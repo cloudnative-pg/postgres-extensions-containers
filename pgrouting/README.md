@@ -1,17 +1,24 @@
 # pgRouting
+<!--
+SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established as CloudNativePG a Series of LF Projects, LLC.
+SPDX-License-Identifier: Apache-2.0
+-->
 
-[pgRouting](https://pgrouting.org/) extends the [PostGIS](https://postgis.net/)/PostgreSQL geospatial database to provide geospatial routing and other network analysis functionality.
+[pgRouting](https://pgrouting.org/) extends the [PostGIS](https://postgis.net/)/PostgreSQL geospatial database to
+provide geospatial routing and other network analysis functionality.
 
 This image provides a convenient way to deploy and manage `pgRouting` with [CloudNativePG](https://cloudnative-pg.io/).
 
 > [!NOTE]
-> `pgRouting` depends on `PostGIS`. When deploying `pgRouting`, you must also include the `postgis` extension image in your Cluster definition.
+> `pgRouting` depends on `PostGIS`. When deploying `pgRouting`, you must also include the `postgis` extension image in
+> your Cluster definition.
 
 ## Usage
 
 ### 1. Add the pgRouting and PostGIS extension images to your Cluster
 
-Define the `postgis` and `pgrouting` extensions under the `postgresql.extensions` section of your `Cluster` resource. For example:
+Define the `postgis` and `pgrouting` extensions under the `postgresql.extensions` section of your `Cluster` resource.
+For example:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -42,13 +49,11 @@ spec:
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pgrouting
         reference: ghcr.io/cloudnative-pg/pgrouting:4.0.1-18-trixie
-      ld_library_path:
-      - system
 ```
 
 ### 2. Enable the extension in a database
 
-You can install `pgrouting` in a specific database by creating or updating a `Database` resource. Note that `postgis` must be listed before `pgrouting`:
+You can install `pgrouting` in a specific database by creating or updating a `Database` resource:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -78,3 +83,22 @@ Once the database is ready, connect to it with `psql` and run:
 ```
 
 You should see `postgis` and `pgrouting` listed among the installed extensions.
+
+---
+
+## Licenses and Copyright
+
+`pgRouting`:
+
+- **Copyright:** pgRouting Contributors
+- **License:** GNU General Public License v2.0 or later (`GPL-2.0-or-later`)
+
+All relevant license and copyright information for the `pgrouting` extension
+and its dependencies are bundled within the image at:
+
+```text
+/licenses/
+```
+
+By using this image, you agree to comply with the terms of the licenses
+contained therein.
