@@ -7,10 +7,10 @@ metadata = {
   postgresql_parameters    = {}
   extension_control_path   = []
   dynamic_library_path     = []
-  ld_library_path          = ["system"]
+  ld_library_path          = []
   bin_path                 = []
   env                      = {}
-  auto_update_os_libs      = true
+  auto_update_os_libs      = false
   required_extensions      = ["postgis"]
   create_extension         = true
 
