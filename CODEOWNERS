@@ -1,14 +1,12 @@
-# The CODEOWNERS file is used to define individuals or teams that are
-# responsible for code in a repository. For details, please refer to
-# https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners
+# This file is generated from componentowners-policy.yaml in
+# cloudnative-pg/cnpg-infra — do not hand-edit, propose changes there instead.
+#
+# Path-scoped rules below always include the repo's own general owners
+# (the "*" line) in addition to their own specific teams/users, since
+# CODEOWNERS only honors the LAST matching pattern for a given path —
+# it does not merge an earlier, less-specific rule into a later one.
 
-* @leonardoce @mnencia @gbartolini @fcanovai @armru @NiccoloFei @GabriFedi97
-
-# TimescaleDB (OSS version)
-/timescaledb-oss/ @shusaan
-
-# wal2json
-/wal2json/ @solidDoWant
-
-# pg-ivm
-/pg-ivm/ @shusaan
+* @cloudnative-pg/postgres-extensions-containers-owners
+/timescaledb-oss/ @cloudnative-pg/postgres-extensions-containers-owners @shusaan
+/wal2json/ @cloudnative-pg/postgres-extensions-containers-owners @solidDoWant
+/pg-ivm/ @cloudnative-pg/postgres-extensions-containers-owners @shusaan
