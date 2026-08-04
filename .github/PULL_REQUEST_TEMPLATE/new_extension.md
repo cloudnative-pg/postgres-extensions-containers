@@ -52,6 +52,9 @@ Closes #<!-- proposal issue id -->
 - [ ] An entry for the new extension folder was added to
       [`CODEOWNERS`](https://github.com/cloudnative-pg/postgres-extensions-containers/blob/main/CODEOWNERS)
       with the component owner's GitHub handle(s).
+- [ ] A `distribution-points` entry for the new image was added under
+      `repository.release` in
+      [`SECURITY-INSIGHTS.yml`](https://github.com/cloudnative-pg/postgres-extensions-containers/blob/main/SECURITY-INSIGHTS.yml).
 - [ ] I confirm my commitment to maintain this extension on behalf of the
       CloudNativePG community.
 
@@ -84,4 +87,6 @@ Closes #<!-- proposal issue id -->
       when `create_extension = true`) are valid.
 - [ ] `CODEOWNERS` entry is present and the component owner(s) accept the
       long-term maintenance commitment.
+- [ ] `SECURITY-INSIGHTS.yml` has a matching `distribution-points` entry for
+      the new image.
 - [ ] PR targets `main` and is ready to merge.

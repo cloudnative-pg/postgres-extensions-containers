@@ -301,6 +301,10 @@ Submission Requirements:
 - **CODEOWNERS**: The PR must add an entry to the [`CODEOWNERS`](./CODEOWNERS)
   file listing the GitHub handles of the component owner(s) for the new
   extension folder.
+- **SECURITY-INSIGHTS.yml**: The PR must add a `distribution-points` entry for
+  the new image under `repository.release` in
+  [`SECURITY-INSIGHTS.yml`](./SECURITY-INSIGHTS.yml), pointing to its GitHub
+  Packages page (using the `image_name` from `metadata.hcl`).
 
 > [!IMPORTANT]
 > When opening the Pull Request, use the **new extension** template, which
