@@ -92,15 +92,33 @@ repository:
           adhoc: false
           ci: true
           release: true
+      - name: CodeQL
+        type: SAST
+        rulesets: ["default"]
+        results: {}
+        comment: GitHub's default CodeQL setup; analyzes Go and GitHub Actions workflow code on pull requests and pushes to main.
+        integration:
+          adhoc: false
+          ci: true
+          release: false
       - name: GitHub Code Scanning
         type: SAST
         rulesets: ["default"]
         results: {}
-        comment: GitHub's default CodeQL setup, enabled at the repo-settings level.
+        comment: Ingests SARIF results from Snyk for integrated GitHub security alerts.
         integration:
           adhoc: false
-          ci: false
-          release: false
+          ci: true
+          release: true
+      - name: Dockle
+        type: container
+        rulesets: ["default"]
+        results: {}
+        comment: Container image linter enforcing CIS Docker Benchmark best practices; fails the build on any warning.
+        integration:
+          adhoc: false
+          ci: true
+          release: true
 
     assessments:
       self:
