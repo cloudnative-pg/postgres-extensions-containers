@@ -26,3 +26,10 @@ spec:
            DB_URI=$(echo $DB_URI | sed "s|/\*|/|")
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'postgis')" -q)" = "t"
            test "$(psql "$DB_URI" -tAc "SELECT EXISTS (SELECT FROM pg_catalog.pg_extension WHERE extname = 'pgrouting' AND extversion = '${EXT_VERSION}')" -q)" = "t"
+           psql "$DB_URI" -c "DROP TABLE IF EXISTS pgrouting_edges CASCADE;"
+           psql "$DB_URI" -c "CREATE TABLE pgrouting_edges (id BIGSERIAL PRIMARY KEY, source BIGINT, target BIGINT, cost DOUBLE PRECISION, reverse_cost DOUBLE PRECISION);"
+           psql "$DB_URI" -c "INSERT INTO pgrouting_edges (source, target, cost, reverse_cost) VALUES (1, 2, 1, 1), (2, 3, 1, 1), (3, 4, 1, 1), (1, 4, 5, 5);"
+           # The cheapest route from node 1 to node 4 is 1 -> 2 -> 3 -> 4 (cost 3),
+           # not the direct edge 1 -> 4 (cost 5).
+           test "$(psql "$DB_URI" -tAc "SELECT string_agg(node::text, ',' ORDER BY path_seq) FROM pgr_dijkstra('SELECT id, source, target, cost, reverse_cost FROM pgrouting_edges', 1, 4)" -q)" = "1,2,3,4"
+           test "$(psql "$DB_URI" -tAc "SELECT max(agg_cost) FROM pgr_dijkstra('SELECT id, source, target, cost, reverse_cost FROM pgrouting_edges', 1, 4)" -q)" = "3"
