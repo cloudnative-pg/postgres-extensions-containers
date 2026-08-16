@@ -24,7 +24,12 @@ This image provides a convenient way to deploy and manage `wal2json` with
 
 Define the `wal2json` extension under the `postgresql.extensions` section of
 your `Cluster` resource. Logical decoding requires `wal_level` to be set to
-`logical`:
+`logical`. On PostgreSQL 18.6+, the server also restricts which libraries may
+be used as logical decoding output plugins via the `output_plugin_libraries`
+allow-list ([CVE-2026-6471](https://www.postgresql.org/support/security/CVE-2026-6471/));
+`wal2json` must be added to it explicitly, alongside the built-in defaults
+(`pgoutput`, `test_decoding`), since setting this parameter replaces
+PostgreSQL's default rather than extending it:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -41,6 +46,7 @@ spec:
   postgresql:
     parameters:
       wal_level: logical
+      output_plugin_libraries: "pgoutput, test_decoding, wal2json"
     extensions:
     - name: wal2json
       image:
@@ -52,6 +58,13 @@ spec:
 > Unlike most extensions, `wal2json` is a logical decoding output plugin and
 > does not require a `Database` resource with `CREATE EXTENSION`. The plugin
 > is referenced directly when a logical replication slot is created.
+
+> [!IMPORTANT]
+> `output_plugin_libraries` does not exist before PostgreSQL 18.6. Setting it
+> on an older 18.x image is **not** harmless: PostgreSQL treats the unknown
+> parameter as a configuration error and the instance **fails to start**
+> (`FATAL: configuration file "postgresql.conf" contains errors`). Only set
+> this parameter if your image is pinned to PostgreSQL 18.6 or later.
 
 ### 2. Create a logical replication slot using `wal2json`
 
