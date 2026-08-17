@@ -6,7 +6,9 @@ metadata = {
   image_name               = "wal2json"
   licenses                 = ["BSD-3-Clause"]
   shared_preload_libraries = []
-  postgresql_parameters    = {}
+  postgresql_parameters    = {
+    output_plugin_libraries = "pgoutput, test_decoding, wal2json"
+  }
   extension_control_path   = []
   dynamic_library_path     = []
   ld_library_path          = []
