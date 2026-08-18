@@ -4,21 +4,23 @@ SPDX-FileCopyrightText: Copyright © contributors to CloudNativePG, established 
 SPDX-License-Identifier: Apache-2.0
 -->
 
-[pgRouting](https://pgrouting.org/) extends the [PostGIS](https://postgis.net/)/PostgreSQL geospatial database to
-provide geospatial routing and other network analysis functionality.
+[pgRouting](https://pgrouting.org/) extends the
+[PostGIS](https://postgis.net/)/PostgreSQL geospatial database to provide
+geospatial routing and other network analysis functionality.
 
-This image provides a convenient way to deploy and manage `pgRouting` with [CloudNativePG](https://cloudnative-pg.io/).
+This image provides a convenient way to deploy and manage `pgRouting` with
+[CloudNativePG](https://cloudnative-pg.io/).
 
 > [!NOTE]
-> `pgRouting` depends on `PostGIS`. When deploying `pgRouting`, you must also include the `postgis` extension image in
-> your Cluster definition.
+> `pgRouting` depends on `PostGIS`. When deploying `pgRouting`, you must also
+> include the `postgis` extension image in your Cluster definition.
 
 ## Usage
 
 ### 1. Add the pgRouting and PostGIS extension images to your Cluster
 
-Define the `postgis` and `pgrouting` extensions under the `postgresql.extensions` section of your `Cluster` resource.
-For example:
+Define the `postgis` and `pgrouting` extensions under the
+`postgresql.extensions` section of your `Cluster` resource. For example:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -53,7 +55,8 @@ spec:
 
 ### 2. Enable the extension in a database
 
-You can install `pgrouting` in a specific database by creating or updating a `Database` resource:
+You can install `pgrouting` in a specific database by creating or updating a
+`Database` resource:
 
 ```yaml
 apiVersion: postgresql.cnpg.io/v1
