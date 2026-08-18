@@ -46,9 +46,9 @@ from a trusted, auditable repository
 | **[wal2json](wal2json)** | Logical decoding output plugin for PostgreSQL | [github.com/eulerto/wal2json](https://github.com/eulerto/wal2json) | @solidDoWant |
 
 > [!NOTE]
-> PostGIS is licensed under GPL-2.0, which is not on the CNCF Allowlist. It
-> predates this policy; the maintainers are filing a CNCF license exception
-> for it. PostGIS is not a precedent for accepting further non-Allowlisted
+> PostGIS and PgRouting are licensed under GPL-2.0, which is not on the CNCF Allowlist.
+> They predate this policy; the maintainers are filing a CNCF license exception
+> for them. They are not a precedent for accepting further non-Allowlisted
 > extensions.
 
 Extensions are provided only for the OS versions already built by the

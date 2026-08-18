@@ -45,6 +45,8 @@ repository:
         comment: GitHub packages for the pgvector extension image
       - uri: https://github.com/cloudnative-pg/postgres-extensions-containers/pkgs/container/postgis-extension
         comment: GitHub packages for the PostGIS extension image
+      - uri: https://github.com/cloudnative-pg/postgres-extensions-containers/pkgs/container/pgrouting
+        comment: GitHub packages for the pgrouting extension image
       - uri: https://github.com/cloudnative-pg/postgres-extensions-containers/pkgs/container/pgaudit
         comment: GitHub packages for the pgaudit extension image
       - uri: https://github.com/cloudnative-pg/postgres-extensions-containers/pkgs/container/pg-ivm
