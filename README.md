@@ -39,15 +39,16 @@ from a trusted, auditable repository
 | **[pgAudit](pgaudit)** | PostgreSQL audit extension | [github.com/pgaudit/pgaudit](https://github.com/pgaudit/pgaudit) | CNPG maintainers |
 | **[pg_crash](pg-crash)** | **Disruptive** fault injection and chaos engineering extension | [github.com/cybertec-postgresql/pg_crash](https://github.com/cybertec-postgresql/pg_crash) | CNPG maintainers |
 | **[pg_ivm](pg-ivm)** | Incremental View Maintenance for PostgreSQL | [github.com/sraoss/pg_ivm](https://github.com/sraoss/pg_ivm) | @shusaan |
+| **[pgRouting](pgrouting)** | Geospatial routing and network analysis for PostgreSQL/PostGIS | [pgrouting.org](https://pgrouting.org/) | CNPG maintainers |
 | **[pgvector](pgvector)** | Vector similarity search for PostgreSQL | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector) | CNPG maintainers |
 | **[PostGIS](postgis)** | Geospatial database extension for PostgreSQL | [postgis.net/](https://postgis.net/) | CNPG maintainers |
 | **[TimescaleDB Apache-2 Edition](timescaledb-oss)** | Time-series database for PostgreSQL (open source version) | [github.com/timescale/timescaledb/](https://github.com/timescale/timescaledb/) | @shusaan |
 | **[wal2json](wal2json)** | Logical decoding output plugin for PostgreSQL | [github.com/eulerto/wal2json](https://github.com/eulerto/wal2json) | @solidDoWant |
 
 > [!NOTE]
-> PostGIS is licensed under GPL-2.0, which is not on the CNCF Allowlist. It
-> predates this policy; the maintainers are filing a CNCF license exception
-> for it. PostGIS is not a precedent for accepting further non-Allowlisted
+> PostGIS and pgRouting are licensed under GPL-2.0, which is not on the CNCF Allowlist.
+> They predate this policy; the maintainers are filing a CNCF license exception
+> for them. They are not a precedent for accepting further non-Allowlisted
 > extensions.
 
 Extensions are provided only for the OS versions already built by the
