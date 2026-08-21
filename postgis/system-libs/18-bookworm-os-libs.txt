@@ -1,3 +1,4 @@
+libproj25_9.8.1-1.pgdg12+1_amd64.deb MD5Sum:f8da9be2155f5a922aabee8c3df0e36d
 libaec0_1.0.6-1+b1_amd64.deb MD5Sum:42611bf8032dad2d74c26d8dc084d322
 libaom3_3.6.0-1+deb12u2_amd64.deb MD5Sum:faae50e521d9a6f39d96953961a2b1f9
 libblas3_3.11.0-2_amd64.deb MD5Sum:b39744800600a80ae852251a16c03d09
@@ -34,7 +35,6 @@ libjpeg62-turbo_1%3a2.1.5-2_amd64.deb MD5Sum:c43c12e2144cad5b82c10d63dcc57ecd
 liblerc4_4.0.0+ds-2_amd64.deb MD5Sum:100ad75d6812ac853407f24c40076b02
 libwebp7_1.2.4-0.2+deb12u1_amd64.deb MD5Sum:19f6c9801f036b0615b9bf650c3ee1fa
 libtiff6_4.5.0-6+deb12u4_amd64.deb MD5Sum:f283ac0d100dc6a749470b06e3908a8a
-libproj25_9.1.1-1+b1_amd64.deb MD5Sum:c21fd1eb543b730bbb79ef8d0144b3d1
 libgeotiff5_1.7.1-2+b1_amd64.deb MD5Sum:31740ac80f3b6d2fe054ae61de84fb29
 libgif7_5.2.1-2.5+deb12u1_amd64.deb MD5Sum:63cf3dd05c8f28e6ab6559567b2e4ff0
 libtirpc-common_1.3.3+ds-1_all.deb MD5Sum:e49aca93814724ed80fa8932a1f7523b
@@ -60,8 +60,8 @@ libogdi4.1_4.1.0+ds-6_amd64.deb MD5Sum:bca573b90eb2ef8e6fa4c7ab66c77927
 libopenjp2-7_2.5.0-2+deb12u3_amd64.deb MD5Sum:bb7b72ae72a38620bed002a063d5dc64
 liblcms2-2_2.14-2+deb12u1_amd64.deb MD5Sum:4a701d009079104e62992b219cee5f6e
 libnspr4_2%3a4.35-1_amd64.deb MD5Sum:1f8e0fda3f2527e0051768abd071c2fe
-libnss3_2%3a3.87.1-1+deb12u3_amd64.deb
-libpoppler126_22.12.0-2+deb12u2_amd64.deb MD5Sum:23886480fe5be6b0c6fe09059318aba8
+libnss3_2%3a3.87.1-1+deb12u4_amd64.deb
+libpoppler126_22.12.0-2+deb12u3_amd64.deb
 libqhull-r8.0_2020.2-5_amd64.deb MD5Sum:781260a36cd4d65a86fc349f26b68338
 librttopo1_1.1.0-3_amd64.deb MD5Sum:901bfdc1a4a806d1c9be972018d65368
 libspatialite7_5.0.1-3_amd64.deb MD5Sum:fb95bb6433ea0a15f712372b1afcf3b5
