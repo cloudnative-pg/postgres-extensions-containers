@@ -32,12 +32,12 @@ vars:
   KIND_INSTALL_SCRIPT: >-
     set -e;
     ARCH=\$(uname -m);
-    case \$ARCH in
+    case \${ARCH} in
     x86_64) ARCH=amd64 ;;
     aarch64|arm64) ARCH=arm64 ;;
-    *) echo unsupported arch: \$ARCH >&2; exit 1 ;;
+    *) echo unsupported arch: \${ARCH} >&2; exit 1 ;;
     esac;
-    wget -qO /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/{{ .KIND_VERSION }}/kind-linux-\$ARCH;
+    wget -qO /usr/local/bin/kind https://github.com/kubernetes-sigs/kind/releases/download/{{ .KIND_VERSION }}/kind-linux-\${ARCH};
     chmod +x /usr/local/bin/kind
   KIND_TOOLBOX: >-
     dagger core container from --address={{ .ALPINE_IMAGE }}
