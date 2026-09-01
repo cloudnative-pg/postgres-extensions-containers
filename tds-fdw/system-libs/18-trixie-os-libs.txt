@@ -1,0 +1,2 @@
+freetds-common_1.3.17+ds-2+deb13u1_all.deb MD5Sum:36e923199e94040883f33ea90f07f558
+libsybdb5_1.3.17+ds-2+deb13u1_amd64.deb MD5Sum:6b3f1f9d9362f7f5e7f0a1eef8cdb4df
