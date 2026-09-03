@@ -41,7 +41,7 @@ vars:
     chmod +x /usr/local/bin/kind
   KIND_TOOLBOX: >-
     dagger core container from --address={{ .ALPINE_IMAGE }}
-    with-exec --args="apk","add","--no-cache","docker"
+    with-exec --args="apk","add","--no-cache","docker-cli"
     with-exec --args="sh","-c","{{ .KIND_INSTALL_SCRIPT }}"
     with-unix-socket --path=/var/run/docker.sock --source={{ .DOCKER_SOCKET }}
     with-env-variable --name=DOCKER_HOST --value=unix:///var/run/docker.sock
