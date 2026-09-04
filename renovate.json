@@ -27,17 +27,19 @@
       "datasourceTemplate": "deb"
     },
     {
-      "description": "updates the container image versions in the README.md files",
+      "description": "updates the normalized deb package versions in the README.md image references",
       "customType": "regex",
       "managerFilePatterns": [
         "**/README.md"
       ],
       "matchStrings": [
-        "#\\s*renovate:\\s*?(suite=(?<suite>.*?))?\\s*depName=(?<depName>.*?)?\\s*reference: ghcr.io\\/cloudnative-pg\\/[A-Za-z0-9_-]+:(?<currentValue>([0-9]\\.?)+)"
+        "#\\s*renovate:\\s*?(?:suite=(?<suite>[^\\s]+))?\\s*depName=(?<depName>[^\\s]+)\\s*reference:\\s+ghcr.io\\/cloudnative-pg\\/(?<imageName>[A-Za-z0-9_-]+):(?<currentValue>(?:[0-9]+-)?[0-9]+(?:\\.[0-9]+)*(?:~[A-Za-z0-9.]+)?)-(?<pgVersion>[0-9]+)-(?<distro>[A-Za-z0-9_-]+)"
       ],
       "registryUrlTemplate": "https://download.postgresql.org/pub/repos/apt?suite={{#if suite}}{{suite}}{{else}}stable{{/if}}&components=main&binaryArch=amd64",
       "datasourceTemplate": "deb",
-      "extractVersionTemplate": "^(?<version>[^-+]+)"
+      "currentValueTemplate": "{{{replace '-' ':' currentValue}}}",
+      "extractVersionTemplate": "^(?<version>[^~+\\-]+)",
+      "autoReplaceStringTemplate": "{{{replace (replace ':' '-' currentValue) (replace ':' '-' (replace '~.*' '' (replace '-.*' '' newValue))) replaceString}}}"
     },
     {
       "description": "updates the container image SQL version in the README.md files",
