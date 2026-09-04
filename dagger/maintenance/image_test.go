@@ -79,3 +79,52 @@ func TestParseImageCoordinates(t *testing.T) {
 		})
 	}
 }
+
+func TestExtractExtensionVersion(t *testing.T) {
+	tests := []struct {
+		name        string
+		packageName string
+		want        string
+		wantErr     bool
+	}{
+		{
+			name:        "standard Debian package version",
+			packageName: "1.7.0-1.pgdg12+1",
+			want:        "1.7.0",
+		},
+		{
+			name:        "Debian package version with epoch",
+			packageName: "1:8.4.8.6-1.pgdg12+1",
+			want:        "1-8.4.8.6",
+		},
+		{
+			name:        "package version without an extension version",
+			packageName: "1:pkg-1",
+			wantErr:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			versions := versionMap{
+				"bookworm": {
+					"18": {Package: tt.packageName},
+				},
+			}
+
+			got, err := extractExtensionVersion(versions, "bookworm", 18)
+			if tt.wantErr {
+				if err == nil {
+					t.Fatal("expected an error, got nil")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if got != tt.want {
+				t.Errorf("version: got %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
