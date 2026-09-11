@@ -35,7 +35,7 @@ spec:
     - name: pg_ivm
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pg-ivm
-        reference: ghcr.io/cloudnative-pg/pg-ivm:1.13-18-trixie
+        reference: ghcr.io/cloudnative-pg/pg-ivm:1.15-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -56,7 +56,7 @@ spec:
   extensions:
   - name: pg_ivm
     # renovate: suite=trixie-pgdg depName=postgresql-18-pg-ivm extractVersion=^(?<version>\d+\.\d+)
-    version: '1.13'
+    version: '1.15'
 ```
 
 ### 3. Verify installation
