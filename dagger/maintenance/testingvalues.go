@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"dagger/maintenance/internal/dagger"
 )
@@ -37,6 +38,8 @@ type testingExtensionInfo struct {
 	CreateExtension bool
 }
 
+const baseImageDependencyPrefix = "base-image:"
+
 type imageLocator struct {
 	ExtensionImage string
 	PgMajor        int
@@ -64,7 +67,19 @@ func generateTestingValuesExtensions(
 		CreateExtension: metadata.CreateExtension,
 	})
 
-	for _, dep := range metadata.RequiredExtensions {
+	for _, requiredDependency := range metadata.RequiredExtensions {
+		dep, isBaseImageDependency, err := parseRequiredDependency(requiredDependency)
+		if err != nil {
+			return nil, err
+		}
+		if isBaseImageDependency {
+			out = append(out, &testingExtensionInfo{
+				SQLName:         dep,
+				CreateExtension: true,
+			})
+			continue
+		}
+
 		depExists, err := source.Exists(ctx, dep)
 		if err != nil {
 			return nil, err
@@ -106,6 +121,19 @@ func generateTestingValuesExtensions(
 	}
 
 	return out, nil
+}
+
+func parseRequiredDependency(dependency string) (string, bool, error) {
+	if !strings.HasPrefix(dependency, baseImageDependencyPrefix) {
+		return dependency, false, nil
+	}
+
+	name := strings.TrimPrefix(dependency, baseImageDependencyPrefix)
+	if name == "" {
+		return "", false, fmt.Errorf("base-image dependency %q has no extension name", dependency)
+	}
+
+	return name, true, nil
 }
 
 func generateExtensionConfiguration(metadata *extensionMetadata, extensionImage string) (*ExtensionConfiguration, error) {
