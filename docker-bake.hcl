@@ -30,8 +30,8 @@ target "default" {
     "linux/arm64"
   ]
 
-  dockerfile = "${metadata.name}/Dockerfile"
-  context = "."
+  dockerfile = "Dockerfile"
+  context = "${metadata.name}/"
   name = getBuildName(metadata.name, build.distro, build.pgVersion)
 
   tags = [
