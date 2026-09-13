@@ -26,14 +26,6 @@ while read -r lib; do
 	done
 done < /tmp/libraries.out
 
-# Preserve aliases supplied as input, such as libmysqlclient.so.
-for input_file in "$@"; do
-	if [ -L "$input_file" ]; then
-		resolved=$(readlink -f "$input_file")
-		ln -sf "$(basename "$resolved")" "/system/$(basename "$input_file")"
-	fi
-done
-
 # Get licenses
 for lib in $(find /system -maxdepth 1 -type f -name '*.so*'); do
 	# Get the name of the pkg that installed the library
