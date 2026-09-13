@@ -7,6 +7,8 @@ ARG POSTGIS_MAJOR
 
 USER 0
 
+COPY scripts/stage_system_libs.sh /usr/local/bin/stage_system_libs.sh
+
 RUN set -eux && \
 	# Initial system libraries
 	ldconfig -p | awk '{print $NF}' | grep '^/' | sort | uniq > /tmp/base-image-libs.out && \
@@ -29,35 +31,9 @@ RUN sed -i "s/'\$libdir\//'/g" \
 	/usr/share/postgresql/${PG_MAJOR}/contrib/postgis*/*.sql
 
 # Gather PostGIS system libraries and their licenses
-RUN mkdir -p /system /licenses && \
-	# Get libraries
-	ldd /usr/lib/postgresql/${PG_MAJOR}/lib/address_standardizer*.so \
-		/usr/lib/postgresql/${PG_MAJOR}/lib/postgis*.so \
-		| awk '{print $3}' | grep '^/' | sort | uniq > /tmp/all-deps.out && \
-	# Extract all the libs that aren't already part of the base image
-	comm -13 /tmp/base-image-libs.out /tmp/all-deps.out > /tmp/libraries.out && \
-	while read -r lib; do \
-		resolved=$(readlink -f "$lib"); \
-		dir=$(dirname "$lib"); \
-		base=$(basename "$lib"); \
-		# Copy the real file
-		cp -a "$resolved" /system/; \
-		# Reconstruct all its symlinks
-		for file in "$dir"/"${base%.so*}.so"*; do \
-			[ -e "$file" ] || continue; \
-			# If it's a symlink and it resolves to the same real file, we reconstruct it
-			if [ -L "$file" ] && [ "$(readlink -f "$file")" = "$resolved" ]; then \
-				ln -sf "$(basename "$resolved")" "/system/$(basename "$file")"; \
-			fi; \
-		done; \
-	done < /tmp/libraries.out && \
-	# Get licenses
-	for lib in $(find /system -maxdepth 1 -type f -name '*.so*'); do \
-		# Get the name of the pkg that installed the library
-		pkg=$(dpkg -S "$(basename "$lib")" | grep -v "diversion by" | awk -F: '/:/{print $1; exit}'); \
-		[ -z "$pkg" ] && continue; \
-		mkdir -p "/licenses/$pkg" && cp -a "/usr/share/doc/$pkg/copyright" "/licenses/$pkg/copyright"; \
-	done
+RUN /usr/local/bin/stage_system_libs.sh \
+	/usr/lib/postgresql/${PG_MAJOR}/lib/address_standardizer*.so \
+	/usr/lib/postgresql/${PG_MAJOR}/lib/postgis*.so
 
 
 FROM scratch
