@@ -1,0 +1,57 @@
+# This workflow runs daily to clean up the `*-testing` images older than the
+# cut-off period specified in `snok/container-retention-policy`
+name: clean-testing-package
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions: {}
+
+jobs:
+  clean-ghcr:
+    name: delete old testing container images
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Fetch valid targets
+        id: get-targets
+        uses: dagger/dagger-for-github@27b130bf0f79a7f6fbbbe0fbca6760dc9bb40a77 # v8.4.1
+        env:
+          # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
+          DAGGER_VERSION: 0.21.8
+        with:
+          version: ${{ env.DAGGER_VERSION }}
+          verb: call
+          module: ./dagger/maintenance/
+          args: get-targets
+
+      - name: Compute image-names list
+        id: image-names
+        env:
+          VALID_TARGETS: ${{ steps.get-targets.outputs.output }}
+        run: |
+          image_names=()
+          for extension in $(jq -r '.[]' <<< "$VALID_TARGETS"); do
+            image_name=$(sed -n 's/^\s*image_name\s*=\s*"\(.*\)"$/\1/p' "${extension}/metadata.hcl")
+            image_names+=("${image_name}-testing")
+          done
+          printf -v joined '%s, ' "${image_names[@]}"
+          echo "value=${joined%, }" >> "$GITHUB_OUTPUT"
+
+      - name: Delete '-testing' operand images
+        uses: snok/container-retention-policy@d3bdcf5ce9b05f685154e4a16c39233b245e3d53 # v3.1.0
+        with:
+          image-names: ${{ steps.image-names.outputs.value }}
+          cut-off: 1w
+          keep-n-most-recent: 1
+          account: ${{ github.repository_owner }}
+          token: ${{ secrets.GITHUB_TOKEN }}
