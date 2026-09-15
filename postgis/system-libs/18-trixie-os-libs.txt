@@ -1,10 +1,10 @@
 libgeos3.14.1_3.14.1-2.pgdg13+1_amd64.deb MD5Sum:3c0161d4f18f24da299404f32188a903
 libgeos-c1t64_3.14.1-2.pgdg13+1_amd64.deb MD5Sum:f87ea7eaba21a1838ada9b919ff43b85
 libproj25_9.8.1-1.pgdg13+1_amd64.deb MD5Sum:b05785ac306398548ca253b583cea45e
-libexpat1_2.8.3-1~deb13u1_amd64.deb
+libexpat1_2.8.3-1~deb13u1_amd64.deb MD5Sum:d02bb9c0c137b7c2f5dcc8187afca31a
 libabsl20240722_20240722.0-4_amd64.deb MD5Sum:5407414647aace5e70314f16ff0aeb99
 libaec0_1.1.3-1+b1_amd64.deb MD5Sum:883972a56ece3b4d19cb9c220dbfeafc
-libaom3_3.12.1-1+deb13u1_amd64.deb
+libaom3_3.12.1-1+deb13u1_amd64.deb MD5Sum:af6c0449754a8c6a219ecd5f11c54f70
 libblas3_3.12.1-6_amd64.deb MD5Sum:009269addf607682ff0a0def1acfbafe
 libgfortran5_14.2.0-19_amd64.deb MD5Sum:4aa25c9245458f20151c1fa228d9209c
 liblapack3_3.12.1-6_amd64.deb MD5Sum:070d94c9032ed79d6d1a7a3b992ac78c
@@ -27,11 +27,11 @@ libngtcp2-16_1.11.0-1+deb13u1_amd64.deb MD5Sum:73c7dc70b69796219facc3d77a092303
 libngtcp2-crypto-gnutls8_1.11.0-1+deb13u1_amd64.deb MD5Sum:085da7b6511e5afdbbd1b33f59054431
 libpsl5t64_0.21.2-1.1+b1_amd64.deb MD5Sum:09aa06d971ce5ff6d02b452c0e1f15f9
 librtmp1_2.4+20151223.gitfa8646d.1-2+b5_amd64.deb MD5Sum:355aeaaf937d70dcc873a458f6244c6e
-libssh2-1t64_1.11.1-1+deb13u1_amd64.deb MD5Sum:ebbc03c2f321467d2e0ea0097c14f7fd
-libcurl3t64-gnutls_8.14.1-2+deb13u4_amd64.deb MD5Sum:9afc089158cea4cbc7cf26c951b600bf
+libssh2-1t64_1.11.1-1+deb13u2_amd64.deb MD5Sum:be952cf8c3cec0f7f280602d4ed8650a
+libcurl3t64-gnutls_8.14.1-2+deb13u5_amd64.deb MD5Sum:3165f060bf3e1a2ace14c9268ad33eb5
 libcfitsio10t64_4.6.2-2_amd64.deb MD5Sum:856f7ba809c5e389e30d711356d158d9
-libcurl4t64_8.14.1-2+deb13u4_amd64.deb MD5Sum:1ce441ba039d03e1f68100922946691b
-libde265-0_1.0.15-1+deb13u1_amd64.deb
+libcurl4t64_8.14.1-2+deb13u5_amd64.deb MD5Sum:f4eafe0d0739cc44a3a387a7ab09eba1
+libde265-0_1.0.15-1+deb13u2_amd64.deb MD5Sum:2d861cd6365705026b8b5035f9e6ca37
 libdeflate0_1.23-2_amd64.deb MD5Sum:7c4b5c0d85726d2d9475d48d3587c775
 libpng16-16t64_1.6.48-1+deb13u5_amd64.deb MD5Sum:0cd2789cb2b8855e0a0798c0c5ffb213
 libfreetype6_2.13.3+dfsg-1+deb13u1_amd64.deb MD5Sum:0994fdb58c0168b608cd1e285deda3d2
@@ -43,15 +43,15 @@ libjbig0_2.1-6.1+b2_amd64.deb MD5Sum:590134f899b900c7c9f8f87cf750ea63
 liblerc4_4.0.0+ds-5_amd64.deb MD5Sum:8c5933a75125eed15b466c16bf201bfa
 libsharpyuv0_1.5.0-0.1_amd64.deb MD5Sum:438d9fd296a1102dfa7f001641d8857a
 libwebp7_1.5.0-0.1_amd64.deb MD5Sum:bf682e1e438b4927c3807cad4ca6c1a9
-libtiff6_4.7.0-3+deb13u3_amd64.deb
+libtiff6_4.7.0-3+deb13u3_amd64.deb MD5Sum:22c223cc85d0ec5c73daf59cf1a9b928
 libgeotiff5_1.7.4-1_amd64.deb MD5Sum:cde344178cfd6dd8706a86ba587ec534
 libgif7_5.2.2-1+deb13u1_amd64.deb MD5Sum:b32a7f65ceaed3e3ce40abc20d3c3d2b
 libsz2_1.1.3-1+b1_amd64.deb MD5Sum:1d27983f2f9ef5efd8b47652603560cd
 libhdf4-0-alt_4.3.0-1+b1_amd64.deb MD5Sum:d55ae40aad48594e1b02fd87f3c6c061
 libhdf5-310_1.14.5+repack-3_amd64.deb MD5Sum:b96e3a5656dcd4452dee459ba4ac10e1
-libheif-plugin-dav1d_1.19.8-1+deb13u1_amd64.deb
-libheif-plugin-libde265_1.19.8-1+deb13u1_amd64.deb
-libheif1_1.19.8-1+deb13u1_amd64.deb
+libheif-plugin-dav1d_1.19.8-1+deb13u1_amd64.deb MD5Sum:a091375d44ff645683a2f393a89ce5c5
+libheif-plugin-libde265_1.19.8-1+deb13u1_amd64.deb MD5Sum:34fe04420a727df88369343f4c5d1034
+libheif1_1.19.8-1+deb13u1_amd64.deb MD5Sum:4ba44e3e72ea1510ec4c37ec18c2115e
 libjson-c5_0.18+ds-1_amd64.deb MD5Sum:2afaa0abf1f11e7f2d5aa1e789148632
 liburiparser1_0.9.8+dfsg-2_amd64.deb MD5Sum:235a70c2df22baa76a41c55799f073c6
 libkmlbase1t64_1.3.0-12+b2_amd64.deb MD5Sum:d900c2d72fed6fb0b4cb10c1f61a1b54
@@ -61,8 +61,8 @@ libmariadb3_1%3a11.8.6-0+deb13u1_amd64.deb MD5Sum:6b72b2c07af03c7125a2d95c73ad83
 libhdf5-hl-310_1.14.5+repack-3_amd64.deb MD5Sum:c8b307b772cb08cea54e85056be5cd09
 libnetcdf22_1%3a4.9.3-1_amd64.deb MD5Sum:9b823d6203627dde68efd86176aa1153
 libltdl7_2.5.4-4_amd64.deb MD5Sum:74f1031b3bb67ba2d0395689fb05d7b0
-libodbc2_2.3.12-2_amd64.deb MD5Sum:39e2300a1ab5d5a16de5c22bffabbefd
-libodbcinst2_2.3.12-2_amd64.deb MD5Sum:8d70f2bdc4494da9678d6d5b14cef135
+libodbc2_2.3.12-2+deb13u1_amd64.deb MD5Sum:74c001194b283a42dadcc5771cc2a6bd
+libodbcinst2_2.3.12-2+deb13u1_amd64.deb MD5Sum:fdb10a0236e5d35eb9a996ab010db870
 libtirpc-common_1.3.6+ds-1_all.deb MD5Sum:d536fb98a02d3d13a7b1a29e3a038131
 libtirpc3t64_1.3.6+ds-1_amd64.deb MD5Sum:a53fcff1f56e64fb19db15eb07756ddd
 libogdi4.1_4.1.1+ds-5_amd64.deb MD5Sum:6c910ba088247ac4bb86c1603f9c5534
@@ -71,7 +71,7 @@ libgpgme11t64_1.24.2-3_amd64.deb MD5Sum:0e26d3e34af7581bda9fd6086fd29cc7
 libgpgmepp6t64_1.24.2-3_amd64.deb MD5Sum:9b6067de043f9224848364739828216b
 liblcms2-2_2.16-2+deb13u2_amd64.deb MD5Sum:263113687b91aafa4e934fa16d91291b
 libnspr4_2%3a4.36-1_amd64.deb MD5Sum:dc825d7a7868119890f38608de1b5e21
-libnss3_2%3a3.110-1+deb13u4_amd64.deb
+libnss3_2%3a3.110-1+deb13u4_amd64.deb MD5Sum:08e74796982fc84bcee7965b8000ff00
 libpoppler147_25.03.0-5+deb13u4_amd64.deb MD5Sum:85a124f7fd20122d5eb5f2a30a75a051
 libqhull-r8.0_2020.2-6+b2_amd64.deb MD5Sum:3b0b21663513226a208f039abea3ad47
 librttopo1_1.1.0-4_amd64.deb MD5Sum:b522568252b7ba63b0c4f87300400be9
