@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"dagger/maintenance/internal/dagger"
 
@@ -180,11 +181,12 @@ func extractExtensionVersion(versions versionMap, distribution string, pgMajor i
 			distribution, pgMajor)
 	}
 
-	re := regexp.MustCompile(`^(\d+(?:\.\d+)+)`)
+	// Keep this in sync with getExtensionVersion in docker-bake.hcl.
+	re := regexp.MustCompile(`^(\d+(?::\d+)?(?:\.\d+)+)`)
 	matches := re.FindStringSubmatch(extVersion.Package)
 	if len(matches) < 2 {
 		return "", fmt.Errorf("cannot extract extension version from %q", extVersion.Package)
 	}
 
-	return matches[1], nil
+	return strings.ReplaceAll(matches[1], ":", "-"), nil
 }
