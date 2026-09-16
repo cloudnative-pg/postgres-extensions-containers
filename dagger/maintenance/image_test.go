@@ -98,8 +98,13 @@ func TestExtractExtensionVersion(t *testing.T) {
 			want:        "1-8.4.8.6",
 		},
 		{
+			name:        "Debian package version with epoch and no minor version",
+			packageName: "1:8-1.pgdg12+1",
+			want:        "1-8",
+		},
+		{
 			name:        "package version without an extension version",
-			packageName: "1:pkg-1",
+			packageName: "nover-1.pgdg12+1",
 			wantErr:     true,
 		},
 	}
