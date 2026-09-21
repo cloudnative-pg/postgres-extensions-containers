@@ -217,7 +217,7 @@ tasks:
     run: once
     vars:
       # renovate: datasource=docker depName=registry versioning=docker
-      REGISTRY_VERSION: 3.1.1@sha256:1be55279f18a2fe1a74edf2664cac61c1bea305b7b4642dab412e7affdcb3e33
+      REGISTRY_VERSION: 3.1.1@sha256:fd374bae807c225661adfe2c0c1f9970a0b8fab1761fd7dfb91e0fd9a8748f9b
     cmds:
       - >
         docker run -d --name {{ .REGISTRY_NAME }} --rm -p {{ .REGISTRY_HOST_PORT }}:{{ .REGISTRY_INTERNAL_PORT }}
