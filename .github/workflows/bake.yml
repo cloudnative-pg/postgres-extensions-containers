@@ -19,7 +19,7 @@ jobs:
   # Gather extensions that have been modified
   change-triage:
     name: Check changed files
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       matrix: ${{ steps.get-matrix.outputs.matrix}}
     steps:
@@ -119,7 +119,7 @@ jobs:
   Catalogs:
     name: Update Catalogs
     needs: Bake
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     if: github.ref == 'refs/heads/main'
