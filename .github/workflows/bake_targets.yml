@@ -81,7 +81,7 @@ jobs:
 
   security:
     name: Security checks
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       packages: read
@@ -109,7 +109,7 @@ jobs:
 
   generate-smoke-test-matrix:
     name: Generate matrix for smoke tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions: {}
     outputs:
       versions: ${{ steps.versions.outputs.versions }}
@@ -128,7 +128,7 @@ jobs:
 
   smoke-test:
     name: Smoke test
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       packages: read
@@ -181,7 +181,7 @@ jobs:
   copytoproduction:
     name: Copy images to production
     if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - testbuild
       - security
