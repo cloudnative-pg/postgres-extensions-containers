@@ -14,17 +14,39 @@ USER 0
 # Instructions:
 # 1. Remove all TODO comment blocks after completing the customization.
 # 2. Uncomment and customize the COPY/RUN commands below.
-# 3. If your extension requires additional system libraries, ensure they are
-#    copied to /lib.
+# 3. If your extension requires additional system libraries, enable BOTH helpers
+#    below in the same builder stage: capture_base_image_libs.sh BEFORE installing
+#    extension packages, then stage_system_libs.sh AFTER installing them.
+#    Also enable the system library and license COPY commands in the final stage
+#    and set ld_library_path = ["system"] in metadata.hcl.
+#    See postgis/Dockerfile for a complete example.
+
+# Capture base image libraries (required when using stage_system_libs.sh below).
+# TODO: Uncomment BOTH COPY/RUN commands here and BOTH staging commands below.
+# Run this helper BEFORE installing extension packages.
+# COPY scripts/capture_base_image_libs.sh /usr/local/bin/capture_base_image_libs.sh
+# RUN /usr/local/bin/capture_base_image_libs.sh
 
 # Install extension via `apt-get`
 # RUN apt-get update && apt-get install -y --no-install-recommends \
 #       "{{ $packageName }}=${EXT_VERSION}"
 
+# Gather system libraries and their licenses
+# TODO: Uncomment BOTH commands below when enabling the capture helper above.
+# Run AFTER installing extension packages. This requires the baseline captured
+# by capture_base_image_libs.sh in this same builder stage.
+# Builds use the repository root as their context. Customize the shared-library
+# glob to include all of your extension's modules.
+# COPY scripts/stage_system_libs.sh /usr/local/bin/stage_system_libs.sh
+# RUN /usr/local/bin/stage_system_libs.sh /usr/lib/postgresql/${PG_MAJOR}/lib/{{ .Name }}*.so
+
 FROM scratch
 ARG PG_MAJOR
 
 # Licenses
+# Optional: include package licenses staged by the system library helper.
+# COPY --from=builder /licenses /licenses/
+
 # TODO: Uncomment and customize the COPY command below
 # Including license files is essential for legal compliance and transparency.
 # It ensures proper attribution to original authors, fulfills open source license
@@ -46,5 +68,10 @@ ARG PG_MAJOR
 # seamlessly find and manage the current extension.
 # For more details, see: https://cloudnative-pg.io/docs/current/imagevolume_extensions#how-it-works
 # COPY --from=builder /usr/share/postgresql/${PG_MAJOR}/extension/{{ .Name }}* /share/extension/
+
+# System libs
+# TODO: Uncomment if using the system library helper above.
+# Set ld_library_path = ["system"] in metadata.hcl so these libraries can be found.
+# COPY --from=builder /system /system/
 
 USER 65532:65532
