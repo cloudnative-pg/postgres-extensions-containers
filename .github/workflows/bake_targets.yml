@@ -114,14 +114,24 @@ jobs:
     outputs:
       versions: ${{ steps.versions.outputs.versions }}
     steps:
-      # main plus the latest and previous supported minor release branches.
+      # main plus the latest released patch of the latest and previous supported minors.
       - name: Compute CNPG release matrix
         id: versions
         env:
-          # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+)\.\d+$
-          LATEST_RELEASE: "1.30"
+          # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+\.\d+)$
+          LATEST_RELEASE: "1.30.1"
         run: |
-          PREVIOUS_RELEASE=$(awk -F. '{print $1"."$2-1}' <<< "$LATEST_RELEASE")
+          LATEST_MINOR="${LATEST_RELEASE%.*}"
+          PREVIOUS_MINOR=$(awk -F. '{print $1"."$2-1}' <<< "$LATEST_MINOR")
+          # Highest stable patch release of the previous minor
+          PREVIOUS_RELEASE=$(git ls-remote --tags --refs https://github.com/cloudnative-pg/cloudnative-pg "refs/tags/v${PREVIOUS_MINOR}.*" \
+            | sed 's|.*refs/tags/v||' \
+            | grep -E "^${PREVIOUS_MINOR//./\\.}\.[0-9]+$" \
+            | sort -V | tail -n1)
+          if [ -z "$PREVIOUS_RELEASE" ]; then
+            echo "No release found for CNPG ${PREVIOUS_MINOR}" >&2
+            exit 1
+          fi
           versions=$(jq -cn --arg latest "$LATEST_RELEASE" --arg previous "$PREVIOUS_RELEASE" \
             '["main", $previous, $latest]')
           echo "versions=$versions" >> "$GITHUB_OUTPUT"
