@@ -31,6 +31,8 @@ while read -r lib; do
 		[ -e "$file" ] || continue
 		# If it's a symlink and it resolves to the same real file, we reconstruct it
 		if [ -L "$file" ] && [ "$(readlink -f "$file")" = "$resolved" ]; then
+			# A same-name alias would replace the copied library with a self-link.
+			[ "$(basename "$file")" = "$(basename "$resolved")" ] && continue
 			ln -sf "$(basename "$resolved")" "/system/$(basename "$file")"
 		fi
 	done
@@ -41,6 +43,7 @@ done < /tmp/libraries.out
 for input_file in "$@"; do
 	if [ -L "$input_file" ]; then
 		resolved=$(readlink -f "$input_file")
+		[ "$(basename "$input_file")" = "$(basename "$resolved")" ] && continue
 		ln -sf "$(basename "$resolved")" "/system/$(basename "$input_file")"
 	fi
 done
