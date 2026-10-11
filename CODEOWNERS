@@ -10,3 +10,4 @@
 /timescaledb-oss/ @cloudnative-pg/postgres-extensions-containers-owners @shusaan
 /wal2json/ @cloudnative-pg/postgres-extensions-containers-owners @solidDoWant
 /pg-ivm/ @cloudnative-pg/postgres-extensions-containers-owners @shusaan
+/postgresql-anonymizer/ @cloudnative-pg/postgres-extensions-containers-owners @pchovelon @daamien
