@@ -1,7 +1,7 @@
 libgeos3.14.1_3.14.1-2.pgdg13+1_amd64.deb MD5Sum:3c0161d4f18f24da299404f32188a903
 libgeos-c1t64_3.14.1-2.pgdg13+1_amd64.deb MD5Sum:f87ea7eaba21a1838ada9b919ff43b85
 libproj25_9.8.1-1.pgdg13+1_amd64.deb MD5Sum:b05785ac306398548ca253b583cea45e
-libexpat1_2.8.3-1~deb13u1_amd64.deb MD5Sum:d02bb9c0c137b7c2f5dcc8187afca31a
+libexpat1_2.9.0-1~deb13u1_amd64.deb
 libabsl20240722_20240722.0-4_amd64.deb MD5Sum:5407414647aace5e70314f16ff0aeb99
 libaec0_1.1.3-1+b1_amd64.deb MD5Sum:883972a56ece3b4d19cb9c220dbfeafc
 libaom3_3.12.1-1+deb13u1_amd64.deb MD5Sum:af6c0449754a8c6a219ecd5f11c54f70
@@ -28,9 +28,9 @@ libngtcp2-crypto-gnutls8_1.11.0-1+deb13u1_amd64.deb MD5Sum:085da7b6511e5afdbbd1b
 libpsl5t64_0.21.2-1.1+b1_amd64.deb MD5Sum:09aa06d971ce5ff6d02b452c0e1f15f9
 librtmp1_2.4+20151223.gitfa8646d.1-2+b5_amd64.deb MD5Sum:355aeaaf937d70dcc873a458f6244c6e
 libssh2-1t64_1.11.1-1+deb13u2_amd64.deb MD5Sum:be952cf8c3cec0f7f280602d4ed8650a
-libcurl3t64-gnutls_8.14.1-2+deb13u5_amd64.deb MD5Sum:3165f060bf3e1a2ace14c9268ad33eb5
+libcurl3t64-gnutls_8.14.1-2+deb13u7_amd64.deb
 libcfitsio10t64_4.6.2-2_amd64.deb MD5Sum:856f7ba809c5e389e30d711356d158d9
-libcurl4t64_8.14.1-2+deb13u5_amd64.deb MD5Sum:f4eafe0d0739cc44a3a387a7ab09eba1
+libcurl4t64_8.14.1-2+deb13u7_amd64.deb
 libde265-0_1.0.15-1+deb13u2_amd64.deb MD5Sum:2d861cd6365705026b8b5035f9e6ca37
 libdeflate0_1.23-2_amd64.deb MD5Sum:7c4b5c0d85726d2d9475d48d3587c775
 libpng16-16t64_1.6.48-1+deb13u6_amd64.deb
