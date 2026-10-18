@@ -25,6 +25,8 @@ jobs:
     outputs:
       metadata: ${{ steps.build.outputs.metadata }}
       images: ${{ steps.images.outputs.images }}
+      provenance_matrix: ${{ steps.images.outputs.provenance_matrix }}
+      production_provenance_matrix: ${{ steps.images.outputs.production_provenance_matrix }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -46,6 +48,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
 
+      - name: Expose builder stage to SBOM generator
+        env:
+          EXTENSION: ${{ inputs.extension_name }}
+        run: |
+          # Expose ownership evidence: line 2 must precede FROM and a stage must be named builder; intentionally let the build fail fast instead of validating format here.
+          sed -i '2i ARG BUILDKIT_SBOM_SCAN_STAGE=builder' "$EXTENSION/Dockerfile"
+
       - name: Build and push
         uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7
         id: build
@@ -54,7 +63,12 @@ jobs:
           environment: testing
           registry: ghcr.io/${{ github.repository_owner }}
           revision: ${{ github.sha }}
+          # Replace the placeholder only after the upstream production image is published and verified.
+          # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/cnpg-sbom-generator
+          sbom_generator: ghcr.io/cloudnative-pg/cnpg-sbom-generator:latest@sha256:REPLACE_WITH_PRODUCTION_DIGEST
         with:
+          # Use the checkout so Bake sees the injected Dockerfile declaration.
+          source: .
           files: ./docker-bake.hcl,./${{ inputs.extension_name }}/metadata.hcl
           push: true
 
@@ -65,6 +79,13 @@ jobs:
         id: images
         run: |
           echo "images=$(jq -c '[ .[]."image.name" | split(",")[] | select(test("[0-9]{12}")) ]' <<< "$BUILD_METADATA")" >>  "$GITHUB_OUTPUT"
+          # Attest each final multi-platform index, once per repository/digest.
+          matrix=$(jq -c '[ .[] | {
+            image: (."image.name" | split(",")[0] | split(":")[0]),
+            digest: ."containerimage.digest"
+          } ] | unique_by([.image, .digest])' <<< "$BUILD_METADATA")
+          echo "provenance_matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "production_provenance_matrix=$(jq -c 'map(.image |= sub("-testing$"; ""))' <<< "$matrix")" >> "$GITHUB_OUTPUT"
 
       # Even if we're testing we sign the images, so we can push them to production later if that's required
       - name: Install cosign
@@ -78,6 +99,26 @@ jobs:
         run: |
           jq -r '.[] | (."image.name" | sub(",.*";"")) + "@" + ."containerimage.digest"' <<< "$BUILD_METADATA" | \
             xargs cosign sign --yes
+
+  provenance:
+    name: Provenance for testing images
+    needs: testbuild
+    permissions:
+      actions: read
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.testbuild.outputs.provenance_matrix) }}
+    # The SLSA generator requires a full version tag rather than a SHA pin.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
+    with:
+      image: ${{ matrix.image }}
+      digest: ${{ matrix.digest }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   security:
     name: Security checks
@@ -170,7 +211,7 @@ jobs:
         env:
           CNPG_RELEASE: ${{ matrix.cnpg }}
         run: |
-          task e2e:setup-env CNPG_RELEASE=$CNPG_RELEASE
+          task e2e:setup-env CNPG_RELEASE="$CNPG_RELEASE"
 
       - name: Generate Chainsaw testing values
         env:
@@ -196,6 +237,7 @@ jobs:
       - testbuild
       - security
       - smoke-test
+      - provenance
     permissions:
       contents: read
       packages: write
@@ -208,3 +250,26 @@ jobs:
           bake_build_metadata: "${{ needs.testbuild.outputs.metadata }}"
           registry_user: ${{ github.actor }}
           registry_token: ${{ secrets.GITHUB_TOKEN }}
+
+  production-provenance:
+    name: Provenance for production images
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - testbuild
+      - copytoproduction
+    permissions:
+      actions: read
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.testbuild.outputs.production_provenance_matrix) }}
+    # Generate in the destination repository: image copying does not copy this attestation.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
+    with:
+      image: ${{ matrix.image }}
+      digest: ${{ matrix.digest }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}

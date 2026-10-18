@@ -31,7 +31,7 @@ Replace `linux/amd64` with `linux/arm64` and `postgis-amd64.spdx.json` with
 `postgis-arm64.spdx.json` to inspect the ARM image. Extraction alone does not
 verify the publisher. See [CloudNativePG's signature and attestation guidance](https://cloudnative-pg.io/docs/1.30/security/#image-signatures).
 
-### Inspect build provenance
+### Inspect and verify build provenance
 
 BuildKit records build inputs and parameters alongside the SBOM:
 
@@ -39,6 +39,22 @@ BuildKit records build inputs and parameters alongside the SBOM:
 docker buildx imagetools inspect "$IMAGE" \
   --format '{{ json (index .Provenance "linux/amd64").SLSA }}'
 ```
+
+For extension images rebuilt after activation, separately signed SLSA provenance
+identifies the source repository, commit, and workflow run. Verify that the image
+was built from this project's `main` branch:
+
+```bash
+slsa-verifier verify-image "$IMAGE" \
+  --source-uri github.com/cloudnative-pg/postgres-extensions-containers \
+  --source-branch main
+```
+
+An image built from another branch fails verification with a message such as
+`expected branch 'main', got 'work/sbom-validation'`. The command exits nonzero;
+it does not silently accept a different branch. Testing and production images
+both receive SLSA provenance. Mirrors must preserve its separate signed
+attestation as well as the image index.
 
 ### Report vulnerabilities and licenses
 
@@ -150,20 +166,21 @@ Files move when copied into the scratch image: for example,
 The generator matches shipped files to their original builder paths and checksums
 to recover package ownership.
 
-### Activation sequence
+### Extension workflow activation
 
-This contribution creates and publishes the generator. A separate activation PR
-must wait until the production image is published from CloudNativePG's `main`
-branch, signed, checked and publicly available in GHCR. That PR will pin the
-published digest in extension CI and retain the downstream workflow's injection
-of `ARG BUILDKIT_SBOM_SCAN_STAGE=builder` before the Dockerfile's first `FROM`.
-It will also select the local checkout with `source: .` so Bake sees the injection.
-The extension Dockerfiles and scaffold need no permanent scanner declaration.
+The extension workflow injects `ARG BUILDKIT_SBOM_SCAN_STAGE=builder` before the
+Dockerfile's first `FROM` and selects `source: .` so Bake sees the modified checkout.
+It pins the production generator image by digest. Extension Dockerfiles and the
+scaffold do not need permanent scanner declarations.
 
-The empty `sbom_generator` Bake variable retains the default scanner until
-activation. For a local custom-generator build, the special stage argument must
-also be declared in the Dockerfile; supplying only a Bake build argument does
-not expose builder evidence.
+This branch is blocked until the first checked, signed production generator image
+is published from CloudNativePG's `main` and is publicly available in GHCR.
+Replace `REPLACE_WITH_PRODUCTION_DIGEST` in `bake_targets.yml` with that verified
+multi-platform digest before merging. A manual `:test` image is not a substitute.
+
+Ordinary local builds retain the default scanner when `sbom_generator` is empty.
+Local custom-generator builds also need the special stage argument declared in
+the Dockerfile; passing only a build argument does not expose builder evidence.
 
 ### Add extension-specific inventory
 
