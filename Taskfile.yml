@@ -24,8 +24,8 @@ vars:
   KIND_NODE_VERSION: v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5
   K8S_VERSION: '{{ regexReplaceAll "^v([0-9.]+).*" .KIND_NODE_VERSION "$1" }}'
   KIND_CLUSTER_NAME: pg-extensions-{{ .K8S_VERSION }}
-  # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+)\.\d+$
-  CNPG_RELEASE_DEFAULT: '1.30'
+  # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+\.\d+)$
+  CNPG_RELEASE_DEFAULT: '1.30.1'
 
   DOCKER_SOCKET:
     sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
@@ -305,13 +305,17 @@ tasks:
     vars:
       CNPG_RELEASE: '{{ .CNPG_RELEASE | default .CNPG_RELEASE_DEFAULT }}'
       # renovate: datasource=docker depName=alpine/kubectl versioning=docker
-      KUBECTL_VERSION: 1.37.1@sha256:7b4cc9a9ce0d064cedeb85550266c11f2b32f010ca299525518646261e4d955e
+      KUBECTL_VERSION: 1.37.1@sha256:b568e8beb6a79aee269c142343078a278b85e7710f1c0e7d8d6b21d1eb566a48
       CNPG_MANIFEST:
         sh: |
-          if [ "{{ .CNPG_RELEASE }}" = "main" ]; then
+          release="{{ .CNPG_RELEASE }}"
+          if [ "${release}" = "main" ]; then
             echo "https://raw.githubusercontent.com/cloudnative-pg/artifacts/main/manifests/operator-manifest.yaml"
+          elif echo "${release}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-${release%.*}/releases/cnpg-${release}.yaml"
           else
-            echo "https://raw.githubusercontent.com/cloudnative-pg/artifacts/release-{{ .CNPG_RELEASE }}/manifests/operator-manifest.yaml"
+            echo "CNPG_RELEASE must be 'main' or a full version like 1.30.1, got '${release}'" >&2
+            exit 1
           fi
     env:
       _EXPERIMENTAL_DAGGER_RUNNER_HOST: container://{{ .DAGGER_ENGINE_NAME }}

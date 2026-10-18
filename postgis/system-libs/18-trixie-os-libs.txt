@@ -33,7 +33,7 @@ libcfitsio10t64_4.6.2-2_amd64.deb MD5Sum:856f7ba809c5e389e30d711356d158d9
 libcurl4t64_8.14.1-2+deb13u5_amd64.deb MD5Sum:f4eafe0d0739cc44a3a387a7ab09eba1
 libde265-0_1.0.15-1+deb13u2_amd64.deb MD5Sum:2d861cd6365705026b8b5035f9e6ca37
 libdeflate0_1.23-2_amd64.deb MD5Sum:7c4b5c0d85726d2d9475d48d3587c775
-libpng16-16t64_1.6.48-1+deb13u5_amd64.deb MD5Sum:0cd2789cb2b8855e0a0798c0c5ffb213
+libpng16-16t64_1.6.48-1+deb13u6_amd64.deb
 libfreetype6_2.13.3+dfsg-1+deb13u1_amd64.deb MD5Sum:0994fdb58c0168b608cd1e285deda3d2
 libfontconfig1_2.15.0-2.3_amd64.deb MD5Sum:51964bf406139551c59047e6cbdd4940
 libminizip1t64_1%3a1.3.dfsg+really1.3.1-1+b1_amd64.deb MD5Sum:4fd908eee3d3daac83c9746532996757
@@ -49,9 +49,9 @@ libgif7_5.2.2-1+deb13u1_amd64.deb MD5Sum:b32a7f65ceaed3e3ce40abc20d3c3d2b
 libsz2_1.1.3-1+b1_amd64.deb MD5Sum:1d27983f2f9ef5efd8b47652603560cd
 libhdf4-0-alt_4.3.0-1+b1_amd64.deb MD5Sum:d55ae40aad48594e1b02fd87f3c6c061
 libhdf5-310_1.14.5+repack-3_amd64.deb MD5Sum:b96e3a5656dcd4452dee459ba4ac10e1
-libheif-plugin-dav1d_1.19.8-1+deb13u1_amd64.deb MD5Sum:a091375d44ff645683a2f393a89ce5c5
-libheif-plugin-libde265_1.19.8-1+deb13u1_amd64.deb MD5Sum:34fe04420a727df88369343f4c5d1034
-libheif1_1.19.8-1+deb13u1_amd64.deb MD5Sum:4ba44e3e72ea1510ec4c37ec18c2115e
+libheif-plugin-libde265_1.23.4-1~deb13u1_amd64.deb
+libheif-plugin-dav1d_1.23.4-1~deb13u1_amd64.deb
+libheif1_1.23.4-1~deb13u1_amd64.deb
 libjson-c5_0.18+ds-1_amd64.deb MD5Sum:2afaa0abf1f11e7f2d5aa1e789148632
 liburiparser1_0.9.8+dfsg-2_amd64.deb MD5Sum:235a70c2df22baa76a41c55799f073c6
 libkmlbase1t64_1.3.0-12+b2_amd64.deb MD5Sum:d900c2d72fed6fb0b4cb10c1f61a1b54
