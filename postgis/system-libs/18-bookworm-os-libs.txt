@@ -50,7 +50,7 @@ liburiparser1_0.9.7+dfsg-2_amd64.deb MD5Sum:7cf05c028b38acd81c591e4f6a112f49
 libkmlbase1_1.3.0-10_amd64.deb MD5Sum:ade5c0c1c3f065c907046e1bb2a25bab
 libkmldom1_1.3.0-10_amd64.deb MD5Sum:0a4c395f2daf8f76507e0837a0660984
 libkmlengine1_1.3.0-10_amd64.deb MD5Sum:9ae0159850a4bdb2cdaecf4d93b2f295
-libmariadb3_1%3a10.11.18-0+deb12u1_amd64.deb MD5Sum:cf60586fa26c69e7d7f9cc3fac6576a4
+libmariadb3_1%3a10.11.19-0+deb12u1_amd64.deb
 libhdf5-hl-100_1.10.8+repack1-1_amd64.deb MD5Sum:16fd3bf27d8e53d8f65f5fe2b4585dbb
 libnetcdf19_1%3a4.9.0-3+b1_amd64.deb MD5Sum:e73d40a2b2af5352e4451c844229c121
 libltdl7_2.4.7-7~deb12u1_amd64.deb MD5Sum:a02756178c3360b03d56768e366357a4
