@@ -3,6 +3,10 @@ name: Build, test and publish extensions
 on:
   push:
     paths-ignore:
+      # Documentation does not require extension builds.
+      - 'examples/**'
+      - '*.md'
+      - 'LICENSE'
       - '.github/workflows/sbom-generator.yml'
       - 'sbom-generator/**'
   workflow_dispatch:

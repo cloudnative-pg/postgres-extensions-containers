@@ -1,11 +1,12 @@
 # SBOM reports - PostGIS 3.6.4, PostgreSQL 18, Bookworm, linux/amd64
-# Captured 2026-10-18 using Grype 0.120.1 and an unreleased Grant build.
+# Captured 2026-10-20 using Grype 0.120.1 and an unreleased Grant build.
 #
 # Captured from a CloudNativePG PostGIS validation build using this generator.
 # Source: https://github.com/cloudnative-pg/postgres-extensions-containers
-# Source revision: 6d15f448e0de9ae4d04deb9734e0e04c44931cad
-# Generator: ghcr.io/cnpg-extensions/cnpg-sbom-generator:latest@sha256:055375d36ca37696266938adc5af62663cf1071ff11a293ad7bce21a0af4d1f7
-# Grype database built 2026-10-18T06:27:17Z. Findings are not proof of exploitability.
+# Source revision: 0f85324 (with the local SBOM refresh under review).
+# Generator: local build from this branch, Python 3.15 and Syft 1.55.0.
+# Local generator image: sha256:164dd6b477c051be81d561b8fde630aa62429773800e3044efcb082060663a79
+# Grype database built 2026-10-19T06:39:15Z. Findings are not proof of exploitability.
 #
 # All report commands below were captured through script/stty/ansi2txt.
 # With command set to the command shown after each "$", the exact capture was:
@@ -18,6 +19,7 @@
 # git clone https://github.com/anchore/grant.git grant-source
 # git -C grant-source checkout --detach 63b3f99949ef9f4a9962b7a9bc74d44f7ecd483d
 # go -C grant-source build -o ../grant ./cmd/grant
+
 
 $ grype sbom:postgis.spdx.json | grep -E 'NAME|High|Critical' | grep -v "won't fix"
 
@@ -38,7 +40,7 @@ libheif1                         1.15.1-1+deb12u1                     deb   CVE-
 libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-84447   High        0.5% (42nd)  0.4    
 libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-47247   High        0.5% (39th)  0.4    
 libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-84444   High        0.5% (39th)  0.4    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-41071   High        0.4% (37th)  0.3    
+libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-41071   High        0.4% (36th)  0.3    
 libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-84446   High        0.5% (38th)  0.3    
 libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-32741   High        0.4% (37th)  0.3    
 libtiff6                         4.5.0-6+deb12u4                      deb   CVE-2026-12912   High        0.4% (36th)  0.3    
@@ -49,40 +51,36 @@ libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-
 libnetcdf19                      1:4.9.0-3+b1                         deb   CVE-2026-86095   High        0.2% (7th)   0.1    
 libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-47178   High        0.2% (7th)   0.1    
 
-
-
 $ ./grant list postgis.spdx.json
 
  ⠋ Loading postgis.spdx.json
  ✔ Loaded postgis.spdx.json                              file
  ✔ License listing
  ✔ Cataloged contents
-   ├── ✔ Packages                       [392 packages]
-   ├── ✔ Licenses                       [90 unique]
+   ├── ✔ Packages                       [376 packages]
+   ├── ✔ Licenses                       [83 unique]
    └── ✔ File metadata                  [0 locations]
  ✔ Aggregated licenses                [grouped by license, desc by count]
 
  LICENSE                                                                                               PACKAGES  RISK    
  BSD-3-Clause                                                                                                29  Low     
- GPL-2.0-only                                                                                                28  High    
- GPL-2.0-or-later                                                                                            26  High    
+ GPL-2.0-only                                                                                                27  High    
+ GPL-2.0-or-later                                                                                            25  High    
  GPL-3.0-only                                                                                                20  High    
  GPL-3.0-or-later                                                                                            20  High    
- Apache-2.0                                                                                                  15  Low     
+ Apache-2.0                                                                                                  14  Low     
  Zlib                                                                                                        13  Low     
  MIT                                                                                                         11  Low     
- LGPL-2.0-or-later                                                                                           10  Medium  
  ISC                                                                                                          9  Low     
  LGPL-2.1-only                                                                                                9  Medium  
- LGPL-2.1-or-later                                                                                            9  Medium  
  BSL-1.0                                                                                                      8  Low     
  LGPL-2.0-only                                                                                                8  Medium  
+ LGPL-2.0-or-later                                                                                            8  Medium  
+ LGPL-2.1-or-later                                                                                            8  Medium  
  BSD-2-Clause                                                                                                 7  Low     
  PostgreSQL                                                                                                   4  Low     
  BSD-4-Clause                                                                                                 3  Low     
  IJG                                                                                                          3  Low     
- LGPL-3.0-only                                                                                                3  Medium  
- LGPL-3.0-or-later                                                                                            3  Medium  
  Libpng                                                                                                       3  Low     
  Qhull                                                                                                        3  Unknown 
  da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3                                             3  Unknown 
@@ -102,27 +100,13 @@ $ ./grant list postgis.spdx.json
  GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND              2  Unknown 
  LGPL-2.1-or-later AND LicenseRef-ppowell                                                                                
  Info-ZIP                                                                                                     2  Unknown 
+ LGPL-3.0-only                                                                                                2  Medium  
+ LGPL-3.0-or-later                                                                                            2  Medium  
  MPL-1.1                                                                                                      2  Medium  
  NetCDF                                                                                                       2  Unknown 
  OLDAP-2.8                                                                                                    2  Unknown 
  X11                                                                                                          2  Low     
  curl                                                                                                         2  Unknown 
- ((GPL-3.0-only AND LGPL-2.1-only AND LGPL-3.0-only) AND (LGPL-2.0-only AND GPL-3.0-only) AND                 1  Unknown 
- GPL-3.0-or-later AND LicenseRef-scancode-gnu-emacs-gpl-1988 AND (GPL-3.0-only AND LGPL-2.1-only) AND                    
- (GPL-2.0-or-later AND GPL-3.0-or-later)) AND AMD-newlib AND (Artistic-1.0-Perl OR GPL-1.0-only) AND                     
- BSD-2-Clause AND BSD-3-Clause AND BSD-3-Clause-flex AND BSD-4-Clause-UC AND BSD-4.3TAHOE AND                            
- GFDL-1.2-only AND GFDL-1.3-or-later AND GPL-2.0-or-later AND (GPL-3.0-only AND GPL-2.0-only AND                         
- LGPL-3.0-or-later WITH LicenseRef-scancode-cygwin-exception-lgpl-3.0-plus AND                                           
- LicenseRef-scancode-other-copyleft AND LicenseRef-scancode-other-permissive) AND GPL-3.0-or-later                       
- AND (GPL-3.0-or-later WITH GCC-exception-3.1) AND HP-1986 AND HPND-Intel AND LGPL-2.0-or-later AND                      
- (LGPL-2.0-or-later AND GPL-1.0-or-later) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later AND                               
- LGPL-2.0-or-later) AND (LGPL-2.1-or-later WITH GCC-exception-3.1) AND (LGPL-2.1-or-later WITH                           
- GCC-exception-3.1 AND GPL-3.0-or-later WITH GCC-exception-3.1) AND                                                      
- LicenseRef-scancode-bsla-no-advert AND LicenseRef-scancode-d-zlib AND                                                   
- LicenseRef-scancode-newlib-historical AND LicenseRef-scancode-nilsson-historical AND                                    
- (LicenseRef-scancode-unicode AND LGPL-2.1-or-later) AND                                                                 
- LicenseRef-scancode-unknown-license-reference AND LicenseRef-scancode-x11-hanson AND MIT AND (NCSA                      
- AND MIT) AND Spencer-94 AND SunPro AND Zlib AND dtoa                                                                    
  4302abcc1ea1b6cbe8d19c79b892acf78878030220210707c19006828866207c                                             1  Unknown 
  53f9aee79bcd00cf7517e13d0f5500cb49b8e593b8f6913a38460cd1e5dc1d6e                                             1  Unknown 
  Apache AND Apache-2.0 AND GPL-2.0-only                                                                       1  Unknown 
@@ -186,15 +170,8 @@ $ ./grant list postgis.spdx.json
  Expat AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later                  1  Unknown 
  FSFAP                                                                                                        1  Unknown 
  FTL                                                                                                          1  Low     
- GFDL-1.2-only                                                                                                1  Unknown 
- GFDL-1.2-or-later                                                                                            1  Unknown 
  GFDL-1.3-only                                                                                                1  Unknown 
  GFDL-1.3-only AND LicenseRef-GFDL-NIV-1.3- AND GPL-2.0-only AND GPL-2.0-or-later                             1  Unknown 
- GPL-1.0-or-later                                                                                             1  High    
- GPL-1.0-or-later AND (GPL-1.0-or-later AND LGPL-2.0-or-later) AND                                            1  Unknown 
- LicenseRef-scancode-proprietary-license AND LicenseRef-scancode-us-govt-public-domain AND NIST-PD                       
- GPL-2.0-only AND GPL-2.0-or-later AND (LGPL-2.1-or-later AND LicenseRef-scancode-other-copyleft AND          1  Unknown 
- LGPL-2.0-or-later)                                                                                                      
  GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND                        1  Unknown 
  LicenseRef-OGDI-3I AND LicenseRef-OGDI-LAS AND LicenseRef-OGDI-QUEEN AND LicenseRef-VPFLIB AND                          
  LicenseRef-public-domain                                                                                                
@@ -203,13 +180,10 @@ $ ./grant list postgis.spdx.json
  Hylafax                                                                                                      1  Unknown 
  Jam                                                                                                          1  Unknown 
  MPL-2.0                                                                                                      1  Medium  
- NIST-PD                                                                                                      1  Unknown 
  NTP                                                                                                          1  Unknown 
  Unlicense                                                                                                    1  Low     
  c434a44e656a89e72b5cee13bba6719011e0899bfc626ab9c08205010ab2dbbe                                             1  Unknown 
  libtiff                                                                                                      1  Low     
-
-
 
 
 $ ./grant list postgis.spdx.json Qhull
@@ -225,12 +199,8 @@ $ ./grant list postgis.spdx.json Qhull
  ✔ Matched packages                   [3 packages]
 
  NAME           VERSION                 LICENSE                                                                                               RISK            
- gdal-data      3.13.2+dfsg-1.pgdg12+1  PostgreSQL, libtiff (+25 more)                                                                        High (+13 more) 
- libgdal32      3.6.2+dfsg-1+b2         Apache-2.0 AND BSD-3-Clause AND LicenseRef-Base64 AND LicenseRef-Expat AND GPL-3.0-only AND           High (+9 more)  
-                                        GPL-3.0-or-later AND LicenseRef-HPND-3i AND LicenseRef-HPND-disclaimer AND LicenseRef-HPND-eos AND                    
-                                        LicenseRef-HPND-p-sl-sgi AND LicenseRef-HPND-sl-gl-sgi AND LicenseRef-HPND-sl-sgi AND IJG AND ISC                     
-                                        AND LicenseRef-ITT AND Info-ZIP AND LGPL-2.0-only AND LGPL-2.0-or-later AND PostgreSQL AND Qhull AND                  
-                                        LicenseRef-cpl-mem-cache AND LicenseRef-fontconfig AND Libpng AND LicenseRef-public-domain AND Zlib                   
+ gdal-data      3.13.2+dfsg-1.pgdg12+1  ISC, LGPL-2.0-only (+25 more)                                                                         High (+13 more) 
+ libgdal32      3.6.2+dfsg-1+b2         Apache-2.0                                                                                            High (+9 more)  
                                         Apache-2.0 AND BSD-3-Clause AND LicenseRef-Base64 AND LicenseRef-Expat AND GPL-3.0-only AND                           
                                         GPL-3.0-or-later AND LicenseRef-HPND-3i AND LicenseRef-HPND-disclaimer AND LicenseRef-HPND-eos AND                    
                                         LicenseRef-HPND-p-sl-sgi AND LicenseRef-HPND-sl-gl-sgi AND LicenseRef-HPND-sl-sgi AND IJG AND ISC                     
@@ -238,8 +208,6 @@ $ ./grant list postgis.spdx.json Qhull
                                         LicenseRef-cpl-mem-cache AND LicenseRef-fontconfig AND Libpng AND LicenseRef-public-domain AND Zlib                   
                                         (+23 more)                                                                                                            
  libqhull-r8.0  2020.2-5                GPL-3.0-only, GPL-3.0-or-later (+1 more)                                                              High            
-
-
 
 
 $ ./grant list postgis.spdx.json Qhull --pkg libqhull-r8.0
@@ -264,5 +232,3 @@ Licenses (3):
 
 • Qhull
   ⚠️  OSI Approved: false | Deprecated: false
-
-

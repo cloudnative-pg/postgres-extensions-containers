@@ -13,9 +13,6 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import platform as host_platform
-import re
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -156,8 +153,16 @@ def run_command_with_progress(
 
 def scan_builder(builder: Path, temporary: Path) -> dict[str, Any]:
     output = temporary / "builder.spdx.json"
+    # Design goal: mirror BuildKit's default generator's builder scan.
+    # Inspected docker/buildkit-syft-scanner commit fcec6730cc202a3536676eb417b2f7a32fb98854.
+    # https://github.com/docker/buildkit-syft-scanner/blob/fcec6730cc202a3536676eb417b2f7a32fb98854/internal/target.go
+    # Match its base path, source alias, image/file defaults, and added SBOM cataloger.
+    # Recheck these CLI equivalents against upstream when updating Syft.
     run_command_with_progress(
-        ["syft", f"dir:{builder}", "--scope", "all-layers", "--quiet",
+        ["syft", f"dir:{builder}", "--quiet",
+         "--base-path", str(builder), "--source-name", builder.name,
+         "--override-default-catalogers", "image,file",
+         "--select-catalogers", "+sbom-cataloger",
          "--output", f"spdx-json={output}"],
         "Syft builder scan",
     )
@@ -165,125 +170,6 @@ def scan_builder(builder: Path, temporary: Path) -> dict[str, Any]:
         document = json.load(stream)
     progress(f"Syft found {len(document['packages'])} builder packages")
     return document
-
-
-def scan_licenses(final_root: Path, temporary: Path) -> dict[str, Any]:
-    licenses = final_root / "licenses"
-    if not licenses.exists():
-        return {"files": []}
-    scan_root = prepare_license_scan_root(final_root, temporary)
-    output = temporary / "scancode.json"
-    try:
-        subprocess.run(
-            [
-                "scancode",
-                "--verbose",
-                "--license",
-                "--license-references",
-                "--json",
-                str(output),
-                str(scan_root),
-            ],
-            stderr=subprocess.STDOUT,
-            check=True,
-        )
-    except FileNotFoundError as error:
-        raise RuntimeError("scancode is required when the final payload has /licenses") from error
-    except subprocess.CalledProcessError as error:
-        raise RuntimeError(f"ScanCode failed with exit code {error.returncode}; see output above") from error
-    try:
-        with output.open(encoding="utf-8") as stream:
-            report = json.load(stream)
-    except (OSError, json.JSONDecodeError) as error:
-        raise RuntimeError(f"scancode did not produce valid JSON at {output}") from error
-    if not isinstance(report, dict):
-        raise RuntimeError("scancode output is not a JSON object")
-    normalize_scancode_report_paths(report, scan_root)
-    return report
-
-
-def prepare_license_scan_root(final_root: Path, temporary: Path) -> Path:
-    """Split shipped copyright files before ScanCode scans them.
-
-    Debian copyright files can contain thousands of ``License:`` sections.
-    ScanCode's per-file timeout applies to the combined file, so scan a
-    directory of chunks instead and map the chunk paths back afterward.
-    """
-
-    licenses = final_root / "licenses"
-    scan_root = temporary / "license-chunks" / "licenses"
-    started = time.monotonic()
-    license_file_count = 0
-    chunk_count = 0
-    for license_file in sorted(licenses.rglob("*")):
-        if license_file.is_symlink() or not license_file.is_file():
-            continue
-        license_file_count += 1
-        relative = license_file.relative_to(licenses)
-        chunk_directory = scan_root / relative
-        chunk_directory.mkdir(parents=True, exist_ok=True)
-        prefix = chunk_directory / "license-"
-        try:
-            result = subprocess.run(
-                [
-                    "csplit",
-                    "-s",
-                    "-z",
-                    "-f",
-                    str(prefix),
-                    str(license_file),
-                    "/^License:/",
-                    "{*}",
-                ],
-                check=False,
-                capture_output=True,
-                text=True,
-            )
-        except FileNotFoundError as error:
-            raise RuntimeError("csplit is required to prepare license files") from error
-        if result.returncode:
-            detail = (result.stderr or result.stdout or "csplit failed").strip()
-            raise RuntimeError(f"csplit failed for {license_file}: {detail}")
-        chunk_count += sum(
-            1 for path in chunk_directory.glob("license-*") if path.is_file()
-        )
-        if license_file_count % 100 == 0:
-            progress(
-                f"prepared {license_file_count} license files "
-                f"({chunk_count} ScanCode chunks, "
-                f"{time.monotonic() - started:.1f}s elapsed)"
-            )
-    progress(
-        f"prepared {license_file_count} license files into {chunk_count} "
-        f"ScanCode chunks in {time.monotonic() - started:.1f}s"
-    )
-    return scan_root
-
-
-def normalize_scancode_report_paths(
-    report: dict[str, Any], scan_root: Path
-) -> None:
-    """Collapse split-file paths to the original final-image paths."""
-
-    scan_prefix = str(scan_root).rstrip("/")
-    chunk_suffix = re.compile(r"/license-[0-9]+$")
-
-    def normalize(path: str) -> str:
-        if path == scan_prefix:
-            path = scan_root.name
-        elif path.startswith(f"{scan_prefix}/"):
-            path = f"{scan_root.name}/{path[len(scan_prefix) + 1:]}"
-        return chunk_suffix.sub("", path.lstrip("/"))
-
-    for record in report["files"]:
-        path = record.get("path")
-        if isinstance(path, str):
-            record["path"] = normalize(path)
-        for detection in record.get("license_detections", []):
-            for match in detection.get("matches", []):
-                from_file = match.get("from_file")
-                if isinstance(from_file, str):
-                    match["from_file"] = normalize(from_file)
 
 
 def infer_platform(builder_document: dict[str, Any]) -> str:
@@ -310,19 +196,6 @@ def infer_platform(builder_document: dict[str, Any]) -> str:
             "set SBOM_TARGET_PLATFORM explicitly"
         )
     return next(iter(platforms))
-
-
-def tool_version(command: str) -> str:
-    executable = shutil.which(command)
-    if not executable:
-        return "unavailable"
-    try:
-        result = subprocess.run(
-            [executable, "--version"], check=False, capture_output=True, text=True
-        )
-    except OSError:
-        return "unavailable"
-    return (result.stdout or result.stderr).splitlines()[0] if (result.stdout or result.stderr) else "unknown"
 
 
 def statement_for(predicate: dict[str, Any]) -> dict[str, Any]:
@@ -362,25 +235,10 @@ def generate() -> Path:
         progress(f"target platform: {platform}")
         inventory = final_inventory(source)
         progress(f"final payload inventory contains {len(inventory['files'])} files")
-        report = scan_licenses(source, temporary)
         progress("composing SPDX document")
-        evidence = {
-            "platformEvidence": "builder package purl architecture",
-            "hostArchitecture": host_platform.machine(),
-            "tools": {
-                "syft": tool_version("syft"),
-                "scancode": tool_version("scancode"),
-                "python": sys.version.split()[0],
-            },
-        }
         predicate = compose(
             builder_document,
-            extension_name=extension_name,
-            builder_path=builder,
             final_inventory=inventory,
-            platform=platform,
-            scancode_report=report,
-            evidence=evidence,
         )
         predicate = run_augmentation_hook(predicate, HookContext(
             extension_name=extension_name,

@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).parents[1]))
 
 import generator
 from hooks import HookContext, run_augmentation_hook
+from compose import set_document_namespace
 from test_compose import builder_document
 
 
@@ -55,10 +56,17 @@ def augment_spdx(document, context: HookContext):
                 "BUILDKIT_SCAN_SOURCE_EXTRAS": str(extras),
                 "BUILDKIT_SCAN_DESTINATION": str(destination),
                 "SBOM_TARGET_PLATFORM": "linux/amd64",
-            }), patch.object(generator, "scan_builder", return_value=evidence), \
-                    patch.object(generator, "tool_version", return_value="test"):
+            }), patch.object(generator, "scan_builder", return_value=evidence):
                 statement = json.loads(generator.generate().read_text())
             self.assertEqual(statement["predicate"]["comment"],
                              "downstream dependency version and license information")
             self.assertEqual(statement["subject"], [])
             self.assertEqual([f["fileName"] for f in statement["predicate"]["files"]], ["artifact"])
+            predicate = statement["predicate"]
+            namespace = predicate["documentNamespace"]
+            self.assertNotEqual(namespace, evidence["documentNamespace"])
+            set_document_namespace(predicate, os.getenv("SBOM_EXTENSION_NAME", "extension"), "linux/amd64")
+            self.assertEqual(predicate["documentNamespace"], namespace)
+            del predicate["comment"]
+            set_document_namespace(predicate, os.getenv("SBOM_EXTENSION_NAME", "extension"), "linux/amd64")
+            self.assertNotEqual(predicate["documentNamespace"], namespace)

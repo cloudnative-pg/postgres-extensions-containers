@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 import hashlib
 import json
-import os
 import sys
 import unittest
 from pathlib import Path
-from unittest.mock import patch
 
 from spdx_tools.spdx.parser.jsonlikedict.json_like_dict_parser import JsonLikeDictParser
 from spdx_tools.spdx.spdx_element_utils import calculate_package_verification_code
@@ -49,6 +47,7 @@ def builder_document():
         "dataLicense": "CC0-1.0",
         "SPDXID": "SPDXRef-DOCUMENT",
         "name": "builder",
+        "documentNamespace": "https://example.com/syft/builder",
         "creationInfo": {"created": "2026-01-01T00:00:00Z", "creators": ["Tool: syft"]},
         "packages": [
             package("SPDXRef-Package-base", "base", "1", "pkg:deb/debian/base@1?arch=amd64&distro=debian-12.15"),
@@ -84,14 +83,12 @@ class ComposeTest(unittest.TestCase):
     def test_composes_only_shipped_files_and_owned_packages(self):
         output = compose(
             builder_document(),
-            extension_name="plr",
             final_inventory=inventory(
                 ("lib/ext.so", "extension"),
                 ("generated/artifact", "generated"),
             ),
-            platform="linux/amd64",
         )
-        self.assertEqual(output["name"], "plr-sbom")
+        self.assertEqual(output["name"], "builder")
         self.assertEqual(
             {record["name"] for record in output["packages"]},
             {"extension"},
@@ -126,13 +123,11 @@ class ComposeTest(unittest.TestCase):
         })
         output = compose(
             document,
-            extension_name="demo",
             final_inventory=inventory(
                 ("lib/ext.so", "extension"),
                 ("lib/duplicate.so", "extension"),
                 ("lib/other.so", "other"),
             ),
-            platform="linux/amd64",
         )
         # Use SPDX Tools as an independent oracle for sorting and duplicate hashes.
         parsed = JsonLikeDictParser().parse(output)
@@ -153,9 +148,7 @@ class ComposeTest(unittest.TestCase):
 
         output = compose(
             document,
-            extension_name="plr",
             final_inventory=inventory(("usr/lib/postgresql/ext.so", "extension")),
-            platform="linux/amd64",
         )
         file_record = next(
             item for item in output["files"]
@@ -168,27 +161,43 @@ class ComposeTest(unittest.TestCase):
         )
         self.assertEqual(validate_spdx_document(output), [])
 
-    @patch.dict(os.environ, {"SBOM_GENERATOR_REVISION": "abc123" * 6 + "abcd"})
-    def test_generator_metadata_identifies_version_and_repository(self):
-        revision = os.environ["SBOM_GENERATOR_REVISION"]
+    def test_preserves_syft_document_metadata_and_unused_license_definitions(self):
+        document = builder_document()
+        document["comment"] = "Original Syft evidence"
+        document["hasExtractedLicensingInfos"] = [
+            {"licenseId": "LicenseRef-Z", "name": "Z", "extractedText": "Z text"},
+            {"licenseId": "LicenseRef-A", "name": "A", "extractedText": "A text"},
+        ]
         output = compose(
-            builder_document(),
-            extension_name="plr",
+            document,
             final_inventory=inventory(("lib/ext.so", "extension")),
-            platform="linux/amd64",
         )
-        generator_annotation = next(
-            annotation for annotation in output["annotations"]
-            if annotation["annotator"] == f"Tool: cnpg-sbom-generator-{revision}"
+        for field in ("name", "documentNamespace", "creationInfo", "comment", "hasExtractedLicensingInfos"):
+            self.assertEqual(output[field], document[field])
+        self.assertNotIn("annotations", output)
+        self.assertEqual(validate_spdx_document(output), [])
+
+    def test_preserves_package_metadata_without_promoting_file_licenses(self):
+        document = builder_document()
+        package = document["packages"][1]
+        package["licenseDeclared"] = "NOASSERTION"
+        package["licenseConcluded"] = "BSD-3-Clause"
+        package["licenseInfoFromFiles"] = ["MIT"]
+        package["sourceInfo"] = "Original builder package evidence"
+        document["files"][1]["licenseInfoInFiles"] = ["Apache-2.0"]
+        extra_checksum = {"algorithm": "MD5", "checksumValue": hashlib.md5(b"extension").hexdigest()}
+        document["files"][1]["checksums"].append(extra_checksum)
+        document["files"][1]["checksums"][0]["checksumValue"] = "0" * 40
+        output = compose(
+            document,
+            final_inventory=inventory(("lib/ext.so", "extension")),
         )
-        metadata = json.loads(generator_annotation["comment"])
-        self.assertIn(f"Tool: cnpg-sbom-generator-{revision}", output["creationInfo"]["creators"])
-        self.assertEqual(metadata["generator"], "cnpg-sbom-generator")
-        self.assertEqual(metadata["generatorVersion"], revision)
-        self.assertEqual(
-            metadata["generatorRepository"],
-            "https://github.com/cloudnative-pg/postgres-extensions-containers",
-        )
+        retained = output["packages"][0].copy()
+        retained.pop("packageVerificationCode")
+        self.assertEqual(retained, package)
+        self.assertEqual(output["files"][0]["licenseInfoInFiles"], ["Apache-2.0"])
+        self.assertEqual(output["files"][0]["checksums"], checksum("extension") + [extra_checksum])
+        self.assertEqual(validate_spdx_document(output), [])
 
     def test_license_files_are_mapped_by_checksum_and_source_ownership(self):
         document = builder_document()
@@ -200,6 +209,8 @@ class ComposeTest(unittest.TestCase):
             "fileName": "usr/share/doc/libgomp1/copyright",
             "checksums": checksum("copyright"),
         })
+        document["files"][-1]["licenseInfoInFiles"] = ["GPL-2.0-only"]
+        document["packages"][-1]["licenseDeclared"] = "GPL-2.0-or-later"
         document["relationships"].append({
             "spdxElementId": "SPDXRef-Package-copyright",
             "relationshipType": "CONTAINS",
@@ -207,180 +218,76 @@ class ComposeTest(unittest.TestCase):
         })
         output = compose(
             document,
-            extension_name="plr",
             final_inventory=inventory(("licenses/system/libgomp1/copyright", "copyright")),
-            platform="linux/amd64",
-            scancode_report={"files": [{
-                "path": "licenses/system/libgomp1/copyright",
-                "license_detections": [{"license_expression_spdx": "GPL-2.0-only"}],
-            }]},
         )
         file_record = output["files"][0]
         package_record = next(item for item in output["packages"] if item["name"] == "libgomp1")
         self.assertEqual(file_record["licenseInfoInFiles"], ["GPL-2.0-only"])
-        self.assertEqual(package_record["licenseDeclared"], "GPL-2.0-only")
+        self.assertEqual(package_record["licenseDeclared"], "GPL-2.0-or-later")
+        self.assertNotIn("licenseInfoFromFiles", package_record)
 
-    def test_invalid_scancode_aggregate_keeps_valid_matches_and_exception_evidence(self):
+    def test_syft_custom_license_text_and_declarations_are_preserved(self):
         document = builder_document()
-        document["packages"].append(
-            package(
-                "SPDXRef-Package-libgfortran5",
-                "libgfortran5",
-                "1",
-                "pkg:deb/debian/libgfortran5@1?arch=amd64&distro=debian-12.15",
-            )
-        )
-        document["files"].append({
-            "SPDXID": "SPDXRef-File-gfortran-copyright",
-            "fileName": "usr/share/doc/libgfortran5/copyright",
-            "checksums": checksum("gfortran-license-evidence"),
-        })
-        document["relationships"].append({
-            "spdxElementId": "SPDXRef-Package-libgfortran5",
-            "relationshipType": "CONTAINS",
-            "relatedSpdxElement": "SPDXRef-File-gfortran-copyright",
-        })
+        document["packages"][1]["licenseDeclared"] = "LicenseRef-Vendor OR MIT"
+        document["files"][1]["licenseInfoInFiles"] = ["LicenseRef-Vendor"]
+        document["files"][1]["licenseComments"] = "Evidence supplied by Syft"
+        reference = {
+            "licenseId": "LicenseRef-Vendor",
+            "name": "Vendor license",
+            "extractedText": "vendor license text",
+        }
+        document["hasExtractedLicensingInfos"] = [reference]
         output = compose(
             document,
-            extension_name="plr",
-            final_inventory=inventory(
-                ("licenses/libgfortran5/copyright", "gfortran-license-evidence"),
-            ),
-            platform="linux/amd64",
-            scancode_report={
-                "files": [{
-                    "path": "licenses/libgfortran5/copyright",
-                    "license_detections": [
-                        {
-                            "license_expression_spdx": (
-                                "MIT AND GFDL-1.2-only AND GCC-exception-3.1"
-                            ),
-                            "matches": [
-                                {
-                                    "license_expression_spdx": "MIT",
-                                    "rule_identifier": "mit_1083.RULE",
-                                    "start_line": 216,
-                                    "end_line": 233,
-                                },
-                                {
-                                    "license_expression_spdx": "GFDL-1.2-only",
-                                    "rule_identifier": "gfdl-1.2_7.RULE",
-                                    "start_line": 236,
-                                    "end_line": 238,
-                                },
-                                {
-                                    "license_expression_spdx": "GCC-exception-3.1",
-                                    "rule_identifier": "gcc-exception-3.1.LICENSE",
-                                    "start_line": 241,
-                                    "end_line": 312,
-                                },
-                            ],
-                        },
-                        {
-                            "license_expression_spdx": (
-                                "GPL-3.0-or-later WITH GCC-exception-3.1"
-                            ),
-                        },
-                    ],
-                }],
-            },
+            final_inventory=inventory(("lib/ext.so", "extension")),
         )
-
-        file_record = output["files"][0]
-        self.assertEqual(file_record["licenseInfoInFiles"], [
-            "GFDL-1.2-only",
-            "GPL-3.0-or-later WITH GCC-exception-3.1",
-            "MIT",
-        ])
-        self.assertIn(
-            "MIT AND GFDL-1.2-only AND GCC-exception-3.1",
-            file_record["licenseComments"],
-        )
-        self.assertIn("GCC-exception-3.1", file_record["licenseComments"])
-        self.assertIn("lines 241-312", file_record["licenseComments"])
-        self.assertIn("gcc-exception-3.1.LICENSE", file_record["licenseComments"])
-        package_record = next(
-            item for item in output["packages"] if item["name"] == "libgfortran5"
-        )
-        self.assertIn("licenseDeclared", package_record)
+        self.assertEqual(output["packages"][0]["licenseDeclared"], "LicenseRef-Vendor OR MIT")
+        self.assertEqual(output["files"][0]["licenseInfoInFiles"], ["LicenseRef-Vendor"])
+        self.assertEqual(output["files"][0]["licenseComments"], "Evidence supplied by Syft")
+        self.assertEqual(output["hasExtractedLicensingInfos"], [reference])
         self.assertEqual(validate_spdx_document(output), [])
 
-    def test_unmatched_files_and_scanned_licenses_are_kept_unclaimed(self):
+    def test_unmatched_notices_remain_inventoried_without_license_assertions(self):
         output = compose(
             builder_document(),
-            extension_name="demo",
-            final_inventory=inventory(
-                ("licenses/vendor/copyright", "vendor-license"),
-                ("licenses/other/copyright", "other-license"),
-            ),
-            platform="linux/amd64",
-            scancode_report={"files": [
-                {
-                    "path": "licenses/vendor/copyright",
-                    "license_detections": [{"license_expression_spdx": "LicenseRef-Vendor"}],
-                },
-                {
-                    "path": "licenses/other/copyright",
-                    "license_detections": [{
-                        "license_expression_spdx": "Apache-2.0 OR BSD-2-Clause",
-                    }],
-                },
-            ], "license_references": [{
-                "spdx_license_key": "LicenseRef-Vendor",
-                "name": "Vendor license",
-                "text": "vendor license text",
-            }]},
+            final_inventory=inventory(("licenses/vendor/copyright", "vendor-license")),
         )
-        self.assertEqual({item["fileName"] for item in output["files"]}, {
-            "licenses/vendor/copyright", "licenses/other/copyright",
-        })
-        self.assertEqual(
-            {item["fileName"]: item["licenseInfoInFiles"] for item in output["files"]},
-            {
-                "licenses/vendor/copyright": ["LicenseRef-Vendor"],
-                "licenses/other/copyright": ["Apache-2.0 OR BSD-2-Clause"],
-            },
-        )
-        self.assertEqual(
-            [item["licenseId"] for item in output["hasExtractedLicensingInfos"]],
-            ["LicenseRef-Vendor"],
-        )
-        self.assertEqual({item["name"] for item in output["packages"]}, set())
-        file_ids = {item["SPDXID"] for item in output["files"]}
-        self.assertFalse(any(
-            relationship["relationshipType"] == "CONTAINS"
-            and relationship["relatedSpdxElement"] in file_ids
-            for relationship in output["relationships"]
-        ))
+        self.assertEqual(output["packages"], [])
+        self.assertEqual(output["files"][0]["fileName"], "licenses/vendor/copyright")
+        self.assertEqual(output["files"][0]["licenseInfoInFiles"], ["NOASSERTION"])
+        self.assertEqual(output["files"][0]["licenseConcluded"], "NOASSERTION")
         self.assertEqual(validate_spdx_document(output), [])
 
     def test_platform_documents_are_deterministic_and_isolated(self):
         first = compose(
-            builder_document(), extension_name="plr",
-            final_inventory=inventory(("lib/ext.so", "extension")), platform="linux/amd64",
-            evidence={"builderSha256": "abc"},
+            builder_document(),
+            final_inventory=inventory(("lib/ext.so", "extension")),
         )
         second = compose(
-            builder_document(), extension_name="plr",
-            final_inventory=inventory(("lib/ext.so", "extension")), platform="linux/arm64",
-            evidence={"builderSha256": "abc"},
+            builder_document(),
+            final_inventory=inventory(("lib/ext.so", "extension")),
         )
+        set_document_namespace(first, "plr", "linux/amd64")
+        set_document_namespace(second, "plr", "linux/arm64")
         self.assertNotEqual(first["documentNamespace"], second["documentNamespace"])
-        self.assertEqual(first, compose(
-            builder_document(), extension_name="plr",
-            final_inventory=inventory(("lib/ext.so", "extension")), platform="linux/amd64",
-            evidence={"builderSha256": "abc"},
-        ))
+        repeated = compose(
+            builder_document(),
+            final_inventory=inventory(("lib/ext.so", "extension")),
+        )
+        set_document_namespace(repeated, "plr", "linux/amd64")
+        self.assertEqual(first, repeated)
 
     def test_namespace_changes_with_content_and_is_stable_when_reapplied(self):
         first = compose(
-            builder_document(), extension_name="demo",
-            final_inventory=inventory(("lib/ext.so", "extension")), platform="linux/amd64",
+            builder_document(),
+            final_inventory=inventory(("lib/ext.so", "extension")),
         )
         changed = compose(
-            builder_document(), extension_name="demo",
-            final_inventory=inventory(("lib/ext.so", "different")), platform="linux/amd64",
+            builder_document(),
+            final_inventory=inventory(("lib/ext.so", "different")),
         )
+        set_document_namespace(first, "demo", "linux/amd64")
+        set_document_namespace(changed, "demo", "linux/amd64")
         self.assertNotEqual(first["documentNamespace"], changed["documentNamespace"])
         original_namespace = first["documentNamespace"]
         set_document_namespace(first, "demo", "linux/amd64")
@@ -396,9 +303,7 @@ class ComposeTest(unittest.TestCase):
         package["filesAnalyzed"] = False
         output = compose(
             document,
-            extension_name="demo",
             final_inventory=inventory(("usr/lib/postgresql/ext.so", "extension")),
-            platform="linux/amd64",
         )
 
         self.assertNotIn(package_id, {item["SPDXID"] for item in output["packages"]})
@@ -418,9 +323,7 @@ class ComposeTest(unittest.TestCase):
         next(item for item in document["packages"] if item["SPDXID"] == rust_id)["filesAnalyzed"] = False
         output = compose(
             document,
-            extension_name="demo",
             final_inventory=inventory(("licenses/rust1.97.1/copyright", "rust-license")),
-            platform="linux/amd64",
         )
 
         self.assertNotIn(rust_id, {item["SPDXID"] for item in output["packages"]})
