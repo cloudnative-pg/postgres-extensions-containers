@@ -27,30 +27,33 @@ def main() -> None:
 
     packages = document.get("packages", [])
     by_name = {package.get("name"): package for package in packages}
-    base_files = by_name.get("base-files")
-    if not base_files:
-        fail("package-owned Debian base-files package is absent")
-
     files = {record.get("fileName"): record for record in document.get("files", [])}
-    copyright_file = files.get("licenses/copyright")
-    if not copyright_file:
-        fail("package-owned /licenses/copyright file is absent")
-    file_licenses = set(copyright_file.get("licenseInfoInFiles", [])) - {
-        "NONE", "NOASSERTION"
+    notices = {
+        "base-files": "licenses/copyright",
+        "libc6": "licenses/libc6/copyright",
+        "zlib1g": "licenses/zlib1g/copyright",
     }
-    if not file_licenses:
-        fail("ScanCode did not identify license evidence in /licenses/copyright")
+    for name, path in notices.items():
+        package = by_name.get(name)
+        if not package:
+            fail(f"package-owned Debian {name} package is absent")
+        notice = files.get(path)
+        if not notice:
+            fail(f"package-owned /{path} file is absent")
+        ownership = any(
+            relation.get("spdxElementId") == package["SPDXID"]
+            and relation.get("relatedSpdxElement") == notice["SPDXID"]
+            and relation.get("relationshipType") == "CONTAINS"
+            for relation in document.get("relationships", [])
+        )
+        if not ownership:
+            fail(f"{name} does not own the final {path} file")
 
-    base_id = base_files["SPDXID"]
-    file_id = copyright_file["SPDXID"]
-    ownership = any(
-        relation.get("spdxElementId") == base_id
-        and relation.get("relatedSpdxElement") == file_id
-        and relation.get("relationshipType") == "CONTAINS"
-        for relation in document.get("relationships", [])
-    )
-    if not ownership:
-        fail("base-files does not own the final licenses/copyright file")
+    # zlib1g has a machine-readable Debian copyright declaration that Syft
+    # recognizes. The freeform base-files/libc6 notices still exercise ownership,
+    # but no longer receive file-level license detection from a second scanner.
+    if by_name["zlib1g"].get("licenseDeclared") != "Zlib":
+        fail("Syft's Debian zlib1g Zlib declaration was not preserved")
 
     crate = next(
         (package for package in packages if purl(package) == "pkg:cargo/sbom-smoke-crate@1.2.3"),
@@ -64,8 +67,9 @@ def main() -> None:
              and package["version"] == "1.2.3"]
     if not any(license["id"] == "MIT" for package in cargo for license in package["licenses"]):
         fail("Grant did not report the hook-provided Cargo package with MIT")
-    if not any(package["name"] == "base-files" and package["licenses"] for package in reported):
-        fail("Grant did not report license evidence for Debian base-files")
+    zlib = [package for package in reported if package["name"] == "zlib1g"]
+    if not any(license["id"] == "Zlib" for package in zlib for license in package["licenses"]):
+        fail("Grant did not report Syft's Zlib declaration for Debian zlib1g")
     if grype["distro"]["name"] != "debian":
         fail("Grype did not recover the Debian distribution from the SPDX inventory")
 
