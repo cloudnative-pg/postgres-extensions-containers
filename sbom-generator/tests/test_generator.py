@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
 import hashlib
 import json
-import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 
 from generator import (  # noqa: E402
     final_inventory,
     infer_platform,
-    scan_licenses,
+    scan_builder,
 )
 
 
@@ -44,56 +42,38 @@ class GeneratorTest(unittest.TestCase):
         self.assertEqual(alias_sha1, hashlib.sha1(b"ext.so").hexdigest())
         self.assertEqual(hashes["outside"]["SHA256"], hashlib.sha256(b"/tmp").hexdigest())
 
+    def test_builder_scan_uses_image_inventory_and_embedded_sboms(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            builder = root / "builder"
+            builder.mkdir()
+            (builder / "go.mod").write_text(
+                "module example.com/source-only\n\ngo 1.22\n\n"
+                "require github.com/google/uuid v1.6.0\n"
+            )
+            metadata = builder / "usr/lib/python3/dist-packages/installed_example-1.2.3.dist-info/METADATA"
+            metadata.parent.mkdir(parents=True)
+            metadata.write_text("Metadata-Version: 2.1\nName: installed-example\nVersion: 1.2.3\n")
+            (builder / "sbom.cdx.json").write_text(json.dumps({
+                "bomFormat": "CycloneDX", "specVersion": "1.5", "version": 1,
+                "components": [{"type": "library", "name": "embedded-example", "version": "2.3.4"}],
+            }))
+            output = scan_builder(builder, root)
+        packages = {package["name"]: package for package in output["packages"]}
+        self.assertEqual(packages["installed-example"]["versionInfo"], "1.2.3")
+        self.assertEqual(packages["embedded-example"]["versionInfo"], "2.3.4")
+        self.assertNotIn("github.com/google/uuid", packages)
+        self.assertNotIn("example.com/source-only", packages)
+        record = next(file for file in output["files"] if file["fileName"].endswith("/METADATA"))
+        self.assertEqual({c["algorithm"] for c in record["checksums"]}, {"SHA1", "SHA256"})
+        self.assertEqual(output["name"], "builder")
+
     def test_platform_comes_from_builder_package_architecture(self):
         document = {"packages": [{"externalRefs": [{
             "referenceType": "purl",
             "referenceLocator": "pkg:deb/debian/base@1?arch=amd64&distro=debian-12.15",
         }]}]}
         self.assertEqual(infer_platform(document), "linux/amd64")
-
-    def test_license_files_are_split_before_scancode_and_paths_are_collapsed(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            (root / "licenses").mkdir()
-            (root / "licenses" / "copyright").write_text("license text")
-            temporary = root / "temporary"
-            temporary.mkdir()
-            commands = []
-
-            def fake_csplit(command, **_kwargs):
-                if command[0] == "scancode":
-                    return fake_scancode(command, **_kwargs)
-                commands.append(command)
-                prefix = Path(command[command.index("-f") + 1])
-                prefix.with_name("license-00").write_text("license text")
-                return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
-
-            def fake_scancode(command, **_kwargs):
-                output = Path(command[command.index("--json") + 1])
-                output.write_text(json.dumps({
-                    "files": [{
-                        "type": "file",
-                        "path": "licenses/copyright/license-00",
-                        "license_detections": [{
-                            "matches": [{"from_file": "licenses/copyright/license-00"}],
-                            "license_expression_spdx": "MIT",
-                        }],
-                    }],
-                }))
-                return subprocess.CompletedProcess(command, 0)
-
-            with patch("generator.subprocess.run", side_effect=fake_csplit):
-                report = scan_licenses(root, temporary)
-
-        self.assertEqual(report["files"][0]["path"], "licenses/copyright")
-        self.assertEqual(
-            report["files"][0]["license_detections"][0]["matches"][0]["from_file"],
-            "licenses/copyright",
-        )
-        split_command = next(command for command in commands if command[0] == "csplit")
-        self.assertIn("/^License:/", split_command)
-        self.assertIn("{*}", split_command)
-
 
 if __name__ == "__main__":
     unittest.main()
