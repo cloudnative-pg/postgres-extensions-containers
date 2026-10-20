@@ -182,7 +182,7 @@
       "versioning": "deb"
     },
     {
-      "description": "Hold SBOM Python to ScanCode-supported 3.14 Bookworm tags",
+      "description": "Keep the SBOM Python base on Bookworm to match pinned Debian packages",
       "matchDatasources": [
         "docker"
       ],
@@ -194,7 +194,7 @@
         "sbom-generator/Dockerfile"
       ],
       "groupName": "SBOM generator Debian and base image updates",
-      "allowedVersions": "/^3\\.14(?:\\.\\d+)?-slim-bookworm$/"
+      "allowedVersions": "/^\\d+\\.\\d+(?:\\.\\d+)?-slim-bookworm$/"
     }
   ],
   "customDatasources": {
