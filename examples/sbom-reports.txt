@@ -21,35 +21,35 @@
 # go -C grant-source build -o ../grant ./cmd/grant
 
 
-$ grype sbom:postgis.spdx.json | grep -E 'NAME|High|Critical' | grep -v "won't fix"
+$ grype sbom:postgis.spdx.json --ignore-states wont-fix | grep -E 'NAME|High|Critical'
 
-NAME                             INSTALLED               FIXED IN     TYPE  VULNERABILITY    SEVERITY    EPSS         RISK   
-libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-2026-107815  High        0.9% (58th)  0.7    
-libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-2026-92262   Critical    0.7% (51st)  0.6    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-32740   High        0.8% (54th)  0.6    
-libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-2026-85746   Critical    0.6% (49th)  0.6    
-libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-2026-107821  High        0.8% (54th)  0.6    
-libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-2026-107823  High        0.7% (52nd)  0.5    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-32882   High        0.7% (52nd)  0.5    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-50142   High        0.7% (50th)  0.5    
-libtiff6                         4.5.0-6+deb12u4                      deb   CVE-2026-52490   Critical    0.5% (42nd)  0.5    
-libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-2026-97380   High        0.6% (45th)  0.5    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-62292   High        0.6% (45th)  0.5    
-libexpat1                        2.5.0-1+deb12u4                      deb   CVE-2026-77214   High        0.5% (44th)  0.4    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-84384   High        0.5% (42nd)  0.4    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-84447   High        0.5% (42nd)  0.4    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-47247   High        0.5% (39th)  0.4    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-84444   High        0.5% (39th)  0.4    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-41071   High        0.4% (36th)  0.3    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-84446   High        0.5% (38th)  0.3    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-32741   High        0.4% (37th)  0.3    
-libtiff6                         4.5.0-6+deb12u4                      deb   CVE-2026-12912   High        0.4% (36th)  0.3    
-libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-2026-107818  High        0.3% (25th)  0.3    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-48029   High        0.4% (28th)  0.3    
-libpoppler126                    22.12.0-2+deb12u3                    deb   CVE-2026-107705  High        0.3% (24th)  0.3    
-libmariadb3                      1:10.11.19-0+deb12u1                 deb   CVE-2026-86047   High        0.3% (23rd)  0.2    
-libnetcdf19                      1:4.9.0-3+b1                         deb   CVE-2026-86095   High        0.2% (7th)   0.1    
-libheif1                         1.15.1-1+deb12u1                     deb   CVE-2026-47178   High        0.2% (7th)   0.1    
+NAME             INSTALLED               TYPE  VULNERABILITY    SEVERITY    EPSS         RISK   
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-107815  High        0.9% (58th)  0.7    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-92262   Critical    0.7% (51st)  0.6    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-32740   High        0.8% (54th)  0.6    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-85746   Critical    0.6% (49th)  0.6    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-107821  High        0.8% (54th)  0.6    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-107823  High        0.7% (52nd)  0.5    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-32882   High        0.7% (52nd)  0.5    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-50142   High        0.7% (50th)  0.5    
+libtiff6         4.5.0-6+deb12u4         deb   CVE-2026-52490   Critical    0.5% (42nd)  0.5    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-97380   High        0.6% (45th)  0.5    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-62292   High        0.6% (45th)  0.5    
+libexpat1        2.5.0-1+deb12u4         deb   CVE-2026-77214   High        0.5% (44th)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-84384   High        0.5% (42nd)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-84447   High        0.5% (42nd)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-47247   High        0.5% (39th)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-84444   High        0.5% (39th)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-41071   High        0.4% (36th)  0.3    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-84446   High        0.5% (38th)  0.3    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-32741   High        0.4% (37th)  0.3    
+libtiff6         4.5.0-6+deb12u4         deb   CVE-2026-12912   High        0.4% (36th)  0.3    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-107818  High        0.3% (25th)  0.3    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-48029   High        0.4% (28th)  0.3    
+libpoppler126    22.12.0-2+deb12u3       deb   CVE-2026-107705  High        0.3% (24th)  0.3    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-86047   High        0.3% (23rd)  0.2    
+libnetcdf19      1:4.9.0-3+b1            deb   CVE-2026-86095   High        0.2% (7th)   0.1    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-47178   High        0.2% (7th)   0.1    
 
 $ ./grant list postgis.spdx.json
 
