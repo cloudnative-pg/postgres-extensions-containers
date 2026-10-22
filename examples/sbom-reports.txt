@@ -1,0 +1,234 @@
+# SBOM reports - PostGIS 3.6.4, PostgreSQL 18, Bookworm, linux/amd64
+# Captured 2026-10-20 using Grype 0.120.1 and an unreleased Grant build.
+#
+# Captured from a CloudNativePG PostGIS validation build using this generator.
+# Source: https://github.com/cloudnative-pg/postgres-extensions-containers
+# Source revision: 0f85324 (with the local SBOM refresh under review).
+# Generator: local build from this branch, Python 3.15 and Syft 1.55.0.
+# Local generator image: sha256:164dd6b477c051be81d561b8fde630aa62429773800e3044efcb082060663a79
+# Grype database built 2026-10-19T06:39:15Z. Findings are not proof of exploitability.
+#
+# All report commands below were captured through script/stty/ansi2txt.
+# With command set to the command shown after each "$", the exact capture was:
+# script -qec "stty cols 200; { $command; } 2>/dev/null" | ansi2txt
+# This provides a 200-column terminal, hides diagnostics, and strips terminal
+# formatting. Complete output from that pipeline is preserved without editing.
+# script also creates a typescript file for each capture.
+#
+# Build the Grant binary used below (Go required):
+# git clone https://github.com/anchore/grant.git grant-source
+# git -C grant-source checkout --detach 63b3f99949ef9f4a9962b7a9bc74d44f7ecd483d
+# go -C grant-source build -o ../grant ./cmd/grant
+
+
+$ grype sbom:postgis.spdx.json --ignore-states wont-fix | grep -E 'NAME|High|Critical'
+
+NAME             INSTALLED               TYPE  VULNERABILITY    SEVERITY    EPSS         RISK   
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-107815  High        0.9% (58th)  0.7    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-92262   Critical    0.7% (51st)  0.6    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-32740   High        0.8% (54th)  0.6    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-85746   Critical    0.6% (49th)  0.6    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-107821  High        0.8% (54th)  0.6    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-107823  High        0.7% (52nd)  0.5    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-32882   High        0.7% (52nd)  0.5    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-50142   High        0.7% (50th)  0.5    
+libtiff6         4.5.0-6+deb12u4         deb   CVE-2026-52490   Critical    0.5% (42nd)  0.5    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-97380   High        0.6% (45th)  0.5    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-62292   High        0.6% (45th)  0.5    
+libexpat1        2.5.0-1+deb12u4         deb   CVE-2026-77214   High        0.5% (44th)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-84384   High        0.5% (42nd)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-84447   High        0.5% (42nd)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-47247   High        0.5% (39th)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-84444   High        0.5% (39th)  0.4    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-41071   High        0.4% (36th)  0.3    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-84446   High        0.5% (38th)  0.3    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-32741   High        0.4% (37th)  0.3    
+libtiff6         4.5.0-6+deb12u4         deb   CVE-2026-12912   High        0.4% (36th)  0.3    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-107818  High        0.3% (25th)  0.3    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-48029   High        0.4% (28th)  0.3    
+libpoppler126    22.12.0-2+deb12u3       deb   CVE-2026-107705  High        0.3% (24th)  0.3    
+libmariadb3      1:10.11.19-0+deb12u1    deb   CVE-2026-86047   High        0.3% (23rd)  0.2    
+libnetcdf19      1:4.9.0-3+b1            deb   CVE-2026-86095   High        0.2% (7th)   0.1    
+libheif1         1.15.1-1+deb12u1        deb   CVE-2026-47178   High        0.2% (7th)   0.1    
+
+$ ./grant list postgis.spdx.json
+
+ ⠋ Loading postgis.spdx.json
+ ✔ Loaded postgis.spdx.json                              file
+ ✔ License listing
+ ✔ Cataloged contents
+   ├── ✔ Packages                       [376 packages]
+   ├── ✔ Licenses                       [83 unique]
+   └── ✔ File metadata                  [0 locations]
+ ✔ Aggregated licenses                [grouped by license, desc by count]
+
+ LICENSE                                                                                               PACKAGES  RISK    
+ BSD-3-Clause                                                                                                29  Low     
+ GPL-2.0-only                                                                                                27  High    
+ GPL-2.0-or-later                                                                                            25  High    
+ GPL-3.0-only                                                                                                20  High    
+ GPL-3.0-or-later                                                                                            20  High    
+ Apache-2.0                                                                                                  14  Low     
+ Zlib                                                                                                        13  Low     
+ MIT                                                                                                         11  Low     
+ ISC                                                                                                          9  Low     
+ LGPL-2.1-only                                                                                                9  Medium  
+ BSL-1.0                                                                                                      8  Low     
+ LGPL-2.0-only                                                                                                8  Medium  
+ LGPL-2.0-or-later                                                                                            8  Medium  
+ LGPL-2.1-or-later                                                                                            8  Medium  
+ BSD-2-Clause                                                                                                 7  Low     
+ PostgreSQL                                                                                                   4  Low     
+ BSD-4-Clause                                                                                                 3  Low     
+ IJG                                                                                                          3  Low     
+ Libpng                                                                                                       3  Low     
+ Qhull                                                                                                        3  Unknown 
+ da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3                                             3  Unknown 
+ Apache-2.0 AND BSD-3-Clause AND BSL-1.0 AND CC-BY-SA-3.0 AND LicenseRef-CCPL AND LicenseRef-Expat            2  Unknown 
+ AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND ISC AND                                 
+ LGPL-2.0-only AND LGPL-2.0-or-later AND PostgreSQL AND LicenseRef-public-domain AND                                     
+ LicenseRef-uthash                                                                                                       
+ Apache-2.0 AND BSL-1.0 AND LicenseRef-Expat AND LGPL-2.1-only AND LGPL-2.1-or-later AND Zlib                 2  Unknown 
+ Apache-2.0 AND LicenseRef-Expat AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND                   2  Unknown 
+ GPL-3.0-or-later AND LicenseRef-LRUCache11 AND LicenseRef-public-domain                                                 
+ BSD-3-Clause AND LicenseRef-BSD-3-clause-intel                                                               2  Unknown 
+ BSD-4-Clause-UC                                                                                              2  Low     
+ CC-BY-4.0                                                                                                    2  Unknown 
+ CC-BY-SA-3.0                                                                                                 2  Unknown 
+ Expat                                                                                                        2  Unknown 
+ FSFULLR                                                                                                      2  Unknown 
+ GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND              2  Unknown 
+ LGPL-2.1-or-later AND LicenseRef-ppowell                                                                                
+ Info-ZIP                                                                                                     2  Unknown 
+ LGPL-3.0-only                                                                                                2  Medium  
+ LGPL-3.0-or-later                                                                                            2  Medium  
+ MPL-1.1                                                                                                      2  Medium  
+ NetCDF                                                                                                       2  Unknown 
+ OLDAP-2.8                                                                                                    2  Unknown 
+ X11                                                                                                          2  Low     
+ curl                                                                                                         2  Unknown 
+ 4302abcc1ea1b6cbe8d19c79b892acf78878030220210707c19006828866207c                                             1  Unknown 
+ 53f9aee79bcd00cf7517e13d0f5500cb49b8e593b8f6913a38460cd1e5dc1d6e                                             1  Unknown 
+ Apache AND Apache-2.0 AND GPL-2.0-only                                                                       1  Unknown 
+ Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND LicenseRef-Base64 AND                           1  Unknown 
+ LicenseRef-CC-BY-3.0-NZ AND LicenseRef-Expat AND GPL-3.0-only AND GPL-3.0-or-later AND                                  
+ LicenseRef-HPND-3i AND LicenseRef-HPND-eos AND IJG AND ISC AND Info-ZIP AND LGPL-2.0-only AND                           
+ LGPL-2.0-or-later AND PostgreSQL AND Qhull AND Unlicense AND LicenseRef-e-log AND                                       
+ LicenseRef-fontconfig AND Libpng AND libtiff AND LicenseRef-libtiff-greg-larson AND                                     
+ LicenseRef-libtiff-pixar AND LicenseRef-public-domain AND Zlib                                                          
+ Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-HDF4 AND NetCDF             1  Unknown 
+ Apache-2.0 AND BSD-3-Clause AND LicenseRef-BSD-like-with-advertising-clause AND GPL-2.0-only AND             1  Unknown 
+ GPL-2.0-or-later AND LicenseRef-expat AND Libpng                                                                        
+ Apache-2.0 AND BSD-3-Clause AND LicenseRef-Base64 AND LicenseRef-Expat AND GPL-3.0-only AND                  1  Unknown 
+ GPL-3.0-or-later AND LicenseRef-HPND-3i AND LicenseRef-HPND-disclaimer AND LicenseRef-HPND-eos AND                      
+ LicenseRef-HPND-p-sl-sgi AND LicenseRef-HPND-sl-gl-sgi AND LicenseRef-HPND-sl-sgi AND IJG AND ISC                       
+ AND LicenseRef-ITT AND Info-ZIP AND LGPL-2.0-only AND LGPL-2.0-or-later AND PostgreSQL AND Qhull AND                    
+ LicenseRef-cpl-mem-cache AND LicenseRef-fontconfig AND Libpng AND LicenseRef-public-domain AND Zlib                     
+ Apache-2.0 AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND                   1  Unknown 
+ LicenseRef-X11-install-sh AND LicenseRef-permissive-configure AND LicenseRef-permissive-fsf AND                         
+ LicenseRef-xerces-Apache-2.0                                                                                            
+ Apache-2.0 AND LicenseRef-BSD2 AND LicenseRef-BSD3-DEShaw AND LicenseRef-BSD3-Google AND BSL-1.0 AND         1  Unknown 
+ LicenseRef-Caramel AND LicenseRef-CrystalClear AND LicenseRef-HP AND Jam AND LicenseRef-Kempf AND                       
+ MIT AND LicenseRef-NIST AND LicenseRef-OldBoost1 AND LicenseRef-OldBoost2 AND LicenseRef-OldBoost3                      
+ AND LicenseRef-Python AND LicenseRef-SGI AND LicenseRef-Spencer AND Zlib                                                
+ Artistic AND BSD-2-Clause AND BSD-2-Clause AND BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later            1  Unknown 
+ AND LicenseRef-GPL-2--with-bison-exception AND LicenseRef-GPL-3--with-bison-exception AND                               
+ LicenseRef-LGPL AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND                     
+ LicenseRef-SWsoft AND LicenseRef-public-domain AND LicenseRef-unlimited-free-doc AND                                    
+ LicenseRef-zlib-libpng                                                                                                  
+ BOOST-1.0 AND BSD-3-Clause AND BSD-4-Clause AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-3.0-only          1  Unknown 
+ AND LGPL-3.0-or-later AND MIT                                                                                           
+ BSD-2 AND LicenseRef-BSD-3 AND Libpng AND libtiff AND LicenseRef-LIBTIFF-GLARSON AND                         1  Unknown 
+ LicenseRef-LIBTIFF-PIXAR AND MIT AND Zlib AND LicenseRef-public-domain                                                  
+ BSD-2-Clause AND BSD-2-Clause AND BSD-3-Clause AND LicenseRef-Expat AND ISC AND                              1  Unknown 
+ LicenseRef-public-domain-md5                                                                                            
+ BSD-2-Clause AND BSD-3-Clause AND LicenseRef-permissive                                                      1  Unknown 
+ BSD-2-Clause AND ISC AND LicenseRef-public-domain                                                            1  Unknown 
+ BSD-2-Clause AND LicenseRef-Expat AND GPL-3.0-only AND GPL-3.0-or-later AND MIT AND                          1  Unknown 
+ LicenseRef-all-permissive                                                                                               
+ BSD-3 AND MPL-2.0 AND Zlib AND LicenseRef-public-domain                                                      1  Unknown 
+ BSD-3-Clause AND BSD-4-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-HPND-sl-sgi AND           1  Unknown 
+ MIT AND LicenseRef-attribution                                                                                          
+ BSD-3-Clause AND BSL-1.0 AND CC-BY-4.0 AND LicenseRef-Expat AND GPL-3.0-only AND GPL-3.0-or-later            1  Unknown 
+ AND HDF5 AND NetCDF AND LicenseRef-Unicode-data AND Zlib AND LicenseRef-ncxml AND                                       
+ LicenseRef-public-domain                                                                                                
+ BSD-3-Clause AND BSL-1.0 AND FSFAP AND FTL AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only            1  Unknown 
+ AND GPL-3.0-or-later AND MIT AND LicenseRef-OpenGroup-BSD-like AND LicenseRef-Public-Domain AND Zlib                    
+ BSD-3-Clause AND CC-BY-3.0 AND CC-BY-4.0 AND MIT AND LicenseRef-public-domain                                1  Unknown 
+ BSD-3-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-permissive AND                             1  Unknown 
+ LicenseRef-permissive-colamd                                                                                            
+ BSD-3-Clause AND LicenseRef-BSD-BY-LC-NE AND LicenseRef-Expat AND NTP AND Zlib                               1  Unknown 
+ BSD-3-Clause AND LicenseRef-Expat AND Zlib                                                                   1  Unknown 
+ BSD-4-Clause AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND                 1  Unknown 
+ LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MPL-1.1 AND                             
+ LicenseRef-public-domain                                                                                                
+ BSD-4-Clause AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND               1  Unknown 
+ LicenseRef-other-1 AND LicenseRef-public-domain-1                                                                       
+ BSD3                                                                                                         1  Unknown 
+ CC-BY-3.0                                                                                                    1  Unknown 
+ Chromium AND MIT AND LicenseRef-gnulib                                                                       1  Unknown 
+ Expat AND GPL-2.0-only AND GPL-2.0-or-later AND ISC AND LGPL-2.1-only AND LGPL-2.1-or-later                  1  Unknown 
+ FSFAP                                                                                                        1  Unknown 
+ FTL                                                                                                          1  Low     
+ GFDL-1.3-only                                                                                                1  Unknown 
+ GFDL-1.3-only AND LicenseRef-GFDL-NIV-1.3- AND GPL-2.0-only AND GPL-2.0-or-later                             1  Unknown 
+ GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND                        1  Unknown 
+ LicenseRef-OGDI-3I AND LicenseRef-OGDI-LAS AND LicenseRef-OGDI-QUEEN AND LicenseRef-VPFLIB AND                          
+ LicenseRef-public-domain                                                                                                
+ HDF5                                                                                                         1  Unknown 
+ HPND-sell-variant                                                                                            1  Unknown 
+ Hylafax                                                                                                      1  Unknown 
+ Jam                                                                                                          1  Unknown 
+ MPL-2.0                                                                                                      1  Medium  
+ NTP                                                                                                          1  Unknown 
+ Unlicense                                                                                                    1  Low     
+ c434a44e656a89e72b5cee13bba6719011e0899bfc626ab9c08205010ab2dbbe                                             1  Unknown 
+ libtiff                                                                                                      1  Low     
+
+
+$ ./grant list postgis.spdx.json Qhull
+
+ ⠋ Loading postgis.spdx.json
+ ✔ Loaded postgis.spdx.json                              file
+ ✔ License listing
+ ✔ Filter applied                     [license="Qhull"]
+ ✔ Cataloged contents
+   ├── ✔ Packages                       [3 packages]
+   ├── ✔ Licenses                       [1 unique]
+   └── ✔ File metadata                  [0 locations]
+ ✔ Matched packages                   [3 packages]
+
+ NAME           VERSION                 LICENSE                                                                                               RISK            
+ gdal-data      3.13.2+dfsg-1.pgdg12+1  ISC, LGPL-2.0-only (+25 more)                                                                         High (+13 more) 
+ libgdal32      3.6.2+dfsg-1+b2         Apache-2.0                                                                                            High (+9 more)  
+                                        Apache-2.0 AND BSD-3-Clause AND LicenseRef-Base64 AND LicenseRef-Expat AND GPL-3.0-only AND                           
+                                        GPL-3.0-or-later AND LicenseRef-HPND-3i AND LicenseRef-HPND-disclaimer AND LicenseRef-HPND-eos AND                    
+                                        LicenseRef-HPND-p-sl-sgi AND LicenseRef-HPND-sl-gl-sgi AND LicenseRef-HPND-sl-sgi AND IJG AND ISC                     
+                                        AND LicenseRef-ITT AND Info-ZIP AND LGPL-2.0-only AND LGPL-2.0-or-later AND PostgreSQL AND Qhull AND                  
+                                        LicenseRef-cpl-mem-cache AND LicenseRef-fontconfig AND Libpng AND LicenseRef-public-domain AND Zlib                   
+                                        (+23 more)                                                                                                            
+ libqhull-r8.0  2020.2-5                GPL-3.0-only, GPL-3.0-or-later (+1 more)                                                              High            
+
+
+$ ./grant list postgis.spdx.json Qhull --pkg libqhull-r8.0
+
+ ⠋ Loading postgis.spdx.json
+ ✔ Loaded postgis.spdx.json                              file
+ ✔ License listing
+ ✔ Package details                    [package="libqhull-r8.0"]
+ ✔ Found package instances           [1 instance]
+
+Name:     libqhull-r8.0
+Version:  2020.2-5
+Type:     deb
+ID:       deb:libqhull-r8.0@2020.2-5
+Licenses (3):
+
+• GPL-3.0-only
+  OSI Approved: true | Deprecated: false
+
+• GPL-3.0-or-later
+  OSI Approved: true | Deprecated: false
+
+• Qhull
+  ⚠️  OSI Approved: false | Deprecated: false
