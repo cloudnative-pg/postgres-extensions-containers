@@ -20,7 +20,7 @@ libavif16_1.2.1-1.2_amd64.deb MD5Sum:c1583daf87a2cc83a8a311be3f4bc3b5
 libsnappy1v5_1.2.2-1_amd64.deb MD5Sum:5e2457205f23689a487168e17d9d4b7e
 libblosc1_1.21.5+ds-1+b2_amd64.deb MD5Sum:6640bac3b9912e70a7fb004338fde1a8
 libboost-serialization1.83.0_1.83.0-4.2_amd64.deb MD5Sum:0db3c604d979abcd786c51e623ca413d
-libbrotli1_1.1.0-2+b7_amd64.deb MD5Sum:e268acc326140ae9f1731f335335fc8d
+libbrotli1_1.1.0-2+deb13u1_amd64.deb
 libnghttp2-14_1.64.0-1.1+deb13u1_amd64.deb MD5Sum:3650643a734bbd58529afd0493d181b2
 libnghttp3-9_1.8.0-1_amd64.deb MD5Sum:6b1f90e4153530a76878e9fde0244c66
 libngtcp2-16_1.11.0-1+deb13u1_amd64.deb MD5Sum:73c7dc70b69796219facc3d77a092303
