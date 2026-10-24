@@ -11,7 +11,7 @@ libarmadillo11_1%3a11.4.2+dfsg-1_amd64.deb MD5Sum:0ec736fe1888c654c32c3812add9d6
 libsnappy1v5_1.1.9-3_amd64.deb MD5Sum:5867cae0b6dcc8238ac96d31523f2907
 libblosc1_1.21.3+ds-1_amd64.deb MD5Sum:7f3b0f7da1e478f24df9069e4bfb9567
 libboost-serialization1.74.0_1.74.0+ds1-21_amd64.deb MD5Sum:db154c4708c5a4641abfee7ee4ad3dad
-libbrotli1_1.0.9-2+b6_amd64.deb MD5Sum:58aff9bd35bab67549bdc84eb7edffcf
+libbrotli1_1.0.9-2+deb12u1_amd64.deb
 libnghttp2-14_1.52.0-1+deb12u3_amd64.deb MD5Sum:d681e56846f2d3d68a237da84943b2d9
 libpsl5_0.21.2-1_amd64.deb MD5Sum:37ebfb57fdbf01631629ee9f36c8b478
 librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb MD5Sum:d757abb668fc1ee0d9488805bfb4371e
@@ -22,7 +22,7 @@ libcurl4_7.88.1-10+deb12u15_amd64.deb MD5Sum:31f3ce5464013ac2f6f580533dbeb9fb
 libdav1d6_1.0.0-2+deb12u1_amd64.deb MD5Sum:e041891f3cff962c8ecd994865318ee3
 libde265-0_1.0.11-1+deb12u3_amd64.deb
 libdeflate0_1.14-1_amd64.deb MD5Sum:e505f1277c856889aa2b539320e3e154
-libexpat1_2.5.0-1+deb12u4_amd64.deb
+libexpat1_2.5.0-1+deb12u5_amd64.deb
 libpng16-16_1.6.39-2+deb12u6_amd64.deb
 libfreetype6_2.12.1+dfsg-5+deb12u4_amd64.deb MD5Sum:8ee3bd604ace008bee4083b14746dedb
 libfontconfig1_2.14.1-4_amd64.deb MD5Sum:522c4fa1fecd36d0f11eb6970fcd1364
