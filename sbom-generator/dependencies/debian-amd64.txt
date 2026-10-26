@@ -1,0 +1,15 @@
+curl=7.88.1-10+deb12u15
+libbrotli1=1.0.9-2+b6
+libcurl4=7.88.1-10+deb12u15
+libgssapi-krb5-2=1.20.1-2+deb12u5
+libk5crypto3=1.20.1-2+deb12u5
+libkeyutils1=1.6.3-2
+libkrb5-3=1.20.1-2+deb12u5
+libkrb5support0=1.20.1-2+deb12u5
+libldap-2.5-0=2.5.13+dfsg-5
+libnghttp2-14=1.52.0-1+deb12u3
+libpsl5=0.21.2-1
+librtmp1=2.4+20151223.gitfa8646d.1-2+b2
+libsasl2-2=2.1.28+dfsg-10
+libsasl2-modules-db=2.1.28+dfsg-10
+libssh2-1=1.10.0-3+deb12u1

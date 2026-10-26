@@ -75,6 +75,65 @@
       "matchStrings": [
         "\\/\\/\\s+renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))\\s+\\/\\/\\s+\\+default=[\\\"']?[^:]+?:(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
       ]
+    },
+    {
+      "description": "updates the SBOM generator base image",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "sbom-generator/Dockerfile"
+      ],
+      "matchStrings": [
+        "#\\s*renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: packageName=(?<packageName>[^\\s]+))?(?: versioning=(?<versioning>[^\\s]+))?\\s+FROM\\s+(?:[a-zA-Z0-9._/-]+:)?(?<currentValue>[^@\\s]+)(?:@(?<currentDigest>sha256:[0-9a-f]+))?"
+      ]
+    },
+    {
+      "description": "updates the SBOM generator Dockerfile frontend",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "sbom-generator/Dockerfile"
+      ],
+      "matchStrings": [
+        "# syntax=docker/dockerfile:(?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "docker/dockerfile",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "description": "updates the SBOM generator tool versions",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "sbom-generator/Dockerfile"
+      ],
+      "matchStrings": [
+        "#\\s*renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))?\\s+ARG [A-Z0-9_]+_VERSION=(?<currentValue>[^\\s]+)"
+      ]
+    },
+    {
+      "description": "updates generator Debian packages not supplied by the base image",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^sbom-generator/dependencies/debian-(amd64|arm64)\\.txt$/"
+      ],
+      "matchStrings": [
+        "(?<depName>[a-z0-9][a-z0-9+.-]*)=(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "deb"
+    },
+    {
+      "description": "Track Ubuntu runners in matrix values and runs-on expressions",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "(?:^|\\r?\\n)[ \\t]*runner:[ \\t]*['\"]?ubuntu-(?<currentValue>\\d+\\.\\d+(?:-arm)?)(?:['\"]|[ \\t\\r\\n]|$)",
+        "(?:^|\\r?\\n)[ \\t]*runs-on:[ \\t]*\\$\\{\\{[^\\r\\n]*?['\"]ubuntu-(?<currentValue>\\d+\\.\\d+(?:-arm)?)['\"]"
+      ],
+      "depNameTemplate": "ubuntu",
+      "depTypeTemplate": "github-runner",
+      "datasourceTemplate": "github-runners",
+      "versioningTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -91,6 +150,59 @@
       ],
       "groupName": "all github action",
       "pinDigests": true
+    },
+    {
+      "matchDatasources": [
+        "deb"
+      ],
+      "matchFileNames": [
+        "sbom-generator/dependencies/debian-amd64.txt"
+      ],
+      "registryUrls": [
+        "https://packages.debian.org/bookworm/amd64/{{packageName}}"
+      ],
+      "groupName": "SBOM generator Debian and base image updates",
+      "description": "Work around Renovate #44330 using Debian package pages",
+      "overrideDatasource": "custom.debian-bookworm",
+      "versioning": "deb"
+    },
+    {
+      "matchDatasources": [
+        "deb"
+      ],
+      "matchFileNames": [
+        "sbom-generator/dependencies/debian-arm64.txt"
+      ],
+      "registryUrls": [
+        "https://packages.debian.org/bookworm/arm64/{{packageName}}"
+      ],
+      "groupName": "SBOM generator Debian and base image updates",
+      "description": "Work around Renovate #44330 using Debian package pages",
+      "overrideDatasource": "custom.debian-bookworm",
+      "versioning": "deb"
+    },
+    {
+      "description": "Keep the SBOM Python base on Bookworm to match pinned Debian packages",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "python",
+        "library/python"
+      ],
+      "matchFileNames": [
+        "sbom-generator/Dockerfile"
+      ],
+      "groupName": "SBOM generator Debian and base image updates",
+      "allowedVersions": "/^\\d+\\.\\d+(?:\\.\\d+)?-slim-bookworm$/"
     }
-  ]
+  ],
+  "customDatasources": {
+    "debian-bookworm": {
+      "format": "plain",
+      "transformTemplates": [
+        "($prefix := \"<h1>Package: {{{packageName}}} (\"; $headers := releases[$substring(version, 0, $length($prefix)) = $prefix]; $assert($count($headers) = 1, \"Expected one Debian package version heading\"); $archVersions := releases[$contains(version, \"<td class='vcurrent'>\")]; $assert($count($archVersions) <= 1, \"Expected at most one architecture version\"); $version := $count($archVersions) = 1 ? $substringBefore($substringAfter($archVersions[0].version, \">\"), \"<\") : $substringBefore($substringAfter($headers[0].version, $prefix), \")\"); $assert($contains($version, /^[0-9][0-9A-Za-z.+:~-]*$/), \"Invalid Debian package version\"); {\"releases\": [{\"version\": $version}]})"
+      ]
+    }
+  }
 }

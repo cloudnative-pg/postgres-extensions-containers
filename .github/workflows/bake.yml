@@ -2,6 +2,13 @@ name: Build, test and publish extensions
 
 on:
   push:
+    paths-ignore:
+      # Documentation does not require extension builds.
+      - 'examples/**'
+      - '*.md'
+      - 'LICENSE'
+      - '.github/workflows/sbom-generator.yml'
+      - 'sbom-generator/**'
   workflow_dispatch:
     inputs:
       extension_name:
@@ -101,6 +108,7 @@ jobs:
     name: Bake
     needs: change-triage
     permissions:
+      actions: read
       packages: write
       contents: read
       id-token: write

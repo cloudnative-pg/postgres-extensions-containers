@@ -16,6 +16,9 @@ variable "revision" {
 }
 
 fullname = ( environment == "testing") ? "${registry}/${metadata.image_name}-testing" : "${registry}/${metadata.image_name}"
+variable "sbom_generator" {
+  default = ""
+}
 now = timestamp()
 authors = "The CloudNativePG Contributors"
 url = "https://github.com/cloudnative-pg/postgres-extensions-containers"
@@ -48,10 +51,9 @@ target "default" {
   output = [
     "type=image,oci-mediatypes=true,oci-artifact=true",
   ]
-  attest = [
+  attest = concat([
     "type=provenance,mode=max",
-    "type=sbom"
-  ]
+  ], sbom_generator == "" ? ["type=sbom"] : ["type=sbom,generator=${sbom_generator}"])
   annotations = [
     "index,manifest:org.opencontainers.image.created=${now}",
     "index,manifest:org.opencontainers.image.url=${url}",
