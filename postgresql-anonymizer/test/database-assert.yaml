@@ -1,0 +1,5 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: (join('-', [$values.name, 'app']))
+status: ($values.database_assert_status)
