@@ -51,7 +51,7 @@ spec:
     - name: wal2json
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-wal2json
-        reference: ghcr.io/cloudnative-pg/wal2json:2.6-18-trixie
+        reference: ghcr.io/cloudnative-pg/wal2json:2.7-18-trixie
 ```
 
 > [!NOTE]
