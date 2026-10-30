@@ -25,14 +25,12 @@ RUN set -eux && \
 # touch unrelated text.
 RUN sed -i "s/'\$libdir\//'/g" \
 	/usr/share/postgresql/${PG_MAJOR}/extension/postgis*.sql \
-	/usr/share/postgresql/${PG_MAJOR}/extension/address_standardizer*.sql \
 	/usr/share/postgresql/${PG_MAJOR}/contrib/postgis*/*.sql
 
 # Gather PostGIS system libraries and their licenses
 RUN mkdir -p /system /licenses && \
 	# Get libraries
-	ldd /usr/lib/postgresql/${PG_MAJOR}/lib/address_standardizer*.so \
-		/usr/lib/postgresql/${PG_MAJOR}/lib/postgis*.so \
+	ldd /usr/lib/postgresql/${PG_MAJOR}/lib/postgis*.so \
 		| awk '{print $3}' | grep '^/' | sort | uniq > /tmp/all-deps.out && \
 	# Extract all the libs that aren't already part of the base image
 	comm -13 /tmp/base-image-libs.out /tmp/all-deps.out > /tmp/libraries.out && \
@@ -70,7 +68,6 @@ COPY --from=builder /usr/share/doc/postgresql-${PG_MAJOR}-postgis-${POSTGIS_MAJO
 
 # Libraries
 COPY --from=builder \
-	/usr/lib/postgresql/${PG_MAJOR}/lib/address_standardizer* \
 	/usr/lib/postgresql/${PG_MAJOR}/lib/postgis* \
 	/lib/
 
@@ -78,7 +75,6 @@ COPY --from=builder /usr/lib/postgresql/${PG_MAJOR}/lib/bitcode/ /lib/bitcode/
 
 # Share
 COPY --from=builder \
-	/usr/share/postgresql/${PG_MAJOR}/extension/address_standardizer* \
 	/usr/share/postgresql/${PG_MAJOR}/extension/postgis* \
 	/share/extension/
 
