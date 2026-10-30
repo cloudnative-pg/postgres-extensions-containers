@@ -50,7 +50,7 @@ spec:
     - name: pgrouting
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pgrouting
-        reference: ghcr.io/cloudnative-pg/pgrouting:4.0.1-18-trixie
+        reference: ghcr.io/cloudnative-pg/pgrouting:4.0.2-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -74,7 +74,7 @@ spec:
     version: '3.6.4'
   - name: pgrouting
     # renovate: suite=trixie-pgdg depName=postgresql-18-pgrouting extractVersion=^(?<version>\d+\.\d+\.\d+)
-    version: '4.0.1'
+    version: '4.0.2'
 ```
 
 ### 3. Verify installation
