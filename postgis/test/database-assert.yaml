@@ -14,11 +14,5 @@ status:
   - applied: true
     name: fuzzystrmatch
   - applied: true
-    name: address_standardizer
-  - applied: true
-    name: address_standardizer_data_us
-  - applied: true
-    name: postgis_tiger_geocoder
-  - applied: true
     name: postgis_topology
   observedGeneration: 1

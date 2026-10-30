@@ -62,9 +62,6 @@ spec:
   - name: postgis_raster
   - name: postgis_sfcgal
   - name: fuzzystrmatch
-  - name: address_standardizer
-  - name: address_standardizer_data_us
-  - name: postgis_tiger_geocoder
   - name: postgis_topology
 ```
 
@@ -89,7 +86,7 @@ connect to the container and run:
 
 ```bash
 cd /extensions/postgis/lib
-LD_LIBRARY_PATH=/extensions/postgis/system ldd address_standardizer* postgis*
+LD_LIBRARY_PATH=/extensions/postgis/system ldd postgis*
 ```
 
 Make sure there are no missing shared libraries.
