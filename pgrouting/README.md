@@ -39,7 +39,7 @@ spec:
     - name: postgis
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
-        reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.4-18-trixie
+        reference: ghcr.io/cloudnative-pg/postgis-extension:3.7.0-18-trixie
       ld_library_path:
       - system
       env:
@@ -71,7 +71,7 @@ spec:
   extensions:
   - name: postgis
     # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
-    version: '3.6.4'
+    version: '3.7.0'
   - name: pgrouting
     # renovate: suite=trixie-pgdg depName=postgresql-18-pgrouting extractVersion=^(?<version>\d+\.\d+\.\d+)
     version: '4.0.2'

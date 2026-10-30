@@ -29,7 +29,7 @@ spec:
     - name: postgis
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
-        reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.4-18-trixie
+        reference: ghcr.io/cloudnative-pg/postgis-extension:3.7.0-18-trixie
       ld_library_path:
       - system
       # Requires CloudNativePG 1.29 (or higher)
@@ -58,13 +58,10 @@ spec:
   extensions:
   - name: postgis
     # renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
-    version: '3.6.4'
+    version: '3.7.0'
   - name: postgis_raster
   - name: postgis_sfcgal
   - name: fuzzystrmatch
-  - name: address_standardizer
-  - name: address_standardizer_data_us
-  - name: postgis_tiger_geocoder
   - name: postgis_topology
 ```
 
@@ -89,7 +86,7 @@ connect to the container and run:
 
 ```bash
 cd /extensions/postgis/lib
-LD_LIBRARY_PATH=/extensions/postgis/system ldd address_standardizer* postgis*
+LD_LIBRARY_PATH=/extensions/postgis/system ldd postgis*
 ```
 
 Make sure there are no missing shared libraries.
