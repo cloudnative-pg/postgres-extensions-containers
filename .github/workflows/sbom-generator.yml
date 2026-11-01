@@ -13,7 +13,12 @@ on:
   workflow_dispatch:
     inputs:
       publish:
-        description: "Publish a checked test image to GHCR (never updates latest)"
+        description: "Publish a checked test image to GHCR (publish_latest takes precedence)"
+        required: false
+        default: false
+        type: boolean
+      publish_latest:
+        description: "Force a checked release to latest (main only), including runtime maintenance"
         required: false
         default: false
         type: boolean
@@ -47,9 +52,12 @@ jobs:
         with:
           # Compare the complete push, including pushes containing multiple commits.
           base: ${{ github.event.before }}
+          predicate-quantifier: every
           filters: |
             generator:
               - 'sbom-generator/**'
+              - '!sbom-generator/Dockerfile'
+              - '!sbom-generator/dependencies/**'
 
   check:
     strategy:
@@ -112,8 +120,8 @@ jobs:
 
   publish:
     needs: [check, changes]
-    # Workflow-only updates (including Grype/Grant bumps) run checks without publishing.
-    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.generator == 'true') || (github.event_name == 'workflow_dispatch' && inputs.publish) }}
+    # Runtime packaging and workflow-only updates run checks without publishing.
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.generator == 'true') || (github.event_name == 'workflow_dispatch' && (inputs.publish || (inputs.publish_latest && github.ref == 'refs/heads/main'))) }}
     runs-on: ubuntu-26.04
     permissions:
       contents: read
@@ -155,9 +163,10 @@ jobs:
         id: destination
         env:
           EVENT_NAME: ${{ github.event_name }}
+          PUBLISH_LATEST: ${{ inputs.publish_latest && github.ref == 'refs/heads/main' }}
         run: |
           echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cnpg-sbom-generator" >> "$GITHUB_OUTPUT"
-          if [[ "$EVENT_NAME" == push ]]; then alias="latest"; else alias="test"; fi
+          if [[ "$EVENT_NAME" == push || "$PUBLISH_LATEST" == true ]]; then alias="latest"; else alias="test"; fi
           echo "alias=$alias" >> "$GITHUB_OUTPUT"
 
       - name: Publish or reuse commit image
