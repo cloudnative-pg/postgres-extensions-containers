@@ -103,10 +103,11 @@
       "description": "updates the SBOM generator tool versions",
       "customType": "regex",
       "managerFilePatterns": [
-        "sbom-generator/Dockerfile"
+        "sbom-generator/Dockerfile",
+        "sbom-generator/auto-publish-versions.env"
       ],
       "matchStrings": [
-        "#\\s*renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))?\\s+ARG [A-Z0-9_]+_VERSION=(?<currentValue>[^\\s]+)"
+        "#\\s*renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))?\\s+(?:ARG )?[A-Z0-9_]+_VERSION=(?<currentValue>[^\\s]+)"
       ]
     },
     {

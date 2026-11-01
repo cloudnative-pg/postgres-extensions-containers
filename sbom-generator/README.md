@@ -210,10 +210,12 @@ tags retain individual builds; there are no major/minor releases.
 | Trigger | Result |
 | --- | --- |
 | Pull request touching generator code/workflow | Checks only |
-| Push to `main` touching `sbom-generator/**` | Publish or reuse commit image; promote the checked digest to `latest` |
+| Push to `main` changing generator files other than `Dockerfile` and `dependencies/**` | Publish or reuse commit image; promote the checked digest to `latest` |
+| Push to `main` changing only `Dockerfile` or `dependencies/**` | Checks only |
 | Workflow-only push to `main`, including Grype/Grant version bumps | Checks only |
-| Manual dispatch, `publish=false` | Checks only |
-| Manual dispatch, `publish=true` | Publish or reuse commit image; promote to `test` |
+| Manual dispatch, `publish=false`, `publish_latest=false` | Checks only |
+| Manual dispatch, `publish=true`, `publish_latest=false` | Publish or reuse commit image; promote to `test` |
+| Manual dispatch on `main`, `publish_latest=true` | Force a checked publication to `latest`, including runtime maintenance |
 
 [The workflow](../.github/workflows/sbom-generator.yml) runs unit and
 BuildKit/SPDX/Grype/Grant checks on native AMD64 and ARM64 runners, publishes a
@@ -224,7 +226,7 @@ SBOM. The publish job signs the checked image index with Cosign before promotion
 this binds the platform images and their attestations to the publishing workflow.
 This does not provide `slsa-verifier` verification for the generator itself.
 
-Publication is serialized. Failed checks leave aliases unchanged; manual
+Publication is serialized. Failed checks leave aliases unchanged; manual test
 publication never moves `latest`. [release.py](release.py) reuses commit tags and
 verifies alias digests. A dependency rebuild requires a new commit.
 
@@ -259,9 +261,9 @@ pin. Review and merge consumer digest updates after the affected extension check
 Renovate tracks the Python base-image digest, which covers its bundled Debian
 packages and pip. Additional Debian packages are tracked in architecture-specific
 `dependencies/debian-*.txt` files, grouped with that digest.
-The Dockerfile pins Syft and the explicit `spdx-tools` Python dependency used for
-SPDX conformance validation. Renovate tracks both versions. Keep the Python base on Bookworm to match the
-Debian dependency lists.
+`auto-publish-versions.env` pins Syft; the Dockerfile pins the `spdx-tools` Python
+dependency used for SPDX conformance validation. Renovate tracks both versions.
+Keep the Python base on Bookworm to match the Debian dependency lists.
 New Debian dependencies must also be added to both architecture lists.
 The image revision label identifies the generator source commit. The SPDX
 document retains Syft's original name, creators, and license metadata.
