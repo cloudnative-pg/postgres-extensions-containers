@@ -61,7 +61,7 @@ jobs:
           fi
           {
             echo 'EXTENSIONS<<YAML_EOF'
-            echo "$VALID_TARGETS" | jq -r '.[] | "\(.):\n  - \"\(.)/**\"\n  - *shared"'
+            echo "$VALID_TARGETS" | jq -r '.[] | "\(.):\n  - \"\(.)/**/!(README.md)\"\n  - *shared"'
             echo 'YAML_EOF'
           } >> "$GITHUB_ENV"
 
