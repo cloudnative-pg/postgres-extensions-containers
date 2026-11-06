@@ -199,6 +199,13 @@ docker buildx imagetools inspect <image> --raw | jq '.annotations'
 skopeo inspect docker://<image> | jq '.Labels'
 ```
 
+## SBOMs and authenticity
+
+Use the [SBOM guide](./sbom-generator/README.md) to verify an extension image,
+extract its platform-specific SPDX, and report vulnerabilities and licenses with
+Grype and Grant. See the [example report](./examples/sbom-reports.txt) and
+[generator release workflow](./sbom-generator/README.md#generator-release-and-test-builds).
+
 ## Image catalogs
 
 To simplify the deployment of PostgreSQL extensions, this project automatically
