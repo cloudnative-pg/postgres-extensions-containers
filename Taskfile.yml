@@ -17,7 +17,7 @@ vars:
   REGISTRY_INTERNAL_PORT: 5000
 
   # renovate: datasource=docker depName=alpine versioning=docker
-  ALPINE_IMAGE: alpine:3.24@sha256:3f4d6b32e26703c6082839234f43769d5046b3ac7c910033911d1e71d8cd630a
+  ALPINE_IMAGE: alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
   # renovate: datasource=github-releases depName=kubernetes-sigs/kind
   KIND_VERSION: v0.33.0
   # renovate: datasource=docker depName=kindest/node versioning=docker
