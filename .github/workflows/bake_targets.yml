@@ -46,6 +46,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
 
+      - name: Expose builder stage to SBOM generator
+        env:
+          EXTENSION: ${{ inputs.extension_name }}
+        run: |
+          # Expose ownership evidence: line 2 must precede FROM and a stage must be named builder; intentionally let the build fail fast instead of validating format here.
+          sed -i '2i ARG BUILDKIT_SBOM_SCAN_STAGE=builder' "$EXTENSION/Dockerfile"
+
       - name: Build and push
         uses: docker/bake-action@59cb1203cd42bcefd40a1b6d73b589e48c86040e # v7
         id: build
@@ -54,7 +61,11 @@ jobs:
           environment: testing
           registry: ghcr.io/${{ github.repository_owner }}
           revision: ${{ github.sha }}
+          # renovate: datasource=docker depName=ghcr.io/cnpg-extensions/cnpg-sbom-generator
+          sbom_generator: ghcr.io/cnpg-extensions/cnpg-sbom-generator:latest@sha256:9909ad887161b18d68f1e84c5568be3e8d3072ad861be843b596a0fdb6c48678
         with:
+          # Use the checkout so Bake sees the injected Dockerfile declaration.
+          source: .
           files: ./docker-bake.hcl,./${{ inputs.extension_name }}/metadata.hcl
           push: true
 

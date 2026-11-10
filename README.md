@@ -199,6 +199,27 @@ docker buildx imagetools inspect <image> --raw | jq '.annotations'
 skopeo inspect docker://<image> | jq '.Labels'
 ```
 
+## SBOMs and authenticity
+
+Extension builds use the published
+[CNPG SBOM generator](https://github.com/cnpg-extensions/cnpg-sbom-generator).
+It matches files shipped in the scratch image to the builder's package inventory,
+retaining package ownership, checksums, and license evidence in SPDX 2.3.
+The generator source, tests, and publication workflow live in that repository.
+
+The build workflow pins the multi-platform `latest` image by digest.
+Renovate tracks that digest using the existing workflow dependency manager.
+Local Bake builds can select the same image through `sbom_generator`; expose the
+`builder` stage with `ARG BUILDKIT_SBOM_SCAN_STAGE=builder` before the first
+`FROM`, as the workflow does.
+
+Use the [SBOM guide](https://github.com/cnpg-extensions/cnpg-sbom-generator#inspect-an-image)
+to verify an extension image, extract its platform-specific SPDX, and report
+vulnerabilities and licenses with Grype and Grant. Use this repository's publishing
+workflow identity when verifying extension images. See the
+[example PostGIS report](./examples/sbom-reports.txt) for a captured inventory;
+its header records the historical generator and scanner versions.
+
 ## Image catalogs
 
 To simplify the deployment of PostgreSQL extensions, this project automatically

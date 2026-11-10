@@ -31,7 +31,3 @@ go.work
 
 # Chainsaw values files
 **/values.yaml
-
-# Python test and bytecode caches
-__pycache__/
-*.py[cod]
