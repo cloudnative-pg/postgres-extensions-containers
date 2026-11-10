@@ -216,9 +216,7 @@ Local Bake builds can select the same image through `sbom_generator`; expose the
 Use the [SBOM guide](https://github.com/cnpg-extensions/cnpg-sbom-generator#inspect-an-image)
 to verify an extension image, extract its platform-specific SPDX, and report
 vulnerabilities and licenses with Grype and Grant. Use this repository's publishing
-workflow identity when verifying extension images. See the
-[example PostGIS report](./examples/sbom-reports.txt) for a captured inventory;
-its header records the historical generator and scanner versions.
+workflow identity when verifying extension images.
 
 ## Image catalogs
 
