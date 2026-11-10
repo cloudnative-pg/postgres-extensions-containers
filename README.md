@@ -218,6 +218,12 @@ to verify an extension image, extract its platform-specific SPDX, and report
 vulnerabilities and licenses with Grype and Grant. Use this repository's publishing
 workflow identity when verifying extension images.
 
+Testing and production extension images also receive separate signed SLSA
+provenance. Testing provenance must succeed before images are copied to
+production; production provenance is generated against the destination image
+digest after copying. These attestations supplement BuildKit provenance and
+the existing image signatures.
+
 ## Image catalogs
 
 To simplify the deployment of PostgreSQL extensions, this project automatically

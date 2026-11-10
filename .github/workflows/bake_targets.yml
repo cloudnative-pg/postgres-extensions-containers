@@ -25,6 +25,8 @@ jobs:
     outputs:
       metadata: ${{ steps.build.outputs.metadata }}
       images: ${{ steps.images.outputs.images }}
+      provenance_matrix: ${{ steps.images.outputs.provenance_matrix }}
+      production_provenance_matrix: ${{ steps.images.outputs.production_provenance_matrix }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -76,6 +78,13 @@ jobs:
         id: images
         run: |
           echo "images=$(jq -c '[ .[]."image.name" | split(",")[] | select(test("[0-9]{12}")) ]' <<< "$BUILD_METADATA")" >>  "$GITHUB_OUTPUT"
+          # Attest each final multi-platform index, once per repository/digest.
+          matrix=$(jq -c '[ .[] | {
+            image: (."image.name" | split(",")[0] | split(":")[0]),
+            digest: ."containerimage.digest"
+          } ] | unique_by([.image, .digest])' <<< "$BUILD_METADATA")
+          echo "provenance_matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "production_provenance_matrix=$(jq -c 'map(.image |= sub("-testing$"; ""))' <<< "$matrix")" >> "$GITHUB_OUTPUT"
 
       # Even if we're testing we sign the images, so we can push them to production later if that's required
       - name: Install cosign
@@ -89,6 +98,26 @@ jobs:
         run: |
           jq -r '.[] | (."image.name" | sub(",.*";"")) + "@" + ."containerimage.digest"' <<< "$BUILD_METADATA" | \
             xargs cosign sign --yes
+
+  provenance:
+    name: Provenance for testing images
+    needs: testbuild
+    permissions:
+      actions: read
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.testbuild.outputs.provenance_matrix) }}
+    # The SLSA generator requires a full version tag rather than a SHA pin.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
+    with:
+      image: ${{ matrix.image }}
+      digest: ${{ matrix.digest }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   security:
     name: Security checks
@@ -181,7 +210,7 @@ jobs:
         env:
           CNPG_RELEASE: ${{ matrix.cnpg }}
         run: |
-          task e2e:setup-env CNPG_RELEASE=$CNPG_RELEASE
+          task e2e:setup-env CNPG_RELEASE="$CNPG_RELEASE"
 
       - name: Generate Chainsaw testing values
         env:
@@ -207,6 +236,7 @@ jobs:
       - testbuild
       - security
       - smoke-test
+      - provenance
     permissions:
       contents: read
       packages: write
@@ -219,3 +249,26 @@ jobs:
           bake_build_metadata: "${{ needs.testbuild.outputs.metadata }}"
           registry_user: ${{ github.actor }}
           registry_token: ${{ secrets.GITHUB_TOKEN }}
+
+  production-provenance:
+    name: Provenance for production images
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - testbuild
+      - copytoproduction
+    permissions:
+      actions: read
+      id-token: write
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.testbuild.outputs.production_provenance_matrix) }}
+    # Generate in the destination repository: image copying does not copy this attestation.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.1.0
+    with:
+      image: ${{ matrix.image }}
+      digest: ${{ matrix.digest }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
