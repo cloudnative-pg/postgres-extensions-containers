@@ -22,7 +22,7 @@ metadata = {
     bookworm = {
       "18" = {
         // renovate: suite=bookworm-pgdg depName=postgresql-18-postgis-3
-        package = "3.7.0+dfsg-1.pgdg12+1"
+        package = "3.7.0+dfsg-1.pgdg12+2"
         // renovate: suite=bookworm-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
         sql     = "3.7.0"
       }
@@ -30,7 +30,7 @@ metadata = {
     trixie = {
       "18" = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
-        package = "3.7.0+dfsg-1.pgdg13+1"
+        package = "3.7.0+dfsg-1.pgdg13+2"
         // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
         sql     = "3.7.0"
       }
