@@ -1,5 +1,5 @@
-libgeos3.15.0_3.15.0-1.pgdg12+1_amd64.deb MD5Sum:4df16fddc144c6856af16ec0b37b0211
-libgeos-c1t64_3.15.0-1.pgdg12+1_amd64.deb MD5Sum:62693fbd75ad8ceb4dd2e3c58bf85e17
+libgeos3.15.0_3.15.0-2.pgdg12+1_amd64.deb MD5Sum:b8a9f77ee78f51bb290fb4284bd385a8
+libgeos-c1t64_3.15.0-2.pgdg12+1_amd64.deb MD5Sum:3966a63b08e0b7ccaff814461e193e25
 libproj25_9.9.0-1.pgdg12+1_amd64.deb MD5Sum:6010756fa20223b25bf5735b5d266b1c
 libgdal39_3.13.3+dfsg-2.pgdg12+1_amd64.deb MD5Sum:5bc350a448a3f6c991fb5b2a0f474f88
 libsfcgal2_2.3.0-1.pgdg12+1_amd64.deb MD5Sum:077025e1eabcf5abbe14e5be6f7c078f
@@ -54,7 +54,6 @@ libsz2_1.0.6-1+b1_amd64.deb MD5Sum:6ab72da8580d02d7cb0d8c968fc83c36
 libhdf5-103-1_1.10.8+repack1-1_amd64.deb MD5Sum:99fa047a59160d481d5c8623e66d5b5b
 libx265-199_3.5-2+b1_amd64.deb MD5Sum:e34942e4ea1c8063121bb734849b2cc0
 libheif1_1.15.1-1+deb12u1_amd64.deb MD5Sum:548fef31d81accc00bc48be783a6820c
-libjson-c5_0.16-2_amd64.deb MD5Sum:f2f6ecf1d26a6e0716cc2cda7a542e52
 libhwy1_1.0.3-3+deb12u1_amd64.deb MD5Sum:c60a8b73f729100d6002c39bddf003fe
 liblcms2-2_2.14-2+deb12u1_amd64.deb MD5Sum:4a701d009079104e62992b219cee5f6e
 libjxl0.7_0.7.0-10+deb12u1_amd64.deb MD5Sum:cbd88a6c462e75b468530cdbc77913ac

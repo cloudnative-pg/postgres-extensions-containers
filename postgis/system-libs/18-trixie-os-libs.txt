@@ -1,5 +1,5 @@
-libgeos3.15.0_3.15.0-1.pgdg13+1_amd64.deb MD5Sum:02b06c8bba5827c3e322f24547e4e10c
-libgeos-c1t64_3.15.0-1.pgdg13+1_amd64.deb MD5Sum:dae89713bcee9cf8ffa1c3ab474c8bc5
+libgeos3.15.0_3.15.0-2.pgdg13+1_amd64.deb MD5Sum:530ff0c84ea96ded97098a89827c2340
+libgeos-c1t64_3.15.0-2.pgdg13+1_amd64.deb MD5Sum:4b936992d289574a8fe84294a17ddc46
 libproj25_9.9.0-1.pgdg13+1_amd64.deb MD5Sum:0e01aa9752316d1f217c865106bbafb1
 libgdal39_3.13.3+dfsg-2.pgdg13+1_amd64.deb MD5Sum:9ed4f09bc923f03dc15682769525e94d
 libsfcgal2_2.3.0-1.pgdg13+1_amd64.deb MD5Sum:558844223b64e810c24be58141c90d3c
