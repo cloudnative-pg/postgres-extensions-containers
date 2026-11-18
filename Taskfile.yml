@@ -25,7 +25,7 @@ vars:
   K8S_VERSION: '{{ regexReplaceAll "^v([0-9.]+).*" .KIND_NODE_VERSION "$1" }}'
   KIND_CLUSTER_NAME: pg-extensions-{{ .K8S_VERSION }}
   # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+\.\d+)$
-  CNPG_RELEASE_DEFAULT: '1.30.1'
+  CNPG_RELEASE_DEFAULT: '1.30.2'
 
   DOCKER_SOCKET:
     sh: docker context inspect -f {{`'{{json .Endpoints.docker.Host}}'`}} $(docker context show)
@@ -233,7 +233,7 @@ tasks:
     run: once
     vars:
       # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-      DAGGER_ENGINE_VERSION: v0.21.11
+      DAGGER_ENGINE_VERSION: v0.21.12
     cmds:
       - >
         docker run -d -v /var/lib/dagger --name {{ .DAGGER_ENGINE_NAME }} --restart always --network {{ .E2E_NETWORK }}

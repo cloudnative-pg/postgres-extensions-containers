@@ -119,7 +119,7 @@ jobs:
         id: versions
         env:
           # renovate: datasource=github-tags depName=cloudnative-pg/cloudnative-pg versioning=semver-coerced extractVersion=^v(?<version>\d+\.\d+\.\d+)$
-          LATEST_RELEASE: "1.30.1"
+          LATEST_RELEASE: "1.30.2"
         run: |
           LATEST_MINOR="${LATEST_RELEASE%.*}"
           PREVIOUS_MINOR=$(awk -F. '{print $1"."$2-1}' <<< "$LATEST_MINOR")
@@ -162,7 +162,7 @@ jobs:
       - name: Install Dagger
         env:
           # renovate: datasource=github-tags depName=dagger/dagger versioning=semver
-          DAGGER_VERSION: 0.21.11
+          DAGGER_VERSION: 0.21.12
         run: |
           curl -L https://dl.dagger.io/dagger/install.sh | BIN_DIR=$HOME/.local/bin sh
 
