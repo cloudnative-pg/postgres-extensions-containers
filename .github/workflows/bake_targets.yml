@@ -77,7 +77,7 @@ jobs:
           BUILD_METADATA: ${{ steps.build.outputs.metadata }}
         run: |
           jq -r '.[] | (."image.name" | sub(",.*";"")) + "@" + ."containerimage.digest"' <<< "$BUILD_METADATA" | \
-            xargs cosign sign --yes
+            xargs cosign sign --recursive --yes
 
   security:
     name: Security checks
