@@ -35,7 +35,7 @@ spec:
     - name: pgaudit
       image:
         # renovate: suite=trixie-pgdg depName=postgresql-18-pgaudit
-        reference: ghcr.io/cloudnative-pg/pgaudit:18.0-18-trixie
+        reference: ghcr.io/cloudnative-pg/pgaudit:18.1-18-trixie
 ```
 
 ### 2. Enable the extension in a database
@@ -56,7 +56,7 @@ spec:
   extensions:
   - name: pgaudit
     # renovate: suite=trixie-pgdg depName=postgresql-18-pgaudit extractVersion=^(?<version>\d+\.\d+)
-    version: '18.0'
+    version: '18.1'
 ```
 
 ### 3. Verify installation
