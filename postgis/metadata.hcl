@@ -26,12 +26,24 @@ metadata = {
         // renovate: suite=bookworm-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
         sql     = "3.7.0"
       }
+      "19" = {
+        // renovate: suite=bookworm-pgdg depName=postgresql-19-postgis-3
+        package = "3.7.0+dfsg-1.pgdg12+2"
+        // renovate: suite=bookworm-pgdg depName=postgresql-19-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
+        sql     = "3.7.0"
+      }
     }
     trixie = {
       "18" = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3
         package = "3.7.0+dfsg-1.pgdg13+2"
         // renovate: suite=trixie-pgdg depName=postgresql-18-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
+        sql     = "3.7.0"
+      }
+      "19" = {
+        // renovate: suite=trixie-pgdg depName=postgresql-19-postgis-3
+        package = "3.7.0+dfsg-1.pgdg13+2"
+        // renovate: suite=trixie-pgdg depName=postgresql-19-postgis-3 extractVersion=^(?<version>\d+\.\d+\.\d+)
         sql     = "3.7.0"
       }
     }
