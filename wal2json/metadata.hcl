@@ -24,10 +24,18 @@ metadata = {
         // renovate: suite=bookworm-pgdg depName=postgresql-18-wal2json
         package = "2.7-1.pgdg12+2"
       }
+      "19" = {
+        // renovate: suite=bookworm-pgdg depName=postgresql-19-wal2json
+        package = "2.7-1.pgdg12+2"
+      }
     }
     trixie = {
       "18" = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-wal2json
+        package = "2.7-1.pgdg13+2"
+      }
+      "19" = {
+        // renovate: suite=trixie-pgdg depName=postgresql-19-wal2json
         package = "2.7-1.pgdg13+2"
       }
     }
