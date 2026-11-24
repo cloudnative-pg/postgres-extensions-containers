@@ -91,6 +91,20 @@
       ],
       "groupName": "all github action",
       "pinDigests": true
+    },
+    {
+      "description": "automerge checked latest generator digest updates",
+      "matchPackageNames": [
+        "/^ghcr\\.io\\/[^/]+\\/cnpg-sbom-generator$/"
+      ],
+      "groupName": "cnpg-sbom-generator image digests",
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "matchCurrentValue": "latest",
+      "automerge": true,
+      "platformAutomerge": true,
+      "rebaseWhen": "behind-base-branch"
     }
   ]
 }
