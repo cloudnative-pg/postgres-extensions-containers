@@ -75,6 +75,19 @@
       "matchStrings": [
         "\\/\\/\\s+renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[^\\s]+?))\\s+\\/\\/\\s+\\+default=[\\\"']?[^:]+?:(?<currentValue>[^@]+?)(@(?<currentDigest>sha256:[0-9a-f]+))?[\"']?\\s"
       ]
+    },
+    {
+      "description": "updates the engine version of the dagger modules",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "dagger/**/dagger.json"
+      ],
+      "matchStrings": [
+        "\"engineVersion\":\\s*\"(?<currentValue>v[^\"]+)\""
+      ],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "dagger/dagger",
+      "versioningTemplate": "semver"
     }
   ],
   "packageRules": [
@@ -91,6 +104,15 @@
       ],
       "groupName": "all github action",
       "pinDigests": true
+    },
+    {
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "matchPackageNames": [
+        "dagger/dagger"
+      ],
+      "groupName": "dagger"
     }
   ]
 }
