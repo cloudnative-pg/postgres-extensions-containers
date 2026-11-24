@@ -104,6 +104,15 @@
       ],
       "groupName": "all github action",
       "pinDigests": true
+    },
+    {
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "matchPackageNames": [
+        "dagger/dagger"
+      ],
+      "groupName": "dagger"
     }
   ]
 }
