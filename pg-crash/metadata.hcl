@@ -20,7 +20,7 @@ metadata = {
     bookworm = {
       "18" = {
         // renovate: suite=bookworm-pgdg depName=postgresql-18-pg-crash
-        package = "0.3-2.pgdg12+3"
+        package = "0.3-3.pgdg12+1"
       }
       "19" = {
         // renovate: suite=bookworm-pgdg depName=postgresql-19-pg-crash
@@ -30,7 +30,7 @@ metadata = {
     trixie = {
       "18" = {
         // renovate: suite=trixie-pgdg depName=postgresql-18-pg-crash
-        package = "0.3-2.pgdg13+3"
+        package = "0.3-3.pgdg13+1"
       }
       "19" = {
         // renovate: suite=trixie-pgdg depName=postgresql-19-pg-crash
