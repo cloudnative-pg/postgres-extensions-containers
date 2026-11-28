@@ -98,8 +98,10 @@ metadata = {
   auto_update_os_libs      = false
 
   # TODO: Remove this comment block after customizing the file.
-  # `required_extensions`: must contain the name(s) of the sibling
-  # folders in this repository that contain a required extension.
+  # `required_extensions`: names of required extensions. By default each name
+  # must identify a sibling folder in this repository. Prefix dependencies
+  # provided by the PostgreSQL base image with `base-image:` (for example,
+  # `base-image:pg_stat_statements`).
   required_extensions      = []
 
   # TODO: Remove this comment block after customizing the file.
