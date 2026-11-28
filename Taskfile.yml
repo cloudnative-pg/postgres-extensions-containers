@@ -305,7 +305,7 @@ tasks:
     vars:
       CNPG_RELEASE: '{{ .CNPG_RELEASE | default .CNPG_RELEASE_DEFAULT }}'
       # renovate: datasource=docker depName=alpine/kubectl versioning=docker
-      KUBECTL_VERSION: 1.37.2@sha256:06c6e028a77b54849182acb93e77f91f6312db02c6232e053212add91309349a
+      KUBECTL_VERSION: 1.37.3@sha256:266a17d072fcee990846c7058d5c4857c73c3f6aec1f33a12036aea2b597e0df
       CNPG_MANIFEST:
         sh: |
           release="{{ .CNPG_RELEASE }}"
